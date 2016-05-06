@@ -1,0 +1,64 @@
+{
+  "project_info": {
+    "project_number": "861319112287",
+    "project_id": "imposing-pipe-92318"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:861319112287:android:2fd8d35826bd583e",
+        "android_client_info": {
+          "package_name": "co.ar_smart.www"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCMdPdNxgKR6MzU1K3lDyDpbYzDT699RGI"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:861319112287:android:2a0d6f44c72efdba",
+        "android_client_info": {
+          "package_name": "co.ar_smart.www.living"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCMdPdNxgKR6MzU1K3lDyDpbYzDT699RGI"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 2,
+          "analytics_property": {
+            "tracking_id": "UA-77204189-1"
+          }
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

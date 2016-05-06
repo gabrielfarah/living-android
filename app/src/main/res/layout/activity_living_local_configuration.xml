@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:orientation="vertical"
+    tools:context="co.ar_smart.www.register.LivingLocalConfigurationActivity"
+    android:background="@color/principal">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/label_local_conf_wifi"
+        android:id="@+id/localConfSelectWifiLabel"
+        android:layout_gravity="center_horizontal" />
+
+    <AutoCompleteTextView
+        android:id="@+id/available_wifi_networks"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/label_local_conf_password"
+        android:id="@+id/localConfSelectPasswordLabel"
+        android:layout_gravity="center_horizontal" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textPassword"
+        android:ems="10"
+        android:id="@+id/localConfPasswordText"
+        android:layout_gravity="center_horizontal" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/label_local_conf_time_zones"
+        android:id="@+id/localConfSelectTimeZoneLabel"
+        android:layout_gravity="center_horizontal" />
+
+    <Spinner
+        android:id="@+id/time_zones_available"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/label_local_conf_submit_button"
+        android:id="@+id/submitLocalConfigurationButton"
+        android:layout_gravity="center_horizontal"
+        android:background="@color/colorPrimary"
+        android:textColor="#ffffff"/>
+
+
+</LinearLayout>

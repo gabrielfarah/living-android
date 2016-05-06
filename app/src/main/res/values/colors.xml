@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#abe7e5</color>
+    <color name="colorPrimaryDark">#2CC2BE</color>
+    <color name="colorAccent">#FF4081</color>
+    <color name="principal">#2CC2BE</color>
+    <color name="secundario">#808080</color>
+    <color name="soporte">#A4A6A9</color>
+    <color name="subBarras">#F3F3F3</color>
+    <color name="lineasIconos">#D1D3D4</color>
+    <color name="elementos">#E3E4E5</color>
+    <color name="soporteClaro">#ABE7E5</color>
+    <color name="alertasCerrar">#F15A29</color>
+    <color name="activar">#39B54A</color>
+</resources>

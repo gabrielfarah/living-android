@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">Living</string>
+    <string name="login_title">Login to your account</string>
+    <string name="login_text">Login</string>
+    <string name="logout_text">Logout</string>
+    <string name="register_text">Register</string>
+    <string name="toast_login_failure">There was a problem logging into Living. Are you connected to the internet?</string>
+    <string name="toast_login_bad_credentials">We were unable to login with provided credentials. Did you forgot your password?</string>
+    <string name="toast_login_server_error">We were unable to log into Living. Are you using the latest version of the app?</string>
+    <string name="toast_missing_fields">You must fill all the required fields</string>
+    <string name="toast_missing_permission">Please accept the permission Living need it to work</string>
+    <string name="toast_missing_internet">Are you connected to the internet?</string>
+    <string name="label_local_conf_wifi">Enter your home Wi-Fi network</string>
+    <string name="label_local_conf_password">Enter your home Wi-Fi password</string>
+    <string name="label_local_conf_time_zones">Select your home time zone</string>
+    <string name="label_local_conf_submit_button">Connect Living to my home Wifi</string>
+</resources>
