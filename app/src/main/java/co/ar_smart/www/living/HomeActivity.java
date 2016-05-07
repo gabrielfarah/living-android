@@ -4,15 +4,24 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
+import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Button;
+import android.widget.ArrayAdapter;
 import android.widget.GridView;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import org.json.JSONException;
@@ -24,12 +33,13 @@ import java.util.List;
 
 import co.ar_smart.www.adapters.GridDevicesAdapter;
 import co.ar_smart.www.analytics.AnalyticsApplication;
-import co.ar_smart.www.controllers.ZwaveLockControllerActivity;
 import co.ar_smart.www.controllers.SonosControllerActivity;
+import co.ar_smart.www.controllers.ZwaveLockControllerActivity;
 import co.ar_smart.www.helpers.JWTManager;
 import co.ar_smart.www.helpers.RetrofitServiceGenerator;
 import co.ar_smart.www.pojos.Endpoint;
 import co.ar_smart.www.pojos.Hub;
+import co.ar_smart.www.user.ManagementUserActivity;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -77,7 +87,23 @@ public class HomeActivity extends AppCompatActivity {
     /**
      * The list of devices (endpoints) a particular hub has
      */
-    private List<String> devices = new ArrayList<String>();
+    private List<String> devices = new ArrayList<>();
+    /**
+     * The list view of the side panel menu
+     */
+    private ListView navList;
+    /**
+     * Main layout of this activity (conatains both content and nav menu)
+     */
+    private DrawerLayout mDrawerLayout;
+    /**
+     * The adapter for the navigation menu
+     */
+    private ArrayAdapter<String> navAdapter;
+    /**
+     * Toggle for the nav menu
+     */
+    private ActionBarDrawerToggle navMenuToggle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,18 +111,175 @@ public class HomeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_home);
         final Intent intent = getIntent();
         API_TOKEN = intent.getStringExtra(EXTRA_MESSAGE);
-        Button loginButton = (Button) findViewById(R.id.logoutButton);
-        if (loginButton != null) {
-            loginButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    AnalyticsApplication.getInstance().trackEvent("User Action", "Logout", "The user logged out");
-                    successfulLogout();
-                }
-            });
+
+        navList = (ListView) findViewById(R.id.homeNavigationList);
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.activity_home);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setHomeButtonEnabled(true);
         }
+        addNavMenuItems();
+        setupDrawer();
+
         loadPreferredHub();
     }
+
+    /**
+     * This method creates the left navigation menu and set the actions for each element
+     */
+    private void addNavMenuItems() {
+        final String[] options = {"Devices", "Scenes", "Rooms", "Guests", "My Account"};
+        navAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, options);
+        navList.setAdapter(navAdapter);
+
+        navList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                switch (position) {
+                    case 0:
+                        Toast.makeText(HomeActivity.this, options[position], Toast.LENGTH_SHORT).show();
+                        openDevicesActivity();
+                        break;
+                    case 1:
+                        Toast.makeText(HomeActivity.this, options[position], Toast.LENGTH_SHORT).show();
+                        openScenesActivity();
+                        break;
+                    case 2:
+                        Toast.makeText(HomeActivity.this, options[position], Toast.LENGTH_SHORT).show();
+                        openRoomsActivity();
+                        break;
+                    case 3:
+                        Toast.makeText(HomeActivity.this, options[position], Toast.LENGTH_SHORT).show();
+                        openGuestsActivity();
+                        break;
+                    case 4:
+                        Toast.makeText(HomeActivity.this, options[position], Toast.LENGTH_SHORT).show();
+                        openAccountActivity();
+                        break;
+                }
+            }
+        });
+    }
+
+    /**
+     * This method opens the devices manager activity (from which the user can do the devices CRUD)
+     */
+    private void openDevicesActivity() {
+        //TODO
+    }
+
+    /**
+     * This method opens the scenes manager activity (from which the user can do the scenes CRUD)
+     */
+    private void openScenesActivity() {
+        //TODO
+    }
+
+    /**
+     * This method opens the rooms manager activity (from which the user can do the rooms CRUD)
+     */
+    private void openRoomsActivity() {
+        //TODO
+    }
+
+    /**
+     * This method opens the guests manager activity (from which the user can do the guests CRUD)
+     */
+    private void openGuestsActivity() {
+        //TODO
+    }
+
+    /**
+     * This method opens the user manager activity (from which the user can do his own CRUD)
+     */
+    private void openAccountActivity() {
+        Intent intent = new Intent(this, ManagementUserActivity.class);
+        startActivity(intent);
+    }
+
+    /**
+     * This method setup the nav menu toggle mechanism
+     * changes the activity title and sets listeners
+     */
+    private void setupDrawer() {
+        navMenuToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.nav_menu_open, R.string.nav_menu_close) {
+            /** Called when a drawer has settled in a completely open state. */
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+                if (getSupportActionBar() != null) {
+                    getSupportActionBar().setTitle(getString(R.string.label_home_activity_title));
+                }
+                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+            }
+
+            /** Called when a drawer has settled in a completely closed state. */
+            public void onDrawerClosed(View view) {
+                super.onDrawerClosed(view);
+                if (getSupportActionBar() != null) {
+                    getSupportActionBar().setTitle(getString(R.string.label_nav_bar_title));
+                }
+                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+            }
+        };
+        navMenuToggle.setDrawerIndicatorEnabled(true);
+        mDrawerLayout.addDrawerListener(navMenuToggle);
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        // Sync the toggle state after onRestoreInstanceState has occurred.
+        navMenuToggle.syncState();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        navMenuToggle.onConfigurationChanged(newConfig);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        // Get the feed icon and add the click action + change its color to white
+        getMenuInflater().inflate(R.menu.home_menu, menu);
+        for (int i = 0; i < menu.size(); i++) {
+            MenuItem item = menu.getItem(i);
+            if (item != null) {
+                item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        Toast.makeText(HomeActivity.this, "FEED", Toast.LENGTH_SHORT).show();
+                        return false;
+                    }
+                });
+            }
+            Drawable drawable = menu.getItem(i).getIcon();
+            if (drawable != null) {
+                drawable.mutate();
+                drawable.setColorFilter(ContextCompat.getColor(this, R.color.blanco), PorterDuff.Mode.SRC_ATOP);
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.notification_feed_button) {
+            return true;
+        }
+        // Activate the navigation drawer toggle
+        if (navMenuToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
 
     /**
      * This method will load the preferred hub the user selected the last time (if any).
@@ -227,6 +410,9 @@ public class HomeActivity extends AppCompatActivity {
                             devices.add(endpoint.getName());
                     }
                     //TODO what if the user got no endpoints?
+                    if (response.body().isEmpty()) {
+
+                    }
                     setGridLayout(response.body());
                 } else {
                     // error response, no access to resource?
@@ -306,7 +492,7 @@ public class HomeActivity extends AppCompatActivity {
         SharedPreferences settings = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = settings.edit();
         editor.putString(PREF_HUB, String.valueOf(PREFERRED_HUB_ID));
-        editor.commit();
+        editor.apply();
     }
 
     /**
@@ -316,15 +502,16 @@ public class HomeActivity extends AppCompatActivity {
     private void setGridLayout(final List<Endpoint> listaEndpoints){
         //ArrayAdapter<String> ssidAdapter = new ArrayAdapter<String>(HomeActivity.this, android.R.layout.simple_dropdown_item_1line, devices);
         final GridView homeMainGridView = (GridView) findViewById(R.id.gridView);
-        homeMainGridView.setAdapter(new GridDevicesAdapter(HomeActivity.this, listaEndpoints));
-        homeMainGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-                Toast.makeText(HomeActivity.this, listaEndpoints.get(position).getName(),
-                        Toast.LENGTH_SHORT).show();
-                processEndpointClick(listaEndpoints.get(position));
-            }
-        });
-
+        if (homeMainGridView != null) {
+            homeMainGridView.setAdapter(new GridDevicesAdapter(HomeActivity.this, listaEndpoints));
+            homeMainGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
+                    Toast.makeText(HomeActivity.this, listaEndpoints.get(position).getName(),
+                            Toast.LENGTH_SHORT).show();
+                    processEndpointClick(listaEndpoints.get(position));
+                }
+            });
+        }
     }
 
     /**
@@ -351,6 +538,8 @@ public class HomeActivity extends AppCompatActivity {
                     //TODO
                 }
                 break;
+            default:
+                AnalyticsApplication.getInstance().trackEvent("Device Image", "DoNotExist", "The device in hub:" + endpoint.getHub() + " named:" + endpoint.getName() + " the image does not correspong. image:" + endpoint.getImage());
         }
     }
 

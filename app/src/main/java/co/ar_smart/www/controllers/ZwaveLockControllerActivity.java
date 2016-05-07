@@ -3,7 +3,7 @@ package co.ar_smart.www.controllers;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
+import android.view.MenuItem;
 
 import co.ar_smart.www.living.R;
 import co.ar_smart.www.pojos.Endpoint;
@@ -26,6 +26,21 @@ public class ZwaveLockControllerActivity extends AppCompatActivity {
         final Intent intent = getIntent();
         API_TOKEN = intent.getStringExtra(EXTRA_MESSAGE);
         endpoint = intent.getParcelableExtra(EXTRA_OBJECT);
-        Log.d(">>>>>>",endpoint.toString());
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setTitle(endpoint.getName());
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                // app icon in action bar clicked; go home
+                this.finish();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 }

@@ -14,4 +14,10 @@
     <string name="label_local_conf_password">Enter your home Wi-Fi password</string>
     <string name="label_local_conf_time_zones">Select your home time zone</string>
     <string name="label_local_conf_submit_button">Connect Living to my home Wifi</string>
+    <string name="nav_menu_open">Open navigation drawer</string>
+    <string name="nav_menu_close">Close navigation drawer</string>
+    <string name="label_notification_feed">Activity</string>
+    <string name="label_home_activity_title">Living Home</string>
+    <string name="label_nav_bar_title">Living Home</string>
+    <string name="label_user_management_title">User Options</string>
 </resources>

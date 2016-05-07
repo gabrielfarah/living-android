@@ -12,4 +12,5 @@
     <color name="soporteClaro">#ABE7E5</color>
     <color name="alertasCerrar">#F15A29</color>
     <color name="activar">#39B54A</color>
+    <color name="blanco">#FFFFFF</color>
 </resources>

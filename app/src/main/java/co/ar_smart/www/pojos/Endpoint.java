@@ -109,38 +109,86 @@ public class Endpoint implements Parcelable{
         return hub;
     }
 
+    /**
+     * Get the endpoint type
+     *
+     * @return the endpoint type
+     */
     public String getEndpoint_type() {
         return endpoint_type;
     }
 
+    /**
+     * Get the state of the device
+     *
+     * @return true if ir reachable
+     */
     public boolean isState() {
         return state;
     }
 
+    /**
+     * Get the endpoint image
+     *
+     * @return the endpoint imege
+     */
     public String getImage() {
         return image;
     }
 
+    /**
+     * Get the endpoint UID
+     *
+     * @return the endpoint UID
+     */
     public String getUid() {
         return uid;
     }
 
+    /**
+     * Get if the device is active
+     *
+     * @return true if active
+     */
     public boolean isActive() {
         return active;
     }
 
+    /**
+     * Get the endpoint name
+     * @return the endpoint name
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Get the manufacturer name
+     * @return the manufacturer name
+     */
     public String getManufacturer_name() {
         return manufacturer_name;
     }
 
-    public String getRoom(){ return room; }
+    /**
+     * Get the room name (if any)
+     *
+     * @return the endpoint room name
+     */
+    public String getRoom() {
+        return room;
+    }
 
-    public Category getCategory() { return category; }
+    /**
+     * Get the category of the endpoint
+     *
+     * @return the endpoint category
+     */
+    public Category getCategory() {
+        return category;
+    }
 
+    @Override
     public String toString(){
         return "("+name+" - "+endpoint_type+" - "+ui_class_command+")";
     }
@@ -177,8 +225,8 @@ public class Endpoint implements Parcelable{
         manufacturer_name = in.readString();
         image = in.readString();
         uid = in.readString();
-        active = (Boolean) in.readValue(null);
-        state = (Boolean) in.readValue(null);
+        active = (Boolean) in.readValue(getClass().getClassLoader());
+        state = (Boolean) in.readValue(getClass().getClassLoader());
         endpoint_type = in.readString();
         hub = in.readInt();
         ui_class_command = in.readString();
@@ -189,6 +237,9 @@ public class Endpoint implements Parcelable{
         in.readTypedList(endpoint_classes, EndpointClass.CREATOR);
     }
 
+    /**
+     * The Parcelable creator
+     */
     public static final Creator<Endpoint> CREATOR = new Creator<Endpoint>() {
         @Override
         public Endpoint createFromParcel(Parcel in) {
