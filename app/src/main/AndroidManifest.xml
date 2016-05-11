@@ -31,7 +31,8 @@
         <activity android:name="co.ar_smart.www.register.LivingLocalConfigurationActivity" />
         <activity android:name="co.ar_smart.www.controllers.SonosControllerActivity" />
         <activity android:name="co.ar_smart.www.controllers.ZwaveLockControllerActivity" />
-        <activity android:name="co.ar_smart.www.user.ManagementUserActivity"></activity>
+        <activity android:name="co.ar_smart.www.user.ManagementUserActivity" />
+        <activity android:name="co.ar_smart.www.register.NewUserActivity"></activity>
     </application>
 
 </manifest>

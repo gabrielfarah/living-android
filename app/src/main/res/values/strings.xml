@@ -20,4 +20,13 @@
     <string name="label_home_activity_title">Living Home</string>
     <string name="label_nav_bar_title">Living Home</string>
     <string name="label_user_management_title">User Options</string>
+    <string name="nav_bar_new_user_title">New Account</string>
+    <string name="btn_new_user_create">Create Account</string>
+    <string name="label_new_user_existing_user">Already have an account ?</string>
+    <string name="edit_text_new_user_name">Name</string>
+    <string name="edit_text_new_user_email">E-mail</string>
+    <string name="edit_text_new_user_confirm_email">Confirm E-mail</string>
+    <string name="edit_text_new_user_password">Password</string>
+    <string name="toast_incomplete_form">Incomplete Form</string>
+    <string name="toast_not_matching_email">The e-mails are not equal</string>
 </resources>
