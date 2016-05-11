@@ -5,33 +5,19 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
-
-import co.ar_smart.www.analytics.AnalyticsApplication;
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
+import co.ar_smart.www.helpers.JWTManager;
 
 import static co.ar_smart.www.helpers.Constants.EXTRA_MESSAGE;
-import static co.ar_smart.www.helpers.Constants.JSON;
-import static co.ar_smart.www.helpers.Constants.LOGIN_URL;
 import static co.ar_smart.www.helpers.Constants.PREFS_NAME;
 import static co.ar_smart.www.helpers.Constants.PREF_EMAIL;
-import static co.ar_smart.www.helpers.Constants.PREF_PASSWORD;
 import static co.ar_smart.www.helpers.Constants.PREF_JWT;
+import static co.ar_smart.www.helpers.Constants.PREF_PASSWORD;
 
 /**
  * This activity is responsable to authenticate a user given the input of an email and password fields.
@@ -68,10 +54,34 @@ public class LoginActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     EMAIL =  emailText.getText().toString();
                     PASSWORD = passwordText.getText().toString();
-                    Log.d("DEBUG",EMAIL+" - "+PASSWORD);
                     // Show progressbar and do network request
                     toggleProgress();
-                    getApiToken(EMAIL,PASSWORD);
+                    JWTManager.getApiToken(EMAIL, PASSWORD, new JWTManager.JWTCallbackInterface() {
+                        @Override
+                        public void onFailureCallback() {
+                            displayMessage(getResources().getString(R.string.toast_login_failure));
+                            toggleProgress();
+                        }
+
+                        @Override
+                        public void onSuccessCallback(String nToken) {
+                            API_TOKEN = nToken;
+                            successfulLogin();
+                        }
+
+                        @Override
+                        public void onUnsuccessfulCallback() {
+                            displayMessage(getResources().getString(R.string.toast_login_bad_credentials));
+                            // Hide progressbar
+                            toggleProgress();
+                        }
+
+                        @Override
+                        public void onExceptionCallback() {
+                            displayMessage(getResources().getString(R.string.toast_login_server_error));
+                            toggleProgress();
+                        }
+                    });
                 }
             });
         }
@@ -90,49 +100,6 @@ public class LoginActivity extends AppCompatActivity {
         editor.putString(PREF_PASSWORD, PASSWORD);
         editor.putString(PREF_JWT, API_TOKEN);
         editor.commit();
-    }
-
-    /**
-     * This method tries obtains a new api token given an email and password field.
-     * If it fails it will notify the user
-     * @param email the user email obtained from the user input
-     * @param password the user password obtained from the user input
-     */
-    private void getApiToken(String email, String password) {
-        String json = "{\"email\":\""+email+"\",\"password\":\""+password+"\"}";
-        OkHttpClient client = new OkHttpClient();
-        RequestBody body = RequestBody.create(JSON, json);
-        Request request = new Request.Builder()
-                .url(LOGIN_URL)
-                .post(body)
-                .build();
-        client.newCall(request).enqueue(new Callback() {
-            @Override public void onFailure(Call call, IOException e) {
-                AnalyticsApplication.getInstance().trackException(e);
-                displayMessage(getResources().getString(R.string.toast_login_failure));
-                toggleProgress();
-            }
-
-            @Override public void onResponse(Call call, Response response) throws IOException {
-                String jsonData = response.body().string();
-                response.body().close();
-                if (!response.isSuccessful()) {
-                    displayMessage(getResources().getString(R.string.toast_login_bad_credentials));
-                    // Hide progressbar
-                    toggleProgress();
-                } else {
-                    try {
-                        JSONObject jObject = new JSONObject(jsonData);
-                        API_TOKEN = jObject.getString("token");
-                        successfulLogin();
-                    } catch (JSONException e) {
-                        AnalyticsApplication.getInstance().trackException(e);
-                        displayMessage(getResources().getString(R.string.toast_login_server_error));
-                        toggleProgress();
-                    }
-                }
-            }
-        });
     }
 
     /**

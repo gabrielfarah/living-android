@@ -11,6 +11,15 @@ import java.util.List;
  */
 public class EndpointClass implements Parcelable{
     private String description;
+
+    public List<EndpointClassCommand> getCommands() {
+        return commands;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
     private List<EndpointClassCommand> commands = new ArrayList<>();
 
     protected EndpointClass(Parcel in) {

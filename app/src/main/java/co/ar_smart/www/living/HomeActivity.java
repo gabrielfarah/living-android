@@ -24,10 +24,6 @@ import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,14 +31,13 @@ import co.ar_smart.www.adapters.GridDevicesAdapter;
 import co.ar_smart.www.analytics.AnalyticsApplication;
 import co.ar_smart.www.controllers.SonosControllerActivity;
 import co.ar_smart.www.controllers.ZwaveLockControllerActivity;
+import co.ar_smart.www.endpoints.ManagementEndpointsActivity;
 import co.ar_smart.www.helpers.JWTManager;
 import co.ar_smart.www.helpers.RetrofitServiceGenerator;
 import co.ar_smart.www.pojos.Endpoint;
 import co.ar_smart.www.pojos.Hub;
+import co.ar_smart.www.register.LivingLocalConfigurationActivity;
 import co.ar_smart.www.user.ManagementUserActivity;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -54,8 +49,6 @@ import static co.ar_smart.www.helpers.Constants.DEFAULT_HUB;
 import static co.ar_smart.www.helpers.Constants.DEFAULT_PASSWORD;
 import static co.ar_smart.www.helpers.Constants.EXTRA_MESSAGE;
 import static co.ar_smart.www.helpers.Constants.EXTRA_OBJECT;
-import static co.ar_smart.www.helpers.Constants.JSON;
-import static co.ar_smart.www.helpers.Constants.LOGIN_URL;
 import static co.ar_smart.www.helpers.Constants.PREFS_NAME;
 import static co.ar_smart.www.helpers.Constants.PREF_EMAIL;
 import static co.ar_smart.www.helpers.Constants.PREF_HUB;
@@ -351,47 +344,28 @@ public class HomeActivity extends AppCompatActivity {
             // Get values using keys
             String EMAIL = settings.getString(PREF_EMAIL, DEFAULT_EMAIL);
             String PASSWORD = settings.getString(PREF_PASSWORD, DEFAULT_PASSWORD);
-            getApiToken(EMAIL, PASSWORD);
-        }
-    }
-
-    /**
-     * This method tries obtains a new api token given an email and password field.
-     * @param email the user email obtained from the shared preferences
-     * @param password the user password obtained from the shared preferences
-     */
-    private void getApiToken(String email, String password) {
-        String json = "{\"email\":\""+email+"\",\"password\":\""+password+"\"}";
-        OkHttpClient client = new OkHttpClient();
-        RequestBody body = RequestBody.create(JSON, json);
-        Request request = new Request.Builder()
-                .url(LOGIN_URL)
-                .post(body)
-                .build();
-        client.newCall(request).enqueue(new okhttp3.Callback() {
-            @Override public void onFailure(okhttp3.Call call, IOException e) {
-                // If we dont have internet active
-                showNoInternetMessage();
-                AnalyticsApplication.getInstance().trackException(e);
-                //finish();
-                //startActivity(getIntent());
-            }
-
-            @Override public void onResponse(okhttp3.Call call, okhttp3.Response response) throws IOException {
-                String jsonData = response.body().string();
-                response.body().close();
-                if (!response.isSuccessful()) {
-                    successfulLogout();
-                } else {
-                    try {
-                        JSONObject jObject = new JSONObject(jsonData);
-                        API_TOKEN = jObject.getString("token");
-                    } catch (JSONException e) {
-                        AnalyticsApplication.getInstance().trackException(e);
-                    }
+            JWTManager.getApiToken(EMAIL, PASSWORD, new JWTManager.JWTCallbackInterface() {
+                @Override
+                public void onFailureCallback() {
+                    showNoInternetMessage();
                 }
-            }
-        });
+
+                @Override
+                public void onSuccessCallback(String nToken) {
+                    API_TOKEN = nToken;
+                }
+
+                @Override
+                public void onUnsuccessfulCallback() {
+                    successfulLogout();
+                }
+
+                @Override
+                public void onExceptionCallback() {
+                    // Nothing exceptional to do in this case.
+                }
+            });
+        }
     }
 
     /**
@@ -408,16 +382,19 @@ public class HomeActivity extends AppCompatActivity {
                     for (Endpoint endpoint : response.body()) {
                         if (!devices.contains(endpoint.getName()))
                             devices.add(endpoint.getName());
+                        Log.d("DEVICE:", endpoint.getName());
+                        Log.d("COMMAND:", endpoint.getEndpoint_classes().get(0).getCommands().get(0).toString());
                     }
-                    //TODO what if the user got no endpoints?
+                    // If user got no endpoints redirect to management activity. set grid layout otherwise.
                     if (response.body().isEmpty()) {
-
+                        openManagementDevicesActivity();
+                    } else {
+                        setGridLayout(response.body());
                     }
-                    setGridLayout(response.body());
                 } else {
                     // error response, no access to resource?
-                    //TODO if the device no longer has access to the endpoints (because he got ininvited) ask for select new hub or manage acordingly.
-                    Log.d("Error", response.toString());
+                    // if the user no longer has access to the endpoints (because he got uninvited) ask for select new hub.
+                    getHubs();
                 }
             }
 
@@ -432,6 +409,15 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     /**
+     * This methods opens the device manager activity
+     */
+    private void openManagementDevicesActivity() {
+        Intent intent = new Intent(this, ManagementEndpointsActivity.class);
+        intent.putExtra(EXTRA_MESSAGE, API_TOKEN);
+        startActivity(intent);
+    }
+
+    /**
      * This method will try to obtain all the Living hubs the user owns/is invited.
      */
     private void getHubs(){
@@ -443,11 +429,14 @@ public class HomeActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<List<Hub>> call, Response<List<Hub>> response) {
                 if (response.isSuccessful()) {
-                    //TODO what happens if the user got no hub?
-                    showSelectHubDialog(response.body());
+                    // If the user got hubs he can select one to use. If he do not then send it to register one activity.
+                    if (!response.body().isEmpty()) {
+                        showSelectHubDialog(response.body());
+                    } else {
+                        openRegisterHubActivity();
+                    }
                 } else {
-                    // error response, no access to resource?
-                    Log.d("Error", response.toString());
+                    AnalyticsApplication.getInstance().trackEvent("Weird Event", "NoAccessToHubs", "The user do not have access to the hubs? token:" + API_TOKEN);
                 }
             }
 
@@ -459,6 +448,15 @@ public class HomeActivity extends AppCompatActivity {
                 AnalyticsApplication.getInstance().trackException(new Exception(t));
             }
         });
+    }
+
+    /**
+     * This method opens the register new hub activity
+     */
+    private void openRegisterHubActivity() {
+        Intent intent = new Intent(this, LivingLocalConfigurationActivity.class);
+        intent.putExtra(EXTRA_MESSAGE, API_TOKEN);
+        startActivity(intent);
     }
 
     /**
@@ -500,7 +498,6 @@ public class HomeActivity extends AppCompatActivity {
      * @param listaEndpoints The list of devices (endpoints) the user has access in this hub
      */
     private void setGridLayout(final List<Endpoint> listaEndpoints){
-        //ArrayAdapter<String> ssidAdapter = new ArrayAdapter<String>(HomeActivity.this, android.R.layout.simple_dropdown_item_1line, devices);
         final GridView homeMainGridView = (GridView) findViewById(R.id.gridView);
         if (homeMainGridView != null) {
             homeMainGridView.setAdapter(new GridDevicesAdapter(HomeActivity.this, listaEndpoints));

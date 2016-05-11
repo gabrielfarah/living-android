@@ -32,6 +32,7 @@
         <activity android:name="co.ar_smart.www.controllers.SonosControllerActivity" />
         <activity android:name="co.ar_smart.www.controllers.ZwaveLockControllerActivity" />
         <activity android:name="co.ar_smart.www.user.ManagementUserActivity"></activity>
+        <activity android:name="co.ar_smart.www.endpoints.ManagementEndpointsActivity" />
     </application>
 
 </manifest>

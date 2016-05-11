@@ -6,7 +6,19 @@ import android.util.Log;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.Date;
+
+import co.ar_smart.www.analytics.AnalyticsApplication;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+
+import static co.ar_smart.www.helpers.Constants.JSON;
+import static co.ar_smart.www.helpers.Constants.LOGIN_URL;
 
 /**
  * This helper class, implements the methods responsable to validate the expiracy of a JWT using the HS256 encription algorithm.
@@ -47,6 +59,75 @@ public class JWTManager {
             Log.d("Error", e.getMessage());
             return false;
         }
+    }
+
+    /**
+     * This method tries obtains a new api token given an email and password field.
+     * If it fails it will notify the user
+     *
+     * @param email    the user email obtained from the user input
+     * @param password the user password obtained from the user input
+     * @param callback
+     */
+    public static void getApiToken(String email, String password, final JWTCallbackInterface callback) {
+        String json = "{\"email\":\"" + email + "\",\"password\":\"" + password + "\"}";
+        OkHttpClient client = new OkHttpClient();
+        RequestBody body = RequestBody.create(JSON, json);
+        Request request = new Request.Builder()
+                .url(LOGIN_URL)
+                .post(body)
+                .build();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                AnalyticsApplication.getInstance().trackException(e);
+                callback.onFailureCallback();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String jsonData = response.body().string();
+                response.body().close();
+                if (!response.isSuccessful()) {
+                    callback.onUnsuccessfulCallback();
+                } else {
+                    try {
+                        JSONObject jObject = new JSONObject(jsonData);
+                        callback.onSuccessCallback(jObject.getString("token"));
+                    } catch (JSONException e) {
+                        AnalyticsApplication.getInstance().trackException(e);
+                        callback.onExceptionCallback();
+                    }
+                }
+            }
+        });
+    }
+
+    /**
+     * This interface defines the callbacks for the states of the getApiToken method
+     */
+    public interface JWTCallbackInterface {
+        /**
+         * This method will be called if the request failed. The main cause may be the lack of internet connection.
+         */
+        void onFailureCallback();
+
+        /**
+         * This method will contain the API token obtained from the server in case the request was successful.
+         *
+         * @param nToken The token obtained from the server
+         */
+        void onSuccessCallback(String nToken);
+
+        /**
+         * This method will be called if the credentials provided were not correct.
+         */
+        void onUnsuccessfulCallback();
+
+        /**
+         * This method will be called if there was an error parsing the JSON response from the server.
+         */
+        void onExceptionCallback();
     }
 
 }
