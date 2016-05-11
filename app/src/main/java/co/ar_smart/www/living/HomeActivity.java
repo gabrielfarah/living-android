@@ -24,9 +24,12 @@ import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.onesignal.OneSignal;
+
 import java.util.ArrayList;
 import java.util.List;
 
+import co.ar_smart.www.actions.ActionActivity;
 import co.ar_smart.www.adapters.GridDevicesAdapter;
 import co.ar_smart.www.analytics.AnalyticsApplication;
 import co.ar_smart.www.controllers.SonosControllerActivity;
@@ -38,6 +41,9 @@ import co.ar_smart.www.pojos.Endpoint;
 import co.ar_smart.www.pojos.Hub;
 import co.ar_smart.www.register.LivingLocalConfigurationActivity;
 import co.ar_smart.www.user.ManagementUserActivity;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -48,7 +54,10 @@ import static co.ar_smart.www.helpers.Constants.DEFAULT_EMAIL;
 import static co.ar_smart.www.helpers.Constants.DEFAULT_HUB;
 import static co.ar_smart.www.helpers.Constants.DEFAULT_PASSWORD;
 import static co.ar_smart.www.helpers.Constants.EXTRA_MESSAGE;
+import static co.ar_smart.www.helpers.Constants.EXTRA_MESSAGE_PREF_HUB;
 import static co.ar_smart.www.helpers.Constants.EXTRA_OBJECT;
+import static co.ar_smart.www.helpers.Constants.JSON;
+import static co.ar_smart.www.helpers.Constants.LOGIN_URL;
 import static co.ar_smart.www.helpers.Constants.PREFS_NAME;
 import static co.ar_smart.www.helpers.Constants.PREF_EMAIL;
 import static co.ar_smart.www.helpers.Constants.PREF_HUB;
@@ -115,6 +124,27 @@ public class HomeActivity extends AppCompatActivity {
         setupDrawer();
 
         loadPreferredHub();
+        performPushNotificationRegistration();
+    }
+
+    /**
+     * This method will syncronize the user push notification token in the backend
+     */
+    private void performPushNotificationRegistration() {
+        OneSignal.startInit(this).init();
+        OneSignal.idsAvailable(new OneSignal.IdsAvailableHandler() {
+            @Override
+            public void idsAvailable(String userId, String registrationId) {
+                String json = "{\"push_token\":\"" + userId + "\"}";
+                OkHttpClient client = new OkHttpClient();
+                RequestBody body = RequestBody.create(JSON, json);
+                Request request = new Request.Builder()
+                        .url(LOGIN_URL)
+                        .patch(body)
+                        .build();
+                //TODO Completar esta funcion: Ir al perfil y obtener el usuario. Despues hacer la peticion de actualizar el push token. La otra opcion seria cambiar el view del "perfil" para que reciba patch tambien
+            }
+        });
     }
 
     /**
@@ -242,7 +272,7 @@ public class HomeActivity extends AppCompatActivity {
                 item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
-                        Toast.makeText(HomeActivity.this, "FEED", Toast.LENGTH_SHORT).show();
+                        openActionsActivity();
                         return false;
                     }
                 });
@@ -254,6 +284,16 @@ public class HomeActivity extends AppCompatActivity {
             }
         }
         return true;
+    }
+
+    /**
+     * This method opens the actions activity (Log/Feed) of the recent things that happened at the house
+     */
+    private void openActionsActivity() {
+        Intent intent = new Intent(this, ActionActivity.class);
+        intent.putExtra(EXTRA_MESSAGE, API_TOKEN);
+        intent.putExtra(EXTRA_MESSAGE_PREF_HUB, PREFERRED_HUB_ID);
+        startActivity(intent);
     }
 
     @Override
@@ -565,7 +605,7 @@ public class HomeActivity extends AppCompatActivity {
     /**
      * This interface implements a Retrofit interface for the Home Activity
      */
-    public interface HomeClient {
+    private interface HomeClient {
         /**
          * This function get all the endpoints inside a hub given a hub id.
          * @param hub_id The ID of the hub from which to get the endpoints
