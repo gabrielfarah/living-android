@@ -52,6 +52,10 @@ public final class Constants {
      */
     public static final String LOGIN_URL = BASE_URL+"api-token-auth/";
     /**
+     * The register URL
+     */
+    public static final String REGISTER_URL = BASE_URL+"users/";
+    /**
      * UID of intra activities messages. Is used for passing messages between intents among activities.
      */
     public static final String EXTRA_MESSAGE = "co.ar-smart.www.living.MESSAGE";

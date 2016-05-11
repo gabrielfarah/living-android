@@ -6,7 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 
-import co.ar_smart.www.register.LivingLocalConfigurationActivity;
+import co.ar_smart.www.register.NewAdminActivity;
 
 /**
  * This activity allows a user to either login in or to register a new Living account.
@@ -49,8 +49,7 @@ public class LoginRegisterActivity extends AppCompatActivity {
      * This method opens the register activity for the user to register
      */
     public void openRegisterActivity() {
-        //TODO finish
-        Intent intent = new Intent(this, LivingLocalConfigurationActivity.class);
+        Intent intent = new Intent(this, NewAdminActivity.class);
         startActivity(intent);
     }
 }

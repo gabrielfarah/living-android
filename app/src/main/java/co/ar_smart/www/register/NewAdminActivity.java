@@ -11,14 +11,12 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-
-
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
 
 import co.ar_smart.www.analytics.AnalyticsApplication;
+import co.ar_smart.www.living.LoginActivity;
 import co.ar_smart.www.living.R;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -27,10 +25,19 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-import static co.ar_smart.www.helpers.Constants.JSON;
-import static co.ar_smart.www.helpers.Constants.LOGIN_URL;
+import static co.ar_smart.www.helpers.Constants.*;
 
-public class NewUserActivity extends AppCompatActivity {
+public class NewAdminActivity extends AppCompatActivity {
+
+
+    /**
+     * The user email
+     */
+    private String EMAIL = "";
+    /**
+     * The user password
+     */
+    private String PASSWORD = "";
 
     /*
      * TextView used for users that already have an account
@@ -44,7 +51,7 @@ public class NewUserActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_new_user);
+        setContentView(R.layout.activity_new_admin);
         setTitle(R.string.nav_bar_new_user_title);
 
         // Add underling to the textView
@@ -72,8 +79,10 @@ public class NewUserActivity extends AppCompatActivity {
         edtPassword.setHintTextColor(ContextCompat.getColor(getApplicationContext(), R.color.blanco));
     }
 
-    public void existingAccount(View v) {
-        finish();
+    public void existingAccount(View v)
+    {
+        Intent i = new Intent(this, LoginActivity.class);
+        startActivity(i);
     }
 
     public void createAccount(View v) {
@@ -84,14 +93,22 @@ public class NewUserActivity extends AppCompatActivity {
         boolean correspondenCorreos = edtEmail.getText().toString().trim().equals(edtConfEmail.getText().toString().trim());
         if (!camposLlenos)
         {
-            Toast.makeText(getApplicationContext(), R.string.toast_incomplete_form, Toast.LENGTH_SHORT).show();
+            displayMessage(getResources().getString(R.string.toast_incomplete_form));
         }
         else if (!correspondenCorreos)
         {
-            Toast.makeText(getApplicationContext(), R.string.toast_not_matching_email, Toast.LENGTH_SHORT).show();
+            displayMessage(getResources().getString(R.string.toast_not_matching_email));
         }
-        else {
+        else if(!android.util.Patterns.EMAIL_ADDRESS.matcher(edtEmail.getText().toString()).matches()
+                || !android.util.Patterns.EMAIL_ADDRESS.matcher(edtConfEmail.getText().toString()).matches())
+        {
+            displayMessage(getResources().getString(R.string.toast_email_format_error));
+        }
+        else
+        {
 
+            EMAIL = edtEmail.getText().toString();
+            PASSWORD = edtPassword.getText().toString();
             JSONObject json = new JSONObject();
             try {
                 json.put("password", edtPassword.getText());
@@ -99,15 +116,14 @@ public class NewUserActivity extends AppCompatActivity {
                 OkHttpClient client = new OkHttpClient();
                 RequestBody body = RequestBody.create(JSON, json.toString());
                 Request request = new Request.Builder()
-                        .url(LOGIN_URL)
+                        .url(REGISTER_URL)
                         .post(body)
                         .build();
                 client.newCall(request).enqueue(new Callback() {
                     @Override
                     public void onFailure(Call call, IOException e) {
                         AnalyticsApplication.getInstance().trackException(e);
-                        //displayMessage(getResources().getString(R.string.toast_login_failure));
-                        //toggleProgress();
+                        displayMessage(getResources().getString(R.string.toast_login_failure));
                     }
 
                     @Override
@@ -115,26 +131,36 @@ public class NewUserActivity extends AppCompatActivity {
                         String jsonData = response.body().string();
                         response.body().close();
                         if (!response.isSuccessful()) {
-                            //displayMessage(getResources().getString(R.string.toast_login_bad_credentials));
-                            // Hide progressbar
-                            //toggleProgress();
-                        } else {
-                            try {
-                                JSONObject jObject = new JSONObject(jsonData);
-                                //API_TOKEN = jObject.getString("token");
-                                //successfulLogin();
-                            } catch (JSONException e) {
-                                AnalyticsApplication.getInstance().trackException(e);
-                                //displayMessage(getResources().getString(R.string.toast_login_server_error));
-                                //toggleProgress();
-                            }
+                            displayMessage(getResources().getString(R.string.toast_login_bad_credentials));
+                        }
+                        else
+                        {
+                            createdUser();
                         }
                     }
                 });
             } catch (Exception e) {
-                Toast.makeText(getApplicationContext(), "Error creando usuario", Toast.LENGTH_SHORT).show();
+                displayMessage(getResources().getString(R.string.create_user_error));
             }
         }
+    }
+
+    private void createdUser()
+    {
+        Intent i = new Intent(this, CreatedUserActivity.class);
+        startActivity(i);
+    }
+
+    /**
+     * This method display a dialog message in the UI thread given a message.
+     * @param message The message sent to be displayed in the main UI
+     */
+    private void displayMessage(final String message){
+        NewAdminActivity.this.runOnUiThread(new Runnable() {
+            public void run() {
+                Toast.makeText(NewAdminActivity.this, message, Toast.LENGTH_LONG).show();
+            }
+        });
     }
 }
 
