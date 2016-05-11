@@ -34,7 +34,9 @@
         <activity android:name="co.ar_smart.www.user.ManagementUserActivity" />
         <activity android:name="co.ar_smart.www.register.NewAdminActivity" />
         <activity android:name="co.ar_smart.www.register.CreatedUserActivity"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar"/>
+        <activity android:name="co.ar_smart.www.endpoints.ManagementEndpointsActivity" />
+        <activity android:name="co.ar_smart.www.actions.ActionActivity"/>
     </application>
 
 </manifest>

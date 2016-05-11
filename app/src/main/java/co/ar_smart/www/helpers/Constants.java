@@ -52,6 +52,10 @@ public final class Constants {
      */
     public static final String LOGIN_URL = BASE_URL+"api-token-auth/";
     /**
+     * The user profile URL
+     */
+    public static final String PROFILE_URL = BASE_URL + "profile/";
+    /**
      * The register URL
      */
     public static final String REGISTER_URL = BASE_URL+"users/";
@@ -63,6 +67,10 @@ public final class Constants {
      * UID of intra activities messages (parcelable objects to be passed). Is used for passing pojos between intents among activities.
      */
     public static final String EXTRA_OBJECT = "co.ar-smart.www.living.PARCEL";
+    /**
+     * UID of intra activities messages. Is used for passing messages between intents among activities.
+     */
+    public static final String EXTRA_MESSAGE_PREF_HUB = "co.ar-smart.www.living.MESSAGE_PREF_HUB";
     /**
      * The header representing JSON media type for he okHttp library
      */

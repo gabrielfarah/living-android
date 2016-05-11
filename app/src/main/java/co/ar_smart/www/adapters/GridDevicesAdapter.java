@@ -1,6 +1,7 @@
 package co.ar_smart.www.adapters;
 
 import android.content.Context;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -40,7 +41,7 @@ public class GridDevicesAdapter extends BaseAdapter {
 
     @Override
     public Object getItem(int position) {
-        return null;
+        return endpoints.get(position);
     }
 
     @Override
@@ -57,7 +58,7 @@ public class GridDevicesAdapter extends BaseAdapter {
             imageView.setLayoutParams(new GridView.LayoutParams(350, 350));
             imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
             imageView.setPadding(8, 8, 8, 8);
-            imageView.setBackgroundColor(context.getResources().getColor(R.color.subBarras));//R.color.subBarras);
+            imageView.setBackgroundColor(ContextCompat.getColor(context, R.color.subBarras));//R.color.subBarras);
         } else {
             imageView = (ImageView) convertView;
         }

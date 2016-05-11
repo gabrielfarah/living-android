@@ -2,9 +2,9 @@ package co.ar_smart.www.register;
 
 import android.content.Intent;
 import android.graphics.PorterDuff;
+import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.style.UnderlineSpan;
 import android.view.View;
@@ -56,26 +56,37 @@ public class NewAdminActivity extends AppCompatActivity {
 
         // Add underling to the textView
         txvExistingAccount = (TextView) findViewById(R.id.txvExistingAccount);
-        String udata = (String) txvExistingAccount.getText();
+        String udata = null;
+        if (txvExistingAccount != null) {
+            udata = (String) txvExistingAccount.getText();
+        }
         SpannableString content = new SpannableString(udata);
-        content.setSpan(new UnderlineSpan(), 0, udata.length(), 0);
+        content.setSpan(new UnderlineSpan(), 0, udata != null ? udata.length() : 0, 0);
         txvExistingAccount.setText(content);
 
         //Change hint color text and editText line color
         edtName = (EditText) findViewById(R.id.edtName);
-        edtName.getBackground().mutate().setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.blanco), PorterDuff.Mode.SRC_ATOP);
+        if (edtName != null) {
+            edtName.getBackground().mutate().setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.blanco), PorterDuff.Mode.SRC_ATOP);
+        }
         edtName.setHintTextColor(ContextCompat.getColor(getApplicationContext(), R.color.blanco));
 
         edtEmail = (EditText) findViewById(R.id.edtEmail);
-        edtEmail.getBackground().mutate().setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.blanco), PorterDuff.Mode.SRC_ATOP);
+        if (edtEmail != null) {
+            edtEmail.getBackground().mutate().setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.blanco), PorterDuff.Mode.SRC_ATOP);
+        }
         edtEmail.setHintTextColor(ContextCompat.getColor(getApplicationContext(), R.color.blanco));
 
         edtConfEmail = (EditText) findViewById(R.id.edtConfEmail);
-        edtConfEmail.getBackground().mutate().setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.blanco), PorterDuff.Mode.SRC_ATOP);
+        if (edtConfEmail != null) {
+            edtConfEmail.getBackground().mutate().setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.blanco), PorterDuff.Mode.SRC_ATOP);
+        }
         edtConfEmail.setHintTextColor(ContextCompat.getColor(getApplicationContext(), R.color.blanco));
 
         edtPassword = (EditText) findViewById(R.id.edtPassword);
-        edtPassword.getBackground().mutate().setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.blanco), PorterDuff.Mode.SRC_ATOP);
+        if (edtPassword != null) {
+            edtPassword.getBackground().mutate().setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.blanco), PorterDuff.Mode.SRC_ATOP);
+        }
         edtPassword.setHintTextColor(ContextCompat.getColor(getApplicationContext(), R.color.blanco));
     }
 
@@ -106,9 +117,9 @@ public class NewAdminActivity extends AppCompatActivity {
         }
         else
         {
-
             EMAIL = edtEmail.getText().toString();
             PASSWORD = edtPassword.getText().toString();
+            //TODO VER LA NUEVA IMPLEMENTACION DEL METODO USANDO LOS CALLBACKS!
             JSONObject json = new JSONObject();
             try {
                 json.put("password", edtPassword.getText());
