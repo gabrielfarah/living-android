@@ -8,7 +8,7 @@
     android:background="@color/principal"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="co.ar_smart.www.register.NewUserActivity">
+    tools:context="co.ar_smart.www.register.NewAdminActivity">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -31,18 +31,21 @@
                 android:layout_height="wrap_content"
                 style="@style/editTextNewUser"
                 android:hint="@string/edit_text_new_user_email"
+                android:inputType="textEmailAddress"
                 android:id="@+id/edtEmail"/>
             <EditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 style="@style/editTextNewUser"
                 android:hint="@string/edit_text_new_user_confirm_email"
+                android:inputType="textEmailAddress"
                 android:id="@+id/edtConfEmail"/>
             <EditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 style="@style/editTextNewUser"
                 android:hint="@string/edit_text_new_user_password"
+                android:inputType="textPassword"
                 android:id="@+id/edtPassword"/>
         </LinearLayout>
         <LinearLayout
@@ -57,7 +60,7 @@
                 android:layout_height="wrap_content"
                 android:textColor="@color/secundario"
                 android:onClick="createAccount"
-                android:background="@drawable/button_center"
+                android:background="@drawable/filled_button"
                 android:text="@string/btn_new_user_create"/>
             <TextView
                 android:layout_width="wrap_content"

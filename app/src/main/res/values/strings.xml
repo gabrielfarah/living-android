@@ -29,4 +29,9 @@
     <string name="edit_text_new_user_password">Password</string>
     <string name="toast_incomplete_form">Incomplete Form</string>
     <string name="toast_not_matching_email">The e-mails are not equal</string>
+    <string name="create_user_error">Error creating user</string>
+    <string name="toast_email_format_error">Incorrect email format</string>
+    <string name="label_created_user_message">Gracias por registrarse \nen Living.
+        \n \nEstá tan sólo a unos pasos \nde controlar su hogar desde \nla palma de su mano. </string>
+    <string name="label_created_user_title">Bienvenido!</string>
 </resources>
