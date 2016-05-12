@@ -37,13 +37,12 @@ import co.ar_smart.www.controllers.ZwaveLockControllerActivity;
 import co.ar_smart.www.endpoints.ManagementEndpointsActivity;
 import co.ar_smart.www.helpers.JWTManager;
 import co.ar_smart.www.helpers.RetrofitServiceGenerator;
+import co.ar_smart.www.helpers.UserManager;
 import co.ar_smart.www.pojos.Endpoint;
 import co.ar_smart.www.pojos.Hub;
+import co.ar_smart.www.pojos.User;
 import co.ar_smart.www.register.LivingLocalConfigurationActivity;
 import co.ar_smart.www.user.ManagementUserActivity;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -56,8 +55,6 @@ import static co.ar_smart.www.helpers.Constants.DEFAULT_PASSWORD;
 import static co.ar_smart.www.helpers.Constants.EXTRA_MESSAGE;
 import static co.ar_smart.www.helpers.Constants.EXTRA_MESSAGE_PREF_HUB;
 import static co.ar_smart.www.helpers.Constants.EXTRA_OBJECT;
-import static co.ar_smart.www.helpers.Constants.JSON;
-import static co.ar_smart.www.helpers.Constants.LOGIN_URL;
 import static co.ar_smart.www.helpers.Constants.PREFS_NAME;
 import static co.ar_smart.www.helpers.Constants.PREF_EMAIL;
 import static co.ar_smart.www.helpers.Constants.PREF_HUB;
@@ -106,6 +103,10 @@ public class HomeActivity extends AppCompatActivity {
      * Toggle for the nav menu
      */
     private ActionBarDrawerToggle navMenuToggle;
+    /**
+     * The current user logged in
+     */
+    private User currentUSer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -134,17 +135,42 @@ public class HomeActivity extends AppCompatActivity {
         OneSignal.startInit(this).init();
         OneSignal.idsAvailable(new OneSignal.IdsAvailableHandler() {
             @Override
-            public void idsAvailable(String userId, String registrationId) {
-                String json = "{\"push_token\":\"" + userId + "\"}";
-                OkHttpClient client = new OkHttpClient();
-                RequestBody body = RequestBody.create(JSON, json);
-                Request request = new Request.Builder()
-                        .url(LOGIN_URL)
-                        .patch(body)
-                        .build();
-                //TODO Completar esta funcion: Ir al perfil y obtener el usuario. Despues hacer la peticion de actualizar el push token. La otra opcion seria cambiar el view del "perfil" para que reciba patch tambien
+            public void idsAvailable(final String userId, String registrationId) {
+                if ((userId != null) || (!userId.isEmpty())) {
+                    UserManager.getUser(API_TOKEN, new UserManager.UserCallbackInterface() {
+                        @Override
+                        public void onFailureCallback() {
+                        }
+
+                        @Override
+                        public void onSuccessCallback(User user) {
+                            currentUSer = user;
+                            currentUSer.setPush_token(userId);
+                            Log.d("DEBUGGG", currentUSer.toString());
+                        }
+
+                        @Override
+                        public void onUnsuccessfulCallback() {
+                        }
+                    });
+                }
             }
         });
+        if (currentUSer != null) {
+            UserManager.updateUser(currentUSer, API_TOKEN, new UserManager.UserCallbackInterface() {
+                @Override
+                public void onFailureCallback() {
+                }
+
+                @Override
+                public void onSuccessCallback(User user) {
+                }
+
+                @Override
+                public void onUnsuccessfulCallback() {
+                }
+            });
+        }
     }
 
     /**
