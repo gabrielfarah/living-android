@@ -2,10 +2,12 @@ package co.ar_smart.www.helpers;
 
 import android.util.Log;
 
+import java.io.IOException;
 import java.util.List;
 
 import co.ar_smart.www.analytics.AnalyticsApplication;
 import co.ar_smart.www.pojos.Guest;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -21,13 +23,20 @@ public class GuestManager {
     public static void getGuests(int hub_id, String API_TOKEN, final GuestCallbackInterface callback) {
         GuestService userClient = RetrofitServiceGenerator.createService(GuestService.class, API_TOKEN);
         Call<List<Guest>> call = userClient.getGuests(hub_id);
+        Log.d("OkHttp", String.format("Sending request %s ", call.request().toString()));
         call.enqueue(new Callback<List<Guest>>() {
             @Override
             public void onResponse(Call<List<Guest>> call, Response<List<Guest>> response) {
                 if (response.isSuccessful()) {
+                    Log.d("DEBUGGG", response.message().toString() + " - " + response.code() + " - " + response.body());
                     callback.onSuccessCallback(response.body());
                 } else {
-                    Log.d("DEBUGGG", response.toString());
+                    Log.d("DEBUGGG", response.message().toString() + " - " + response.code());
+                    try {
+                        Log.d("DEBUGGG", response.errorBody().string().toString());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                     callback.onUnsuccessfulCallback();
                 }
             }
@@ -50,7 +59,7 @@ public class GuestManager {
                 if (response.isSuccessful()) {
                     callback.onSuccessCallback();
                 } else {
-                    Log.d("DEBUGGG", response.toString());
+                    Log.d("DEBUGGG", response.message().toString() + " - " + response.code());
                     callback.onUnsuccessfulCallback();
                 }
             }
@@ -94,7 +103,7 @@ public class GuestManager {
         @GET("hubs/{hub_id}/guests/")
         Call<List<Guest>> getGuests(@Path("hub_id") int hub_id);
 
-        @DELETE("hubs/{hub_id}/guests/{guest_id}")
-        Call deleteGuest(@Path("hub_id") int hub_id, @Path("guest_id") int guest_id);
+        @DELETE("hubs/{hub_id}/guests/{guest_id}/")
+        Call<ResponseBody> deleteGuest(@Path("hub_id") int hub_id, @Path("guest_id") int guest_id);
     }
 }

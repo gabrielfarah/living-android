@@ -8,6 +8,23 @@ import android.os.Parcelable;
  */
 public class Guest implements Parcelable {
     private int id;
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
     private String email;
 
     protected Guest(Parcel in) {
@@ -40,5 +57,15 @@ public class Guest implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(id);
         dest.writeString(email);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null)
+            return false;
+        if (!(obj instanceof Guest))
+            return false;
+        Guest other = (Guest) obj;
+        return getEmail() == null ? false : getEmail().equalsIgnoreCase(other.getEmail());//Compare email if null false
     }
 }

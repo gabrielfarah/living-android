@@ -1,7 +1,6 @@
 package co.ar_smart.www.adapters;
 
 import android.content.Context;
-import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,36 +10,35 @@ import android.widget.TextView;
 import java.util.List;
 
 import co.ar_smart.www.living.R;
-import co.ar_smart.www.pojos.FeedAction;
+import co.ar_smart.www.pojos.Guest;
 
 /**
- * Created by Gabriel on 5/11/2016.
+ * Created by Gabriel on 5/13/2016.
  */
-public class FeedActionAdapter extends BaseAdapter {
+public class GuestAdapter extends BaseAdapter {
 
     private Context context;
-    private List<FeedAction> actions;
+    private List<Guest> guests;
     private LayoutInflater inflater;
 
     private static class ViewHolder {
-        TextView message;
-        TextView time;
+        TextView guestEmail;
     }
 
-    public FeedActionAdapter(Context c, List<FeedAction> actionsList) {
+    public GuestAdapter(Context c, List<Guest> nGuests) {
         context = c;
-        actions = actionsList;
+        guests = nGuests;
         inflater = (LayoutInflater.from(c));
     }
 
     @Override
     public int getCount() {
-        return actions.size();
+        return guests.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return null;
+        return guests.get(position);
     }
 
     @Override
@@ -53,16 +51,13 @@ public class FeedActionAdapter extends BaseAdapter {
         ViewHolder viewHolder; // view lookup cache stored in tag
         if (convertView == null) {
             viewHolder = new ViewHolder();
-            convertView = inflater.inflate(R.layout.activity_action_item, null);
-            viewHolder.message = (TextView) convertView.findViewById(R.id.action_feed_message);
-            viewHolder.time = (TextView) convertView.findViewById(R.id.action_feed_time);
+            convertView = inflater.inflate(R.layout.activity_guest_management_item, null);
+            viewHolder.guestEmail = (TextView) convertView.findViewById(R.id.guest_email_text_view);
             convertView.setTag(viewHolder);
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
         }
-        viewHolder.message.setText(actions.get(position).getMessage());
-        String timeString = DateUtils.getRelativeTimeSpanString(context, actions.get(position).getCreated_at().getTime(), true).toString();
-        viewHolder.time.setText(timeString);
+        viewHolder.guestEmail.setText(guests.get(position).getEmail());
         return convertView;
     }
 }
