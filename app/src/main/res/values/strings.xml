@@ -34,4 +34,8 @@
     <string name="label_created_user_message">Gracias por registrarse \nen Living.
         \n \nEstá tan sólo a unos pasos \nde controlar su hogar desde \nla palma de su mano. </string>
     <string name="label_created_user_title">Bienvenido!</string>
+    <string name="label_new_guest_button">Manage Guests</string>
+    <string name="label_manage_account_button">Manage Account</string>
+    <string name="label_change_password_button">Change Password</string>
+    <string name="label_guest_list">Guest List</string>
 </resources>

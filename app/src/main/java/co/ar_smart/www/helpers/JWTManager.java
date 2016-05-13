@@ -67,7 +67,7 @@ public class JWTManager {
      *
      * @param email    the user email obtained from the user input
      * @param password the user password obtained from the user input
-     * @param callback
+     * @param callback the interface for managing the request actions on each UI screens independently if needed
      */
     public static void getApiToken(String email, String password, final JWTCallbackInterface callback) {
         String json = "{\"email\":\"" + email + "\",\"password\":\"" + password + "\"}";

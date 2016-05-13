@@ -42,6 +42,7 @@ import co.ar_smart.www.pojos.Endpoint;
 import co.ar_smart.www.pojos.Hub;
 import co.ar_smart.www.pojos.User;
 import co.ar_smart.www.register.LivingLocalConfigurationActivity;
+import co.ar_smart.www.user.GuestManagementActivity;
 import co.ar_smart.www.user.ManagementUserActivity;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -235,7 +236,10 @@ public class HomeActivity extends AppCompatActivity {
      * This method opens the guests manager activity (from which the user can do the guests CRUD)
      */
     private void openGuestsActivity() {
-        //TODO
+        Intent intent = new Intent(this, GuestManagementActivity.class);
+        intent.putExtra(EXTRA_MESSAGE, API_TOKEN);
+        intent.putExtra(EXTRA_MESSAGE_PREF_HUB, PREFERRED_HUB_ID);
+        startActivity(intent);
     }
 
     /**
@@ -243,6 +247,8 @@ public class HomeActivity extends AppCompatActivity {
      */
     private void openAccountActivity() {
         Intent intent = new Intent(this, ManagementUserActivity.class);
+        intent.putExtra(EXTRA_MESSAGE, API_TOKEN);
+        intent.putExtra(EXTRA_OBJECT, currentUSer);
         startActivity(intent);
     }
 

@@ -30,9 +30,9 @@ public class ManagementUserActivity extends AppCompatActivity {
             getSupportActionBar().setTitle(getString(R.string.label_user_management_title));
         }
 
-        Button loginButton = (Button) findViewById(R.id.logoutButton);
-        if (loginButton != null) {
-            loginButton.setOnClickListener(new View.OnClickListener() {
+        Button logoutButton = (Button) findViewById(R.id.logoutButton);
+        if (logoutButton != null) {
+            logoutButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     AnalyticsApplication.getInstance().trackEvent("User Action", "Logout", "The user logged out");
@@ -40,6 +40,34 @@ public class ManagementUserActivity extends AppCompatActivity {
                 }
             });
         }
+
+        Button profileButton = (Button) findViewById(R.id.edit_profile_button);
+        if (profileButton != null) {
+            profileButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    openEditProfileActivity();
+                }
+            });
+        }
+
+        Button changePasswordButton = (Button) findViewById(R.id.change_password_button);
+        if (changePasswordButton != null) {
+            changePasswordButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    openChangePasswordActivity();
+                }
+            });
+        }
+    }
+
+    private void openChangePasswordActivity() {
+        //TODO
+    }
+
+    private void openEditProfileActivity() {
+        //TODO
     }
 
     @Override

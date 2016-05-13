@@ -141,8 +141,8 @@ public class User implements Parcelable {
         dest.writeString(email);
         dest.writeString(mobile_os);
         dest.writeString(push_token);
-        dest.writeLong(date_joined.getTime());
-        dest.writeLong(last_login.getTime());
+        dest.writeLong(date_joined != null ? date_joined.getTime() : 0);
+        dest.writeLong(last_login != null ? last_login.getTime() : 0);
         dest.writeFloat(latitude);
         dest.writeFloat(longitude);
         dest.writeInt(id);

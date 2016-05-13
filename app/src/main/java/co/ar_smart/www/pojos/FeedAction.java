@@ -41,7 +41,7 @@ public class FeedAction implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeLong(created_at.getTime());
+        dest.writeLong(created_at != null ? created_at.getTime() : 0);
         dest.writeString(message);
     }
 
