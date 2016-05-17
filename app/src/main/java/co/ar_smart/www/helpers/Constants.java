@@ -1,5 +1,8 @@
 package co.ar_smart.www.helpers;
 
+import java.util.Calendar;
+import java.util.Date;
+
 import okhttp3.MediaType;
 
 /**
@@ -84,4 +87,11 @@ public final class Constants {
      * Password for connecting to the Living hotspot network while the installation.
      */
     public static final String LIVING_HOTSPOT_PASSWORD = "03FARAH07";
+
+    public static final Date calculateTimeout(int timeout) {
+        Calendar date = Calendar.getInstance();
+        long t = date.getTimeInMillis();
+        Date afterAddingTimeout = new Date(t + (1000 * timeout));
+        return afterAddingTimeout;
+    }
 }

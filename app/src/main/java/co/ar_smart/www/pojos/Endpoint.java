@@ -3,9 +3,6 @@ package co.ar_smart.www.pojos;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * This POJO class represents a Device (Endpoint) in Living.
  * Created by Gabriel on 5/3/2016.
@@ -67,15 +64,15 @@ public class Endpoint implements Parcelable{
     /**
      * The classes this device can use
      */
-    private List<EndpointClass> endpoint_classes = new ArrayList<>();
+    //private List<EndpointClass> endpoint_classes = new ArrayList<>();
 
     /**
      * Get the list of classes this device can use
      * @return list of classes this device can use
      */
-    public List<EndpointClass> getEndpoint_classes() {
+    /*public List<EndpointClass> getEndpoint_classes() {
         return endpoint_classes;
-    }
+    }*/
 
     /**
      * Get the device node
@@ -188,6 +185,11 @@ public class Endpoint implements Parcelable{
         return category;
     }
 
+    /**
+     * This flags if the endpoint has performed the setting of the variables for the commands
+     */
+    private boolean flag = true;
+
     @Override
     public String toString(){
         return "("+name+" - "+endpoint_type+" - "+ui_class_command+")";
@@ -196,6 +198,9 @@ public class Endpoint implements Parcelable{
     @Override
     public int describeContents() {
         return 0;
+    }
+
+    public Endpoint() {
     }
 
     @Override
@@ -213,7 +218,9 @@ public class Endpoint implements Parcelable{
         dest.writeInt(node);
         dest.writeString(room);
         dest.writeParcelable(category,flags);
-        dest.writeTypedList(endpoint_classes);
+        //dest.writeTypedList(endpoint_classes);
+
+        //dest.writeByte((byte) (flag ? 1 : 0));
     }
 
     /**
@@ -234,7 +241,9 @@ public class Endpoint implements Parcelable{
         node = in.readInt();
         room = in.readString();
         category = in.readParcelable(getClass().getClassLoader());
-        in.readTypedList(endpoint_classes, EndpointClass.CREATOR);
+        //in.readTypedList(endpoint_classes, EndpointClass.CREATOR);
+
+        //flag = in.readByte() != 0;
     }
 
     /**

@@ -455,7 +455,6 @@ public class HomeActivity extends AppCompatActivity {
                         if (!devices.contains(endpoint.getName()))
                             devices.add(endpoint.getName());
                         Log.d("DEVICE:", endpoint.getName());
-                        Log.d("COMMAND:", endpoint.getEndpoint_classes().get(0).getCommands().get(0).toString());
                     }
                     // If user got no endpoints redirect to management activity. set grid layout otherwise.
                     if (response.body().isEmpty()) {
@@ -474,7 +473,12 @@ public class HomeActivity extends AppCompatActivity {
             public void onFailure(Call<List<Endpoint>> call, Throwable t) {
                 // something went completely south (like no internet connection)
                 showNoInternetMessage();
-                Log.d("Error", t.getMessage());
+                try {
+                    Log.d("Error", call.request().body().toString());
+                } catch (Exception e) {
+
+                }
+                t.printStackTrace();
                 AnalyticsApplication.getInstance().trackException(new Exception(t));
             }
         });
@@ -619,6 +623,7 @@ public class HomeActivity extends AppCompatActivity {
     private void openSONOSController(Endpoint sonos){
         Intent intent = new Intent(this, SonosControllerActivity.class);
         intent.putExtra(EXTRA_MESSAGE, API_TOKEN);
+        intent.putExtra(EXTRA_MESSAGE_PREF_HUB, PREFERRED_HUB_ID);
         intent.putExtra(EXTRA_OBJECT, sonos);
         startActivity(intent);
     }

@@ -11,8 +11,10 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
+import retrofit2.http.POST;
 import retrofit2.http.Path;
 
 /**
@@ -21,8 +23,8 @@ import retrofit2.http.Path;
 public class GuestManager {
 
     public static void getGuests(int hub_id, String API_TOKEN, final GuestCallbackInterface callback) {
-        GuestService userClient = RetrofitServiceGenerator.createService(GuestService.class, API_TOKEN);
-        Call<List<Guest>> call = userClient.getGuests(hub_id);
+        GuestService guestClient = RetrofitServiceGenerator.createService(GuestService.class, API_TOKEN);
+        Call<List<Guest>> call = guestClient.getGuests(hub_id);
         Log.d("OkHttp", String.format("Sending request %s ", call.request().toString()));
         call.enqueue(new Callback<List<Guest>>() {
             @Override
@@ -50,8 +52,8 @@ public class GuestManager {
     }
 
     public static void removeGuest(int hub_id, int guest_id, String API_TOKEN, final GuestCallbackInterface callback) {
-        GuestService userClient = RetrofitServiceGenerator.createService(GuestService.class, API_TOKEN);
-        Call call = userClient.deleteGuest(hub_id, guest_id);
+        GuestService guestClient = RetrofitServiceGenerator.createService(GuestService.class, API_TOKEN);
+        Call call = guestClient.deleteGuest(hub_id, guest_id);
         Log.d("OkHttp", String.format("Sending request %s ", call.request().toString()));
         call.enqueue(new Callback() {
             @Override
@@ -60,6 +62,33 @@ public class GuestManager {
                     callback.onSuccessCallback();
                 } else {
                     Log.d("DEBUGGG", response.message().toString() + " - " + response.code());
+                    callback.onUnsuccessfulCallback();
+                }
+            }
+
+            @Override
+            public void onFailure(Call call, Throwable t) {
+                AnalyticsApplication.getInstance().trackException(new Exception(t));
+                callback.onFailureCallback();
+            }
+        });
+    }
+
+    public static void addGuest(int hub_id, Guest email, String API_TOKEN, final GuestCallbackInterface callback) {
+        GuestService guestClient = RetrofitServiceGenerator.createService(GuestService.class, API_TOKEN);
+        Call call = guestClient.addGuest(hub_id, email);
+        Log.d("OkHttp", String.format("Sending request %s ", call.request().toString()));
+        call.enqueue(new Callback() {
+            @Override
+            public void onResponse(Call call, Response response) {
+                if (response.isSuccessful()) {
+                    callback.onSuccessCallback();
+                } else {
+                    try {
+                        Log.d("DEBUGGG", response.message().toString() + " - " + response.code() + " " + response.errorBody().string());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                     callback.onUnsuccessfulCallback();
                 }
             }
@@ -102,6 +131,9 @@ public class GuestManager {
     public interface GuestService {
         @GET("hubs/{hub_id}/guests/")
         Call<List<Guest>> getGuests(@Path("hub_id") int hub_id);
+
+        @POST("hubs/{hub_id}/guests/")
+        Call<ResponseBody> addGuest(@Path("hub_id") int hub_id, @Body Guest email);
 
         @DELETE("hubs/{hub_id}/guests/{guest_id}/")
         Call<ResponseBody> deleteGuest(@Path("hub_id") int hub_id, @Path("guest_id") int guest_id);
