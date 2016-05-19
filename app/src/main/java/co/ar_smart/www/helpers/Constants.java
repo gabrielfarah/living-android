@@ -1,8 +1,12 @@
 package co.ar_smart.www.helpers;
 
+import android.content.Context;
+import android.widget.Toast;
+
 import java.util.Calendar;
 import java.util.Date;
 
+import co.ar_smart.www.living.R;
 import okhttp3.MediaType;
 
 /**
@@ -55,9 +59,9 @@ public final class Constants {
      */
     public static final String LOGIN_URL = BASE_URL+"api-token-auth/";
     /**
-     * The user profile URL
+     * The URL for changing the user password
      */
-    public static final String PROFILE_URL = BASE_URL + "profile/";
+    public static final String CHANGE_PASSWORD_URL = BASE_URL + "change_password/";
     /**
      * The register URL
      */
@@ -88,10 +92,31 @@ public final class Constants {
      */
     public static final String LIVING_HOTSPOT_PASSWORD = "03FARAH07";
 
-    public static final Date calculateTimeout(int timeout) {
+    /**
+     * This method will return a future date given a timeout in seconds.
+     *
+     * @param timeout number of seconds into the future
+     * @return current date + timeout in seconds
+     */
+    public static Date calculateTimeout(int timeout) {
         Calendar date = Calendar.getInstance();
         long t = date.getTimeInMillis();
-        Date afterAddingTimeout = new Date(t + (1000 * timeout));
-        return afterAddingTimeout;
+        return new Date(t + (1000 * timeout));
+    }
+
+    /**
+     * This method will show a no internet error message to the user
+     */
+    public static void showNoInternetMessage(Context c) {
+        Toast.makeText(c.getApplicationContext(), c.getResources().getString(R.string.toast_missing_internet),
+                Toast.LENGTH_LONG).show();
+    }
+
+    /**
+     * This method will show a custom message to the user
+     */
+    public static void showCustomMessage(Context c, String message) {
+        Toast.makeText(c.getApplicationContext(), message,
+                Toast.LENGTH_LONG).show();
     }
 }

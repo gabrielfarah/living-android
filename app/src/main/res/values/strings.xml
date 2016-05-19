@@ -34,8 +34,33 @@
     <string name="label_created_user_message">Gracias por registrarse \nen Living.
         \n \nEstá tan sólo a unos pasos \nde controlar su hogar desde \nla palma de su mano. </string>
     <string name="label_created_user_title">Bienvenido!</string>
-    <string name="label_new_guest_button">Manage Guests</string>
+    <string name="label_manage_guests">Manage Guests</string>
+    <string name="label_new_guest_button">Add new guest</string>
     <string name="label_manage_account_button">Manage Account</string>
     <string name="label_change_password_button">Change Password</string>
     <string name="label_guest_list">Guest List</string>
+    <string name="label_add_button">Add</string>
+    <string name="label_cancel_button">Cancel</string>
+    <string name="label_add_guest_by_email">Add guest using email</string>
+    <string name="label_confirmation_remove_guest">Are you sure you want to remove: </string>
+    <string name="label_failed_remove_guest">Unable to remove guest, try again</string>
+    <string name="label_guest_removed_message">Guest removed!</string>
+    <string name="label_only_administrator_can_add_guest">Only the administrator can manage the guests in this hub</string>
+    <string name="label_only_failed_add_guest">Failed. Did the email is registered?</string>
+    <string name="label_edit_user_first_name">Edit your first name:</string>
+    <string name="label_edit_user_first_name_text_view">First Name</string>
+    <string name="label_edit_user_last_name">Edit your last name:</string>
+    <string name="label_edit_user_last_name_text_view">Last Name</string>
+    <string name="label_edit_user_email">Edit your email address:</string>
+    <string name="label_edit_user_email_text_view">Email</string>
+    <string name="label_edit_user_button">Update my information</string>
+    <string name="label_error_updating_user">Error while updating information. Please try again.</string>
+    <string name="label_success_updating_user">Information updated successfully!.</string>
+    <string name="label_change_password_old">My current password:</string>
+    <string name="label_change_password_new">Type the new password:</string>
+    <string name="label_change_password_new_repeat">Type the new password again:</string>
+    <string name="label_error_message_fill_fields">Please fill all the fields</string>
+    <string name="label_error_message_passwords_missmatch">You did not retype the password correctly. Please try again. </string>
+    <string name="label_error_message_passwords_failed">The old password is either wrong or the new password is too short.</string>
+    <string name="label_message_passwords_success">The password was changed!</string>
 </resources>

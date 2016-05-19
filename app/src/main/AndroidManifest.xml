@@ -38,7 +38,9 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name="co.ar_smart.www.endpoints.ManagementEndpointsActivity" />
         <activity android:name="co.ar_smart.www.actions.ActionActivity" />
-        <activity android:name="co.ar_smart.www.user.GuestManagementActivity"></activity>
+        <activity android:name="co.ar_smart.www.user.GuestManagementActivity" />
+        <activity android:name="co.ar_smart.www.user.ChangePasswordActivity" />
+        <activity android:name="co.ar_smart.www.user.EditAccountActivity" />
     </application>
 
 </manifest>

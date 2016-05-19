@@ -24,24 +24,26 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Back"
+            android:background="@drawable/ic_cast_light"
             android:id="@+id/sonos_back_button" />
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Play"
+            android:background="@drawable/ic_media_play"
             android:id="@+id/sonos_play_pause_button" />
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Next"
+            android:background="@drawable/ic_cast_on_1_light"
             android:id="@+id/sonos_next_button" />
     </LinearLayout>
 
     <ListView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/music_tracks_list_view"></ListView>
+        android:id="@+id/music_tracks_list_view"
+        android:singleLine="true"
+        android:ellipsize="end" />
 </LinearLayout>
