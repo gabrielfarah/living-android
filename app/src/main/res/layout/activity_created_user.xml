@@ -30,15 +30,15 @@
                     android:layout_height="wrap_content"
                     android:text="@string/label_created_user_title"
                     android:layout_marginBottom="30dp"
-                    android:layout_marginLeft="30dp"
+                    android:layout_marginStart="30dp"
                     android:layout_marginTop="10dp"
                     android:textColor="@color/principal"
-                    android:textSize="30dp"/>
+                    android:textSize="30sp"/>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="21dp"
-                    android:layout_marginLeft="30dp"
+                    android:textSize="21sp"
+                    android:layout_marginStart="30dp"
                     android:layout_marginBottom="30dp"
                     android:textColor="@color/secundario"
                     android:text="@string/label_created_user_message">
@@ -55,7 +55,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/empty_button"
-                android:text="Continue"
+                android:text="@string/label_continue"
                 android:textColor="@color/blanco"
                 android:onClick="registerHub"/>
         </LinearLayout>

@@ -119,4 +119,15 @@ public final class Constants {
         Toast.makeText(c.getApplicationContext(), message,
                 Toast.LENGTH_LONG).show();
     }
+
+    /**
+     * Default latitude for map-like activities
+     */
+    public static final double DEFAULT_LATITUDE = 4;
+
+    /**
+     * Default latitude for map-like activities
+     */
+    public static final double DEFAULT_LONGITUDE = -72;
+
 }
