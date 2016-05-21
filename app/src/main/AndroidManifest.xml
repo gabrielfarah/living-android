@@ -38,7 +38,16 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name="co.ar_smart.www.endpoints.ManagementEndpointsActivity" />
         <activity android:name="co.ar_smart.www.actions.ActionActivity" />
-        <activity android:name="co.ar_smart.www.user.GuestManagementActivity"></activity>
+        <activity android:name="co.ar_smart.www.user.GuestManagementActivity" />
+        <activity
+            android:name="co.ar_smart.www.endpoints.NewDevicesActivity"
+            android:label="@string/title_activity_new_devices"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name="co.ar_smart.www.endpoints.EditDeviceActivity" />
+        <activity android:name="co.ar_smart.www.endpoints.EditIconActivity" />
+        <activity android:name="co.ar_smart.www.endpoints.EditRoomActivity" />
+        <activity android:name="co.ar_smart.www.endpoints.DevicesActivity" />
+        <activity android:name="co.ar_smart.www.endpoints.DeleteDeviceActivity"></activity>
     </application>
 
 </manifest>

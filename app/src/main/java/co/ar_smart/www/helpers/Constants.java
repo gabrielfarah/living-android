@@ -84,4 +84,34 @@ public final class Constants {
      * Password for connecting to the Living hotspot network while the installation.
      */
     public static final String LIVING_HOTSPOT_PASSWORD = "03FARAH07";
+
+    //Add by Sergio
+    /**
+     * Extra ID add devices type
+     */
+    public static final String EXTRA_TYPE_DEVICE = "EXTRA_TYPE_DEV";
+    /**
+     * Extra ID device category
+     */
+    public static final String EXTRA_CATEGORY_DEVICE = "EXTRA_CATEGORY_DEV";
+    /**
+     * Type WIFI device
+     */
+    public static final String TYPE_DEVICE_WIFI = "TYPE_DEV_WIFI";
+    /**
+     * Type ZWAVE device
+     */
+    public static final String TYPE_DEVICE_ZWAVE = "TYPE_DEV_ZWAVE";
+    /**
+     * ID Extra Action
+     */
+    public static final String EXTRA_ACTION = "Extra_ACTION";
+    /**
+     * ID Extra UID
+     */
+    public static final String EXTRA_UID = "EXTRA_UID";
+
+    public static final String ACTION_EDIT = "ACTION_edit";
+    public static final String ACTION_ADD = "ACTION_add";
+
 }

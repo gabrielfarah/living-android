@@ -10,18 +10,19 @@ import android.widget.ImageView;
 
 import java.util.List;
 
+import co.ar_smart.www.Interfaces.IDrawable;
 import co.ar_smart.www.living.R;
 import co.ar_smart.www.pojos.Endpoint;
 
 /**
  * Created by Gabriel on 5/3/2016.
  */
-public class GridDevicesAdapter extends BaseAdapter {
+public class GridDevicesAdapter<T extends IDrawable> extends BaseAdapter{
 
     private Context context;
-    private List<Endpoint> endpoints;
+    private List<T> endpoints;
 
-    public GridDevicesAdapter(Context c, List<Endpoint> endpointGrid){
+    public GridDevicesAdapter(Context c, List<T> endpointGrid){
         context = c;
         endpoints = endpointGrid;
     }
@@ -31,7 +32,7 @@ public class GridDevicesAdapter extends BaseAdapter {
             case "ligh":
                 return R.drawable.light_icon;
         }
-        return R.drawable.connect_btn;
+        return R.drawable.light_icon;
     }
 
     @Override
@@ -55,16 +56,18 @@ public class GridDevicesAdapter extends BaseAdapter {
         if (convertView == null) {
             // if it's not recycled, initialize some attributes
             imageView = new ImageView(context);
-            imageView.setLayoutParams(new GridView.LayoutParams(350, 350));
+            imageView.setLayoutParams(new GridView.LayoutParams(250, 250));
             imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
             imageView.setPadding(8, 8, 8, 8);
             imageView.setBackgroundColor(ContextCompat.getColor(context, R.color.subBarras));//R.color.subBarras);
-        } else {
+        } else
+        {
             imageView = (ImageView) convertView;
         }
-
-        imageView.setImageResource(getDrawableFromString(endpoints.get(position).getImage()));
+        if(endpoints.get(position)!=null)
+        {
+            imageView.setImageResource(getDrawableFromString(endpoints.get(position).getImage()));
+        }
         return imageView;
-
     }
 }

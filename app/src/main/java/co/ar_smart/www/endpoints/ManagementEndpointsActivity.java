@@ -13,11 +13,17 @@ import co.ar_smart.www.analytics.AnalyticsApplication;
 import co.ar_smart.www.living.LoginActivity;
 import co.ar_smart.www.living.R;
 
+import static co.ar_smart.www.helpers.Constants.ACTION_EDIT;
+import static co.ar_smart.www.helpers.Constants.EXTRA_ACTION;
+import static co.ar_smart.www.helpers.Constants.EXTRA_MESSAGE;
+import static co.ar_smart.www.helpers.Constants.EXTRA_TYPE_DEVICE;
 import static co.ar_smart.www.helpers.Constants.PREFS_NAME;
 import static co.ar_smart.www.helpers.Constants.PREF_EMAIL;
 import static co.ar_smart.www.helpers.Constants.PREF_HUB;
 import static co.ar_smart.www.helpers.Constants.PREF_JWT;
 import static co.ar_smart.www.helpers.Constants.PREF_PASSWORD;
+import static co.ar_smart.www.helpers.Constants.TYPE_DEVICE_WIFI;
+import static co.ar_smart.www.helpers.Constants.TYPE_DEVICE_ZWAVE;
 
 public class ManagementEndpointsActivity extends AppCompatActivity {
 
@@ -76,5 +82,45 @@ public class ManagementEndpointsActivity extends AppCompatActivity {
     public void openLoginActivity() {
         Intent intent = new Intent(this, LoginActivity.class);
         startActivity(intent);
+    }
+
+    public void addWifi(View v)
+    {
+        Intent i=new Intent(ManagementEndpointsActivity.this,NewDevicesActivity.class);
+        i.putExtra(EXTRA_TYPE_DEVICE,TYPE_DEVICE_WIFI);
+        i.putExtra(EXTRA_MESSAGE,getIntent().getStringExtra(EXTRA_MESSAGE));
+        startActivity(i);
+    }
+
+    public void addZWave(View v)
+    {
+        Intent i=new Intent(ManagementEndpointsActivity.this,NewDevicesActivity.class);
+        i.putExtra(EXTRA_TYPE_DEVICE,TYPE_DEVICE_ZWAVE);
+        i.putExtra(EXTRA_MESSAGE,getIntent().getStringExtra(EXTRA_MESSAGE));
+        startActivity(i);
+    }
+
+    public void delWifi(View v)
+    {
+        Intent i=new Intent(ManagementEndpointsActivity.this,DeleteDeviceActivity.class);
+        i.putExtra(EXTRA_TYPE_DEVICE,TYPE_DEVICE_WIFI);
+        i.putExtra(EXTRA_MESSAGE,getIntent().getStringExtra(EXTRA_MESSAGE));
+        startActivity(i);
+    }
+
+    public void delZWave(View v)
+    {
+        Intent i=new Intent(ManagementEndpointsActivity.this,DeleteDeviceActivity.class);
+        i.putExtra(EXTRA_TYPE_DEVICE,TYPE_DEVICE_ZWAVE);
+        i.putExtra(EXTRA_MESSAGE,getIntent().getStringExtra(EXTRA_MESSAGE));
+        startActivity(i);
+    }
+
+    public void editDevices(View v)
+    {
+        Intent i=new Intent(ManagementEndpointsActivity.this,DevicesActivity.class);
+        i.putExtra(EXTRA_MESSAGE,getIntent().getStringExtra(EXTRA_MESSAGE));
+        i.putExtra(EXTRA_ACTION,ACTION_EDIT);
+        startActivity(i);
     }
 }

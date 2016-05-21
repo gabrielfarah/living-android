@@ -216,6 +216,9 @@ public class HomeActivity extends AppCompatActivity {
      */
     private void openDevicesActivity() {
         //TODO
+        Intent i=new Intent(HomeActivity.this, ManagementEndpointsActivity.class);
+        i.putExtra(EXTRA_MESSAGE,API_TOKEN);
+        startActivity(i);
     }
 
     /**
@@ -455,7 +458,7 @@ public class HomeActivity extends AppCompatActivity {
                         if (!devices.contains(endpoint.getName()))
                             devices.add(endpoint.getName());
                         Log.d("DEVICE:", endpoint.getName());
-                        Log.d("COMMAND:", endpoint.getEndpoint_classes().get(0).getCommands().get(0).toString());
+                        //Log.d("COMMAND:", endpoint.getEndpoint_classes().get(0).getCommands().get(0).toString());
                     }
                     // If user got no endpoints redirect to management activity. set grid layout otherwise.
                     if (response.body().isEmpty()) {

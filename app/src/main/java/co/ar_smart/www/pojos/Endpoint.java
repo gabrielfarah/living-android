@@ -67,15 +67,15 @@ public class Endpoint implements Parcelable{
     /**
      * The classes this device can use
      */
-    private List<EndpointClass> endpoint_classes = new ArrayList<>();
+    //private List<EndpointClass> endpoint_classes = new ArrayList<>();
 
     /**
      * Get the list of classes this device can use
      * @return list of classes this device can use
      */
-    public List<EndpointClass> getEndpoint_classes() {
-        return endpoint_classes;
-    }
+    //public List<EndpointClass> getEndpoint_classes() {
+        //return endpoint_classes;
+    //}
 
     /**
      * Get the device node
@@ -188,6 +188,12 @@ public class Endpoint implements Parcelable{
         return category;
     }
 
+    public Endpoint()
+    {
+        name="dfssfd";
+        category=new Category();
+    }
+
     @Override
     public String toString(){
         return "("+name+" - "+endpoint_type+" - "+ui_class_command+")";
@@ -213,7 +219,7 @@ public class Endpoint implements Parcelable{
         dest.writeInt(node);
         dest.writeString(room);
         dest.writeParcelable(category,flags);
-        dest.writeTypedList(endpoint_classes);
+        //dest.writeTypedList(endpoint_classes);
     }
 
     /**
@@ -234,7 +240,7 @@ public class Endpoint implements Parcelable{
         node = in.readInt();
         room = in.readString();
         category = in.readParcelable(getClass().getClassLoader());
-        in.readTypedList(endpoint_classes, EndpointClass.CREATOR);
+        //in.readTypedList(endpoint_classes, EndpointClass.CREATOR);
     }
 
     /**

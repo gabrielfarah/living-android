@@ -1,22 +1,89 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
+    android:orientation="vertical"
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="co.ar_smart.www.user.ManagementUserActivity">
-
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="4"
+        android:background="@color/colorPrimary"
+        android:layout_marginBottom="5dp" />
     <Button
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:text="@string/editDevice_btntext"
+        android:id="@+id/btnEditDevs"
+        android:background="@drawable/gradient_border_btn"
+        android:layout_weight="1"
+        android:textColor="#000"
+        android:textAllCaps="false"
+        android:drawableRight="@drawable/right_arrow_icon"
+        android:onClick="editDevices"
+        android:layout_marginBottom="10dp"/>
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:text="@string/addwifi_btntext"
+        android:id="@+id/btnAddWifi"
+        android:background="@drawable/gradient_border_btn"
+        android:layout_weight="1"
+        android:textColor="#000"
+        android:textAllCaps="false"
+        android:drawableRight="@drawable/right_arrow_icon"
+        android:onClick="addWifi"/>
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:text="@string/delwifi_btntext"
+        android:id="@+id/btnDelWifi"
+        android:background="@drawable/gradient_border_btn"
+        android:layout_weight="1"
+        android:onClick="delWifi"
+        android:textColor="#000"
+        android:textAllCaps="false"
+        android:drawableRight="@drawable/right_arrow_icon" />
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:text="@string/addwave_btntext"
+        android:id="@+id/btnAddZwave"
+        android:background="@drawable/gradient_border_btn"
+        android:layout_weight="1"
+        android:onClick="addZWave"
+        android:textColor="#000"
+        android:textAllCaps="false"
+        android:drawableRight="@drawable/right_arrow_icon" />
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:text="@string/delzwave_btntext"
+        android:id="@+id/btnDelZwave"
+        android:background="@drawable/gradient_border_btn"
+        android:layout_weight="1"
+        android:onClick="delZWave"
+        android:textColor="#000"
+        android:textAllCaps="false"
+        android:drawableRight="@drawable/right_arrow_icon"/>
+
+    <Button
+        android:textColorHint="#000"
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
         android:text="@string/logout_text"
         android:id="@+id/logoutButton"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:background="@color/colorPrimary"
-        android:textColor="#ffffff" />
+        android:background="@drawable/dark_color_btn"
+        android:layout_weight="1"
+        android:textColor="#000"
+        android:textAllCaps="false" />
 
-</RelativeLayout>
+</LinearLayout>
