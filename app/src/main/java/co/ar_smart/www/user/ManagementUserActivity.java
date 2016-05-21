@@ -11,8 +11,12 @@ import android.widget.Button;
 
 import co.ar_smart.www.analytics.AnalyticsApplication;
 import co.ar_smart.www.living.LoginActivity;
+import co.ar_smart.www.living.LoginRegisterActivity;
 import co.ar_smart.www.living.R;
+import co.ar_smart.www.pojos.User;
 
+import static co.ar_smart.www.helpers.Constants.EXTRA_MESSAGE;
+import static co.ar_smart.www.helpers.Constants.EXTRA_OBJECT;
 import static co.ar_smart.www.helpers.Constants.PREFS_NAME;
 import static co.ar_smart.www.helpers.Constants.PREF_EMAIL;
 import static co.ar_smart.www.helpers.Constants.PREF_HUB;
@@ -21,10 +25,16 @@ import static co.ar_smart.www.helpers.Constants.PREF_PASSWORD;
 
 public class ManagementUserActivity extends AppCompatActivity {
 
+    private String API_TOKEN;
+    private User USER;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_management_user);
+        final Intent intent = getIntent();
+        API_TOKEN = intent.getStringExtra(EXTRA_MESSAGE);
+        USER = intent.getParcelableExtra(EXTRA_OBJECT);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setTitle(getString(R.string.label_user_management_title));
@@ -63,11 +73,17 @@ public class ManagementUserActivity extends AppCompatActivity {
     }
 
     private void openChangePasswordActivity() {
-        //TODO
+        Intent intent = new Intent(this, ChangePasswordActivity.class);
+        intent.putExtra(EXTRA_MESSAGE, API_TOKEN);
+        intent.putExtra(EXTRA_OBJECT, USER);
+        startActivity(intent);
     }
 
     private void openEditProfileActivity() {
-        //TODO
+        Intent intent = new Intent(this, EditAccountActivity.class);
+        intent.putExtra(EXTRA_MESSAGE, API_TOKEN);
+        intent.putExtra(EXTRA_OBJECT, USER);
+        startActivityForResult(intent, RESULT_CANCELED);
     }
 
     @Override
@@ -102,7 +118,15 @@ public class ManagementUserActivity extends AppCompatActivity {
      * This method will open the login activity.
      */
     public void openLoginActivity() {
-        Intent intent = new Intent(this, LoginActivity.class);
+        Intent intent = new Intent(this, LoginRegisterActivity.class);
         startActivity(intent);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == RESULT_CANCELED) { //TODO why the fuck is -1 (RESULT_CANCELED)?
+            USER = data.getExtras().getParcelable(EXTRA_OBJECT);
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 }

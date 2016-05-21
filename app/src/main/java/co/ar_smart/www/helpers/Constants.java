@@ -1,5 +1,12 @@
 package co.ar_smart.www.helpers;
 
+import android.content.Context;
+import android.widget.Toast;
+
+import java.util.Calendar;
+import java.util.Date;
+
+import co.ar_smart.www.living.R;
 import okhttp3.MediaType;
 
 /**
@@ -52,13 +59,17 @@ public final class Constants {
      */
     public static final String LOGIN_URL = BASE_URL+"api-token-auth/";
     /**
-     * The user profile URL
+     * The URL for changing the user password
      */
-    public static final String PROFILE_URL = BASE_URL + "profile/";
+    public static final String CHANGE_PASSWORD_URL = BASE_URL + "change_password/";
     /**
      * The register URL
      */
     public static final String REGISTER_URL = BASE_URL+"users/";
+    /**
+     * The URL for register a hub
+     */
+    public static final String HUB_REGISTER_URL = BASE_URL+"hubs/";
     /**
      * UID of intra activities messages. Is used for passing messages between intents among activities.
      */
@@ -113,5 +124,52 @@ public final class Constants {
 
     public static final String ACTION_EDIT = "ACTION_edit";
     public static final String ACTION_ADD = "ACTION_add";
+
+
+    /**
+     * This method will return a future date given a timeout in seconds.
+     *
+     * @param timeout number of seconds into the future
+     * @return current date + timeout in seconds
+     */
+    public static Date calculateTimeout(int timeout) {
+        Calendar date = Calendar.getInstance();
+        long t = date.getTimeInMillis();
+        return new Date(t + (1000 * timeout));
+    }
+
+    /**
+     * This method will show a no internet error message to the user
+     */
+    public static void showNoInternetMessage(Context c) {
+        Toast.makeText(c.getApplicationContext(), c.getResources().getString(R.string.toast_missing_internet),
+                Toast.LENGTH_LONG).show();
+    }
+
+    /**
+     * This method will show a custom message to the user
+     */
+    public static void showCustomMessage(Context c, String message) {
+        Toast.makeText(c.getApplicationContext(), message,
+                Toast.LENGTH_LONG).show();
+    }
+
+    /**
+     * Default latitude for map-like activities
+     */
+    public static final double DEFAULT_LATITUDE = 4;
+
+    /**
+     * Default latitude for map-like activities
+     */
+    public static final double DEFAULT_LONGITUDE = -72;
+    /**
+     * Default radius for map-like activities
+     */
+    public static final double DEFAULT_RADIUS = 1000;
+    /**
+     * Default background image path
+     */
+    public static final String DEFAULT_BACKGROUND_PATH = "drawable://" + R.drawable.default_background;
 
 }

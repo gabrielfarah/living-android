@@ -32,6 +32,10 @@ public class Guest implements Parcelable {
         email = in.readString();
     }
 
+    public Guest() {
+
+    }
+
     public static final Creator<Guest> CREATOR = new Creator<Guest>() {
         @Override
         public Guest createFromParcel(Parcel in) {

@@ -10,14 +10,27 @@
     android:orientation="vertical"
     tools:context="co.ar_smart.www.user.GuestManagementActivity">
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/only_admins_can_edit_guests_layout"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/label_only_administrator_can_add_guest"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:gravity="center" />
+    </RelativeLayout>
+
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/label_new_guest_button"
         android:id="@+id/add_new_guest_button"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:drawableLeft="@drawable/new_cross_btn"
+        android:drawableStart="@drawable/new_cross_btn"
         android:background="@color/blanco" />
 
     <LinearLayout
@@ -32,7 +45,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/label_guest_list"
+            android:text="@string/label_new_guest_button"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:background="@color/elementos"
             android:textColor="@color/common_plus_signin_btn_text_light_focused" />
@@ -40,7 +53,9 @@
         <ListView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/guest_list_view"></ListView>
+            android:id="@+id/guest_list_view"
+            android:singleLine="true"
+            android:ellipsize="end" />
     </LinearLayout>
 
 </LinearLayout>

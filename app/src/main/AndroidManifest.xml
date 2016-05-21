@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="co.ar_smart.www.living">
+          package="co.ar_smart.www.living">
 
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 
     <application
         android:name="co.ar_smart.www.analytics.AnalyticsApplication"
@@ -18,21 +19,23 @@
         android:theme="@style/AppTheme">
         <activity android:name=".MainActivity">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.MAIN"/>
 
-                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
         <activity
             android:name=".LoginActivity"
-            android:label="@string/login_title" />
-        <activity android:name=".HomeActivity" />
-        <activity android:name=".LoginRegisterActivity" />
-        <activity android:name="co.ar_smart.www.register.LivingLocalConfigurationActivity" />
-        <activity android:name="co.ar_smart.www.controllers.SonosControllerActivity" />
-        <activity android:name="co.ar_smart.www.controllers.ZwaveLockControllerActivity" />
-        <activity android:name="co.ar_smart.www.user.ManagementUserActivity" />
-        <activity android:name="co.ar_smart.www.register.NewAdminActivity" />
+            android:label="@string/login_title"/>
+        <activity android:name=".HomeActivity"/>
+        <activity android:name=".LoginRegisterActivity"/>
+        <activity android:name="co.ar_smart.www.register.LivingLocalConfigurationActivity"/>
+        <activity android:name="co.ar_smart.www.controllers.SonosControllerActivity"/>
+        <activity android:name="co.ar_smart.www.controllers.ZwaveLockControllerActivity"/>
+        <activity android:name="co.ar_smart.www.user.ManagementUserActivity"/>
+        <activity
+            android:name="co.ar_smart.www.register.NewAdminActivity"
+            android:theme="@style/NewAdmin"/>
         <activity
             android:name="co.ar_smart.www.register.CreatedUserActivity"
             android:theme="@style/AppTheme.NoActionBar" />

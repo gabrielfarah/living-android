@@ -35,6 +35,7 @@ import co.ar_smart.www.analytics.AnalyticsApplication;
 import co.ar_smart.www.controllers.SonosControllerActivity;
 import co.ar_smart.www.controllers.ZwaveLockControllerActivity;
 import co.ar_smart.www.endpoints.ManagementEndpointsActivity;
+import co.ar_smart.www.helpers.Constants;
 import co.ar_smart.www.helpers.JWTManager;
 import co.ar_smart.www.helpers.RetrofitServiceGenerator;
 import co.ar_smart.www.helpers.UserManager;
@@ -137,7 +138,8 @@ public class HomeActivity extends AppCompatActivity {
         OneSignal.idsAvailable(new OneSignal.IdsAvailableHandler() {
             @Override
             public void idsAvailable(final String userId, String registrationId) {
-                if ((userId != null) || (!userId.isEmpty())) {
+                if ((userId != null)) {
+                    if (!userId.isEmpty()) {
                     UserManager.getUser(API_TOKEN, new UserManager.UserCallbackInterface() {
                         @Override
                         public void onFailureCallback() {
@@ -154,6 +156,7 @@ public class HomeActivity extends AppCompatActivity {
                         public void onUnsuccessfulCallback() {
                         }
                     });
+                }
                 }
             }
         });
@@ -342,10 +345,7 @@ public class HomeActivity extends AppCompatActivity {
             return true;
         }
         // Activate the navigation drawer toggle
-        if (navMenuToggle.onOptionsItemSelected(item)) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
+        return navMenuToggle.onOptionsItemSelected(item) || super.onOptionsItemSelected(item);
     }
 
 
@@ -422,7 +422,7 @@ public class HomeActivity extends AppCompatActivity {
             JWTManager.getApiToken(EMAIL, PASSWORD, new JWTManager.JWTCallbackInterface() {
                 @Override
                 public void onFailureCallback() {
-                    showNoInternetMessage();
+                    Constants.showNoInternetMessage(getApplicationContext());
                 }
 
                 @Override
@@ -476,8 +476,13 @@ public class HomeActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<List<Endpoint>> call, Throwable t) {
                 // something went completely south (like no internet connection)
-                showNoInternetMessage();
-                Log.d("Error", t.getMessage());
+                Constants.showNoInternetMessage(getApplicationContext());
+                try {
+                    Log.d("Error", call.request().body().toString());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                t.printStackTrace();
                 AnalyticsApplication.getInstance().trackException(new Exception(t));
             }
         });
@@ -518,7 +523,7 @@ public class HomeActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<List<Hub>> call, Throwable t) {
                 // something went completely south (like no internet connection)
-                showNoInternetMessage();
+                Constants.showNoInternetMessage(getApplicationContext());
                 Log.d("Error", t.getMessage());
                 AnalyticsApplication.getInstance().trackException(new Exception(t));
             }
@@ -587,14 +592,6 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     /**
-     * This method will show a no internet error message to the user
-     */
-    private void showNoInternetMessage() {
-        Toast.makeText(HomeActivity.this, getResources().getString(R.string.toast_missing_internet),
-                Toast.LENGTH_SHORT).show();
-    }
-
-    /**
      * This method is in charge of opening the corresponding controller for each device depending the UI parameter of the device
      * @param endpoint the endpoint clicked by the user in the app UI
      */
@@ -622,6 +619,7 @@ public class HomeActivity extends AppCompatActivity {
     private void openSONOSController(Endpoint sonos){
         Intent intent = new Intent(this, SonosControllerActivity.class);
         intent.putExtra(EXTRA_MESSAGE, API_TOKEN);
+        intent.putExtra(EXTRA_MESSAGE_PREF_HUB, PREFERRED_HUB_ID);
         intent.putExtra(EXTRA_OBJECT, sonos);
         startActivity(intent);
     }
