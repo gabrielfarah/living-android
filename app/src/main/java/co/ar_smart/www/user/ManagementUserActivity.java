@@ -11,6 +11,7 @@ import android.widget.Button;
 
 import co.ar_smart.www.analytics.AnalyticsApplication;
 import co.ar_smart.www.living.LoginActivity;
+import co.ar_smart.www.living.LoginRegisterActivity;
 import co.ar_smart.www.living.R;
 import co.ar_smart.www.pojos.User;
 
@@ -117,7 +118,7 @@ public class ManagementUserActivity extends AppCompatActivity {
      * This method will open the login activity.
      */
     public void openLoginActivity() {
-        Intent intent = new Intent(this, LoginActivity.class);
+        Intent intent = new Intent(this, LoginRegisterActivity.class);
         startActivity(intent);
     }
 

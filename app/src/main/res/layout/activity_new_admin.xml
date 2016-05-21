@@ -30,6 +30,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 style="@style/editTextNewUser"
+                android:hint="@string/edit_text_new_user_lastname"
+                android:id="@+id/edtLastname"/>
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/editTextNewUser"
                 android:hint="@string/edit_text_new_user_email"
                 android:inputType="textEmailAddress"
                 android:id="@+id/edtEmail"/>

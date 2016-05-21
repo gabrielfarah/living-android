@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.TimeZone;
 
+import co.ar_smart.www.living.LoginActivity;
 import co.ar_smart.www.living.R;
 
 import static co.ar_smart.www.helpers.Constants.LIVING_HOTSPOT_PASSWORD;
@@ -43,12 +44,13 @@ public class LivingLocalConfigurationActivity extends AppCompatActivity {
     private BroadcastReceiver broadcastReceiver;
     private IntentFilter intentFilter = new IntentFilter();
     private boolean wasNetworkStarted = false;
+    private Context mContext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_living_local_configuration);
-
+        mContext = this;
         askAndroidPermissions();
         permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
         if (permissionCheck!=-1){
@@ -100,7 +102,9 @@ public class LivingLocalConfigurationActivity extends AppCompatActivity {
                     String userWifiPassword = passwordText.getText().toString();
                     boolean valid = validateUserInput(userWifiSSID, userWifiPassword, userHomeTimeZone);
                     if (valid){
-
+                        //TODO add real behavior
+                        Intent i = new Intent(mContext, RegisteredHubActivity.class);
+                        startActivity(i);
                     }
                 }
             });
