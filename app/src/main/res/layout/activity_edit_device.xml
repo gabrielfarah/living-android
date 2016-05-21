@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:orientation="vertical"
+    tools:context="co.ar_smart.www.endpoints.EditDeviceActivity">
+    <TextView
+        android:id="@+id/labelName"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:text="Nombre: "
+        android:textSize="30dp"
+        android:textColor="@color/colorPrimaryDark"/>
+    <EditText
+        android:id="@+id/txtNameDev"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginBottom="10dp"/>
+    <Button
+        android:id="@+id/btnEditIcon"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:text="@string/editicon_btntext"
+        android:drawableRight="@drawable/right_arrow_icon"
+        android:drawableLeft="@drawable/light_icon"
+        android:background="@drawable/filled_button"
+        android:layout_marginBottom="5dp"/>
+    <Button
+        android:id="@+id/btnEditRoom"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:text="@string/editroom_btntext"
+        android:background="@drawable/filled_button"
+        android:drawableRight="@drawable/right_arrow_icon"
+        android:drawableLeft="@drawable/light_icon"
+        android:layout_marginBottom="10dp"/>
+    <CheckBox
+        android:gravity="center"
+        android:layout_gravity="center"
+        android:id="@+id/chkAddFav"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:text="@string/addfavorites_chktext"
+        android:textAlignment="center"
+        android:background="@drawable/filled_button"/>
+
+</LinearLayout>

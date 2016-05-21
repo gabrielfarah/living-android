@@ -1,4 +1,26 @@
 <resources>
+    <string name="addwifi_btntext">Add Wifi Device</string>
+    <string name="delwifi_btntext">Delete Wifi Device</string>
+    <string name="addwave_btntext">Add ZWave Device</string>
+    <string name="delzwave_btntext">Delete ZWave Device</string>
+    <string name="editDevice_btntext">Edit Device</string>
+
+
+    <string name="editicon_btntext">Select Icon</string>
+    <string name="editroom_btntext">Select Room</string>
+    <string name="addfavorites_chktext">Add to favorites</string>
+
+    <string name="newroom_btntext">New Room</string>
+
+    <string name="warning_fields">Please fill in all required fields</string>
+    <string name="warning_fail_newdev1">It was not possible to connect your device</string>
+    <string name="warning_fail_newdev2">warning 2</string>
+
+    <string name="addDevice_success_dialog">The device was added successfully</string>
+    <string name="lblnameroom_dialog">Room Name: </string>
+    <string name="acept">Acept</string>
+    <string name="cancel">Cancel</string>
+
     <string name="app_name">Living</string>
     <string name="login_title">Login to your account</string>
     <string name="login_text">Login</string>
@@ -85,4 +107,5 @@
     <string name="label_registered_hub_title">Congrats!</string>
     <string name="label_registered_hub_message">Has conectado correctamente \ntu estación.\n \nComienza ahora a automatizar \ntu hogar y vive más cómodo y \nseguro con Living.</string>
     <string name="btn_registered_hub">END</string>
+    <string name="title_activity_new_devices">NewDevicesActivity</string>
 </resources>

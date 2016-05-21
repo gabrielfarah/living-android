@@ -113,6 +113,36 @@ public final class Constants {
     public static final String DEFAULT_BACKGROUND_PATH = "drawable://" + R.drawable.default_background;
     public static final String EXTRA_ADDITIONAL_OBJECT = "co.ar-smart.www.living.EXTRA_PARCEL";
 
+    //Add by Sergio
+    /**
+     * Extra ID add devices type
+     */
+    public static final String EXTRA_TYPE_DEVICE = "EXTRA_TYPE_DEV";
+    /**
+     * Extra ID device category
+     */
+    public static final String EXTRA_CATEGORY_DEVICE = "EXTRA_CATEGORY_DEV";
+    /**
+     * Type WIFI device
+     */
+    public static final String TYPE_DEVICE_WIFI = "TYPE_DEV_WIFI";
+    /**
+     * Type ZWAVE device
+     */
+    public static final String TYPE_DEVICE_ZWAVE = "TYPE_DEV_ZWAVE";
+    /**
+     * ID Extra Action
+     */
+    public static final String EXTRA_ACTION = "Extra_ACTION";
+    /**
+     * ID Extra UID
+     */
+    public static final String EXTRA_UID = "EXTRA_UID";
+
+    public static final String ACTION_EDIT = "ACTION_edit";
+    public static final String ACTION_ADD = "ACTION_add";
+
+
     /**
      * This method will return a future date given a timeout in seconds.
      *

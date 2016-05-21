@@ -3,6 +3,9 @@ package co.ar_smart.www.pojos;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * This POJO class represents a Device (Endpoint) in Living.
  * Created by Gabriel on 5/3/2016.
@@ -241,6 +244,7 @@ public class Endpoint implements Parcelable{
         node = in.readInt();
         room = in.readString();
         category = in.readParcelable(getClass().getClassLoader());
+        //in.readTypedList(endpoint_classes, EndpointClass.CREATOR);
         //in.readTypedList(endpoint_classes, EndpointClass.CREATOR);
 
         //flag = in.readByte() != 0;

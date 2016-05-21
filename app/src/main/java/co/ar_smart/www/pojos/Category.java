@@ -10,6 +10,11 @@ public class Category implements Parcelable{
     private String description;
     private String code;
 
+    public  Category()
+    {
+        code="sddf";
+        description="Iluminación";
+    }
     protected Category(Parcel in) {
         description = in.readString();
         code = in.readString();
@@ -41,4 +46,6 @@ public class Category implements Parcelable{
         dest.writeString(description);
         dest.writeString(code);
     }
+
+    public String getCat(){return description;}
 }
