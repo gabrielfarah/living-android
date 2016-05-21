@@ -66,6 +66,18 @@ public class HueControllerActivity extends AppCompatActivity {
      */
     private String pollingURL;
 
+    public String getAPI_TOKEN() {
+        return API_TOKEN;
+    }
+
+    public int getPREFERRED_HUB_ID() {
+        return PREFERRED_HUB_ID;
+    }
+
+    public HueEndpoint getHueEndpoint() {
+        return hueEndpoint;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -99,35 +111,6 @@ public class HueControllerActivity extends AppCompatActivity {
         adapter.addFragment(HueBulbsFragment.newInstance(bulbs), "Bulbs");
         adapter.addFragment(HueBulbsFragment.newInstance(bulbs), "Groups");
         viewPager.setAdapter(adapter);
-    }
-
-    class ViewPagerAdapter extends FragmentPagerAdapter {
-        private final List<Fragment> mFragmentList = new ArrayList<>();
-        private final List<String> mFragmentTitleList = new ArrayList<>();
-
-        public ViewPagerAdapter(FragmentManager manager) {
-            super(manager);
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            return mFragmentList.get(position);
-        }
-
-        @Override
-        public int getCount() {
-            return mFragmentList.size();
-        }
-
-        public void addFragment(Fragment fragment, String title) {
-            mFragmentList.add(fragment);
-            mFragmentTitleList.add(title);
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            return mFragmentTitleList.get(position);
-        }
     }
 
     @Override
@@ -245,5 +228,34 @@ public class HueControllerActivity extends AppCompatActivity {
         };
         // start it with:
         pollingResponseHandler.post(runnable);
+    }
+
+    class ViewPagerAdapter extends FragmentPagerAdapter {
+        private final List<Fragment> mFragmentList = new ArrayList<>();
+        private final List<String> mFragmentTitleList = new ArrayList<>();
+
+        public ViewPagerAdapter(FragmentManager manager) {
+            super(manager);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            return mFragmentList.get(position);
+        }
+
+        @Override
+        public int getCount() {
+            return mFragmentList.size();
+        }
+
+        public void addFragment(Fragment fragment, String title) {
+            mFragmentList.add(fragment);
+            mFragmentTitleList.add(title);
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return mFragmentTitleList.get(position);
+        }
     }
 }

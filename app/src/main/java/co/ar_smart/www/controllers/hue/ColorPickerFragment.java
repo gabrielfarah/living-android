@@ -15,7 +15,13 @@ import com.flask.colorpicker.slider.AlphaSlider;
 import com.flask.colorpicker.slider.LightnessSlider;
 import com.flask.colorpicker.slider.OnValueChangedListener;
 
+import org.json.JSONObject;
+
+import co.ar_smart.www.helpers.CommandManager;
+import co.ar_smart.www.helpers.Constants;
 import co.ar_smart.www.living.R;
+import co.ar_smart.www.pojos.hue.HueEndpoint;
+import co.ar_smart.www.pojos.hue.HueLight;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -30,37 +36,38 @@ public class ColorPickerFragment extends Fragment {
     private static final String ARG_PARAM2 = "param2";
 
     // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private HueLight hueLight;
+    private HueEndpoint hueEndpoint;
+    private HueColorControllerActivity parentActivity;
+
+    public ColorPickerFragment() {
+        // Required empty public constructor
+    }
 
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
+     * @param hueLight Parameter 1.
+     * @param hueEndpoint Parameter 2.
      * @return A new instance of fragment ColorPickerFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static ColorPickerFragment newInstance(String param1, String param2) {
+    public static ColorPickerFragment newInstance(HueLight hueLight, HueEndpoint hueEndpoint) {
         ColorPickerFragment fragment = new ColorPickerFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putParcelable(ARG_PARAM1, hueLight);
+        args.putParcelable(ARG_PARAM2, hueEndpoint);
         fragment.setArguments(args);
         return fragment;
-    }
-
-    public ColorPickerFragment() {
-        // Required empty public constructor
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            hueLight = getArguments().getParcelable(ARG_PARAM1);
+            hueEndpoint = getArguments().getParcelable(ARG_PARAM2);
         }
     }
 
@@ -68,17 +75,20 @@ public class ColorPickerFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_color_picker, container, false);
+        parentActivity = (HueColorControllerActivity) getActivity();
         // Inflate the layout for this fragment
-
         ColorPickerView color_view = (ColorPickerView) rootView.findViewById(R.id.color_picker_view);
         LightnessSlider brightness = (LightnessSlider) rootView.findViewById(R.id.v_lightness_slider);
         AlphaSlider saturation = (AlphaSlider) rootView.findViewById(R.id.v_alpha_slider);
         if (color_view != null) {
+            color_view.setColor(hueLight.getRGBfromXY(), true);
             color_view.addOnColorSelectedListener(new OnColorSelectedListener() {
                 @Override
                 public void onColorSelected(int selectedColor) {
                     Log.d("RGB:", "" + Color.red(selectedColor) + " " + Color.green(selectedColor) + " " + Color.blue(selectedColor));
                     Toast.makeText(getActivity().getApplicationContext(), "onColorSelected: 0x" + Integer.toHexString(selectedColor), Toast.LENGTH_LONG).show();
+                    changeColor(selectedColor);
+
                 }
             });
         }
@@ -88,6 +98,7 @@ public class ColorPickerFragment extends Fragment {
                 public void onValueChanged(float v) {
                     Log.d("BRIG", "" + Math.round(v * 254));
                     //Toast.makeText(getApplicationContext(),"LightnessSlider: " +  (v*254), Toast.LENGTH_LONG).show();
+                    changeBrightness(Math.round(v * 254));
                 }
             });
         }
@@ -97,11 +108,71 @@ public class ColorPickerFragment extends Fragment {
                 public void onValueChanged(float v) {
                     Log.d("SAT", "" + Math.round(v * 254));
                     //Toast.makeText(getApplicationContext(),"AlphaSlider: " +  (v*254), Toast.LENGTH_LONG).show();
+                    changeSaturation(Math.round(v * 254));
                 }
             });
         }
-        //TODO if respnse fail it could be a registration fail
 
         return rootView;
+    }
+
+    private void changeColor(int color) {
+        int lid = hueLight.getLight_id();
+        int r = Color.red(color);
+        int g = Color.green(color);
+        int b = Color.blue(color);
+        CommandManager.sendCommandWithoutResult(parentActivity.getAPI_TOKEN(), parentActivity.getPREFERRED_HUB_ID(), hueEndpoint.getRGB(lid, r, g, b), new CommandManager.ResponseCallbackInterface() {
+            @Override
+            public void onFailureCallback() {
+                Constants.showNoInternetMessage(getActivity().getApplicationContext());
+            }
+
+            @Override
+            public void onSuccessCallback(JSONObject jObject) {
+            }
+
+            @Override
+            public void onUnsuccessfulCallback() {
+                //TODO if respnse fail it could be a registration fail
+            }
+        });
+    }
+
+    private void changeBrightness(int value) {
+        int lid = hueLight.getLight_id();
+        CommandManager.sendCommandWithoutResult(parentActivity.getAPI_TOKEN(), parentActivity.getPREFERRED_HUB_ID(), hueEndpoint.getBrightness(lid, value), new CommandManager.ResponseCallbackInterface() {
+            @Override
+            public void onFailureCallback() {
+                Constants.showNoInternetMessage(getActivity().getApplicationContext());
+            }
+
+            @Override
+            public void onSuccessCallback(JSONObject jObject) {
+            }
+
+            @Override
+            public void onUnsuccessfulCallback() {
+                //TODO if respnse fail it could be a registration fail
+            }
+        });
+    }
+
+    private void changeSaturation(int value) {
+        int lid = hueLight.getLight_id();
+        CommandManager.sendCommandWithoutResult(parentActivity.getAPI_TOKEN(), parentActivity.getPREFERRED_HUB_ID(), hueEndpoint.getSaturation(lid, value), new CommandManager.ResponseCallbackInterface() {
+            @Override
+            public void onFailureCallback() {
+                Constants.showNoInternetMessage(getActivity().getApplicationContext());
+            }
+
+            @Override
+            public void onSuccessCallback(JSONObject jObject) {
+            }
+
+            @Override
+            public void onUnsuccessfulCallback() {
+                //TODO if respnse fail it could be a registration fail
+            }
+        });
     }
 }

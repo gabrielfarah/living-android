@@ -1,7 +1,9 @@
 package co.ar_smart.www.controllers.hue;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +18,11 @@ import co.ar_smart.www.adapters.hue.BulbsAdapter;
 import co.ar_smart.www.living.R;
 import co.ar_smart.www.pojos.hue.HueLight;
 
+import static co.ar_smart.www.helpers.Constants.EXTRA_ADDITIONAL_OBJECT;
+import static co.ar_smart.www.helpers.Constants.EXTRA_MESSAGE;
+import static co.ar_smart.www.helpers.Constants.EXTRA_MESSAGE_PREF_HUB;
+import static co.ar_smart.www.helpers.Constants.EXTRA_OBJECT;
+
 /**
  * A simple {@link Fragment} subclass.
  * to handle interaction events.
@@ -27,6 +34,11 @@ public class HueBulbsFragment extends Fragment {
     private static final String ARG_PARAM_HUE_LIGHTS = "huelightslist";
 
     private List<HueLight> bulbs = new java.util.ArrayList<>();
+    private HueControllerActivity parentActivity;
+
+    public HueBulbsFragment() {
+        // Required empty public constructor
+    }
 
     /**
      * Use this factory method to create a new instance of
@@ -44,10 +56,6 @@ public class HueBulbsFragment extends Fragment {
         return fragment;
     }
 
-    public HueBulbsFragment() {
-        // Required empty public constructor
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,7 +69,7 @@ public class HueBulbsFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.hue_bulbs_fragment_list, container, false);
         // Inflate the layout for this fragment
-        //TODO fill bulbs? or in the oncreate
+        parentActivity = (HueControllerActivity) getActivity();
 
         ListView sceneListView = (ListView) rootView.findViewById(R.id.hue_bulbs_list_view);
         BulbsAdapter customAdapter = new BulbsAdapter(getActivity().getApplicationContext(), bulbs);
@@ -70,9 +78,20 @@ public class HueBulbsFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Toast.makeText(getActivity().getApplicationContext(), bulbs.get(position).toString(), Toast.LENGTH_SHORT).show();
+                openColorPickerActivity(bulbs.get(position));
             }
         });
 
         return rootView;
+    }
+
+    private void openColorPickerActivity(HueLight hueLight) {
+        Log.d("CHECK", hueLight.toString());
+        Intent intent = new Intent(parentActivity, HueColorControllerActivity.class);
+        intent.putExtra(EXTRA_MESSAGE, parentActivity.getAPI_TOKEN());
+        intent.putExtra(EXTRA_MESSAGE_PREF_HUB, parentActivity.getPREFERRED_HUB_ID());
+        intent.putExtra(EXTRA_OBJECT, hueLight);
+        intent.putExtra(EXTRA_ADDITIONAL_OBJECT, parentActivity.getHueEndpoint());
+        startActivity(intent);
     }
 }

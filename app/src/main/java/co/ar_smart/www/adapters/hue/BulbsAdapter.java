@@ -25,10 +25,6 @@ public class BulbsAdapter extends BaseAdapter {
 
     private List<HueLight> bulbs = new java.util.ArrayList<>();
 
-    private static class ViewHolder {
-        TextView bulb_name;
-    }
-
     public BulbsAdapter(Context c, List<HueLight> bulbs) {
         context = c;
         this.bulbs = bulbs;
@@ -68,7 +64,11 @@ public class BulbsAdapter extends BaseAdapter {
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
         }
-        viewHolder.bulb_name.setText(bulbs.get(position).toString());
+        viewHolder.bulb_name.setText(bulbs.get(position).getName());
         return convertView;
+    }
+
+    private static class ViewHolder {
+        TextView bulb_name;
     }
 }

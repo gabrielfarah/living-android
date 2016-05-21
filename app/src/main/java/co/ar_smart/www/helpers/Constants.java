@@ -95,6 +95,23 @@ public final class Constants {
      * Password for connecting to the Living hotspot network while the installation.
      */
     public static final String LIVING_HOTSPOT_PASSWORD = "03FARAH07";
+    /**
+     * Default latitude for map-like activities
+     */
+    public static final double DEFAULT_LATITUDE = 4;
+    /**
+     * Default latitude for map-like activities
+     */
+    public static final double DEFAULT_LONGITUDE = -72;
+    /**
+     * Default radius for map-like activities
+     */
+    public static final double DEFAULT_RADIUS = 1000;
+    /**
+     * Default background image path
+     */
+    public static final String DEFAULT_BACKGROUND_PATH = "drawable://" + R.drawable.default_background;
+    public static final String EXTRA_ADDITIONAL_OBJECT = "co.ar-smart.www.living.EXTRA_PARCEL";
 
     /**
      * This method will return a future date given a timeout in seconds.
@@ -123,23 +140,5 @@ public final class Constants {
         Toast.makeText(c.getApplicationContext(), message,
                 Toast.LENGTH_LONG).show();
     }
-
-    /**
-     * Default latitude for map-like activities
-     */
-    public static final double DEFAULT_LATITUDE = 4;
-
-    /**
-     * Default latitude for map-like activities
-     */
-    public static final double DEFAULT_LONGITUDE = -72;
-    /**
-     * Default radius for map-like activities
-     */
-    public static final double DEFAULT_RADIUS = 1000;
-    /**
-     * Default background image path
-     */
-    public static final String DEFAULT_BACKGROUND_PATH = "drawable://" + R.drawable.default_background;
 
 }
