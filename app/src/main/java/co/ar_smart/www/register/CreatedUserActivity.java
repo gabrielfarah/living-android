@@ -45,6 +45,7 @@ public class CreatedUserActivity extends AppCompatActivity implements GoogleApiC
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_created_user);
+        //Initialize atribute in charge of getting the static map image
         if (mGoogleApiClient == null)
         {
             mGoogleApiClient = new GoogleApiClient.Builder(this)
@@ -59,26 +60,25 @@ public class CreatedUserActivity extends AppCompatActivity implements GoogleApiC
     }
 
     /**
-     * Redirects to Hub Register and creates bitmap with static map of last registered location
-     *
+     * Creates bitmap with static map of last registered location
      * @param v - View needed for onClick property
      */
     public void registerHub(View v)
     {
-        String lastLat = String.valueOf(Constants.DEFAULT_LATITUDE);
-        String lastLng = String.valueOf(Constants.DEFAULT_LONGITUDE);
+
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
         {
+            //Assign last registered location
             mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
                     mGoogleApiClient);
-            if (mLastLocation != null)
-            {
-                lastLat = String.valueOf(mLastLocation.getLatitude());
-                lastLng = String.valueOf(mLastLocation.getLongitude());
-            }
-            String url = "http://maps.google.com/maps/api/staticmap?center=" + lastLat + "," + lastLng + "&zoom=14&size=400x130&sensor=false";
+            //URL of last registered location static map
+            String url = "http://maps.google.com/maps/api/staticmap?center=" +
+                    String.valueOf(mLastLocation.getLatitude()) + "," +
+                    String.valueOf(mLastLocation.getLongitude()) + "&zoom=14&size=400x130&sensor=false";
+            //Gets bitmap of the given url
             OkHttpClient client = new OkHttpClient();
-            Request request = new Request.Builder().url(url)
+            Request request = new Request.Builder()
+                    .url(url)
                     .build();
 
             client.newCall(request).enqueue(new Callback()
@@ -92,8 +92,10 @@ public class CreatedUserActivity extends AppCompatActivity implements GoogleApiC
                 @Override
                 public void onResponse(Call call, Response response) throws IOException
                 {
+
                     InputStream in = response.body().byteStream();
                     Bitmap myBitmap = BitmapFactory.decodeStream(in);
+                    //Call method in charge of changing activity
                     registerHub(myBitmap);
                 }
             });
@@ -112,6 +114,11 @@ public class CreatedUserActivity extends AppCompatActivity implements GoogleApiC
         i.putExtra("long", mLastLocation.getLongitude());
         startActivity(i);
     }
+
+    //-------------------------------------
+    // Methods required by implementations
+    //-------------------------------------
+
     protected void onStart() {
         mGoogleApiClient.connect();
         super.onStart();

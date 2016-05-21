@@ -67,6 +67,10 @@ public final class Constants {
      */
     public static final String REGISTER_URL = BASE_URL+"users/";
     /**
+     * The URL for register a hub
+     */
+    public static final String HUB_REGISTER_URL = BASE_URL+"hubs/";
+    /**
      * UID of intra activities messages. Is used for passing messages between intents among activities.
      */
     public static final String EXTRA_MESSAGE = "co.ar-smart.www.living.MESSAGE";
@@ -129,5 +133,13 @@ public final class Constants {
      * Default latitude for map-like activities
      */
     public static final double DEFAULT_LONGITUDE = -72;
+    /**
+     * Default radius for map-like activities
+     */
+    public static final double DEFAULT_RADIUS = 1000;
+    /**
+     * Default background image path
+     */
+    public static final String DEFAULT_BACKGROUND_PATH = "drawable://" + R.drawable.default_background;
 
 }

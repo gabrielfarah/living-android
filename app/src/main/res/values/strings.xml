@@ -24,6 +24,7 @@
     <string name="btn_new_user_create">Create Account</string>
     <string name="label_new_user_existing_user">Already have an account ?</string>
     <string name="edit_text_new_user_name">Name</string>
+    <string name="edit_text_new_user_lastname">Lastname</string>
     <string name="edit_text_new_user_email">E-mail</string>
     <string name="edit_text_new_user_confirm_email">Confirm E-mail</string>
     <string name="edit_text_new_user_password">Password</string>
@@ -75,4 +76,13 @@
     <string name="btn_map_register_hub_location_selected">Done</string>
     <string name="capture">Capture</string>
     <string name="select">Select</string>
+    <string name="btn_connect_outlet">Continue</string>
+    <string name="label_connect_outlet">Connect the central station using the network cables and power included on the packing. After completed the process, press Continue.</string>
+    <string name="title_activity_connect_outlet">Connect the station</string>
+    <string name="label_set_serial_hub">Enter the code included inside the packing of your central station and press continue.</string>
+    <string name="edit_text_reg_hub_serial_hint">Eg: LIV463E</string>
+    <string name="toast_register_bad_credentials">Are all the fields filled correctly ?</string>
+    <string name="label_registered_hub_title">Congrats!</string>
+    <string name="label_registered_hub_message">Has conectado correctamente \ntu estación.\n \nComienza ahora a automatizar \ntu hogar y vive más cómodo y \nseguro con Living.</string>
+    <string name="btn_registered_hub">END</string>
 </resources>

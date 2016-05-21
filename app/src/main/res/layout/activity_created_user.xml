@@ -54,7 +54,7 @@
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/empty_button"
+                android:background="@drawable/empty_button_white"
                 android:text="@string/label_continue"
                 android:textColor="@color/blanco"
                 android:onClick="registerHub"/>

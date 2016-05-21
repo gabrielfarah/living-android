@@ -54,10 +54,9 @@
             android:id="@+id/btnReady"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/empty_button"
+            android:background="@color/activar"
             android:text="@string/btn_map_register_hub_location_selected"/>
 
     </LinearLayout>
-
 
 </LinearLayout>

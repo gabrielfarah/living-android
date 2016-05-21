@@ -1,18 +1,26 @@
 package co.ar_smart.www.register;
 
+import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
-import android.graphics.Point;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.location.Location;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.Button;
-import android.widget.SeekBar;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -23,42 +31,87 @@ import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+import java.io.IOException;
+import java.io.InputStream;
+
+import co.ar_smart.www.helpers.Constants;
 import co.ar_smart.www.living.R;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
-public class MapRegisterHubActivity extends FragmentActivity implements GoogleMap.OnMarkerDragListener, GoogleMap.OnMapLongClickListener, OnMapReadyCallback {
+public class MapRegisterHubActivity extends FragmentActivity implements GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener,
+        GoogleMap.OnMarkerDragListener,
+        GoogleMap.OnMapLongClickListener,
+        OnMapReadyCallback
+{
 
+    /**
+     * Radius of earth in meters for
+     */
     public static final double RADIUS_OF_EARTH_METERS = 6371009;
-    private static final double DEFAULT_RADIUS = 1000000;
-
+    /**
+     * Google api client for static map image
+     */
+    private GoogleApiClient mGoogleApiClient;
+    /**
+     * Google map showed in activity
+     */
     private GoogleMap mMap;
+    /**
+     * Circle showed over the map
+     */
     private DraggableCircle mCircles;
-    private int latitude;
-    private int longitude;
-    private static final int WIDTH_MAX = 50;
-    private SeekBar mWidthBar;
+    /**
+     * Current marker latitude
+     */
+    private double latitude;
+    /**
+     * Current marker longitude
+     */
+    private double longitude;
+    /**
+     * Circle filling color
+     */
+    private int colorCircle;
+    /**
+     * Current context
+     */
+    private Context mContext;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map_register_hub);
-        latitude = getIntent().getIntExtra("lat",4);
-        longitude = getIntent().getIntExtra("long",-74);
+        latitude = getIntent().getDoubleExtra("lat", 4);
+        longitude = getIntent().getDoubleExtra("long", -74);
+
+        mContext = this;
+        int tempColor = ContextCompat.getColor(getApplicationContext(), R.color.soporteClaro);
+        colorCircle = Color.argb(100, Color.red(tempColor), Color.green(tempColor), Color.blue(tempColor));
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-        (findViewById(R.id.btnReady)).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setResult(Activity.RESULT_OK,
-                        new Intent().putExtra("latitude", mCircles.centerMarker.getPosition().latitude)
-                                .putExtra("longitude", mCircles.centerMarker.getPosition().longitude)
-                                .putExtra("radius", mCircles.radius));
-                finish();
-            }
-        });
+        if (mGoogleApiClient == null)
+        {
+            mGoogleApiClient = new GoogleApiClient.Builder(this)
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .addApi(LocationServices.API)
+                    .build();
+        }
+        Button btnReady = (Button) findViewById(R.id.btnReady);
+        if (btnReady != null)
+        {
+            btnReady.setOnClickListener(listenerMap);
+        }
     }
-
 
     /**
      * Manipulates the map once available.
@@ -70,64 +123,147 @@ public class MapRegisterHubActivity extends FragmentActivity implements GoogleMa
      * installed Google Play services and returned to the app.
      */
     @Override
-    public void onMapReady(GoogleMap googleMap) {
+    public void onMapReady(GoogleMap googleMap)
+    {
         mMap = googleMap;
-        // Override the default content description on the view, for accessibility mode.
-        googleMap.setContentDescription("Hola");
 
         mMap.setOnMarkerDragListener(this);
         mMap.setOnMapLongClickListener(this);
         mMap.clear();
-        mWidthBar = (SeekBar) findViewById(R.id.widthSeekBar);
-        mWidthBar.setMax(WIDTH_MAX);
-        mWidthBar.setProgress(10);
+        double preRadius = getIntent().getDoubleExtra("radius", Constants.DEFAULT_RADIUS);
+        double radius = preRadius == 0.0 ? Constants.DEFAULT_RADIUS : preRadius;
         LatLng defaultLocation = new LatLng(latitude, longitude);
-        Log.d("DEBUG", "5");
-        DraggableCircle circle = new DraggableCircle(defaultLocation, DEFAULT_RADIUS);
-        Log.d("DEBUG", "6");
+        DraggableCircle circle = new DraggableCircle(defaultLocation, radius);
         mCircles = circle;
-        Log.d("DEBUG", "7");
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(defaultLocation, 4.0f));
-        Log.d("DEBUG", "8");
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(defaultLocation, 14.0f));
     }
 
+    /**
+     * Method called when user make a long click in the map
+     * Replace the point of the map with a new centered in the new position
+     * @param point
+     */
     @Override
-    public void onMapLongClick(LatLng point) {
-        // We know the center, let's place the outline at a point 3/4 along the view.
-        View view =  getSupportFragmentManager().findFragmentById(R.id.map)
-                .getView();
-        LatLng radiusLatLng = null;
-        if (view != null)
-        {
-            radiusLatLng = mMap.getProjection().fromScreenLocation(new Point(
-                    view.getHeight() * 3 / 4, view.getWidth() * 3 / 4));
-        }
-
+    public void onMapLongClick(LatLng point)
+    {
         mMap.clear();
-        // ok create it
-        mCircles = new DraggableCircle(point, radiusLatLng);
+        mCircles = new DraggableCircle(point, Constants.DEFAULT_RADIUS);
+    }
+
+    /**
+     * Method called when user clic in done button
+     * @param myBitmap
+     */
+    private void endActivity(final Bitmap myBitmap)
+    {
+        MapRegisterHubActivity.this.runOnUiThread(new Runnable()
+        {
+            public void run()
+            {
+                setResult(Activity.RESULT_OK,
+                        new Intent().putExtra("latitude", mCircles.centerMarker.getPosition().latitude)
+                                .putExtra("longitude", mCircles.centerMarker.getPosition().longitude)
+                                .putExtra("radius", mCircles.radius)
+                                .putExtra("bitmap", myBitmap));
+                finish();
+            }
+        });
+
     }
 
     @Override
-    public void onMarkerDragStart(Marker marker) {
+    public void onMarkerDragStart(Marker marker)
+    {
         onMarkerMoved(marker);
     }
 
     @Override
-    public void onMarkerDrag(Marker marker) {
+    public void onMarkerDrag(Marker marker)
+    {
         onMarkerMoved(marker);
     }
 
     @Override
-    public void onMarkerDragEnd(Marker marker) {
+    public void onMarkerDragEnd(Marker marker)
+    {
         onMarkerMoved(marker);
     }
 
-    private void onMarkerMoved(Marker marker) {
+    private void onMarkerMoved(Marker marker)
+    {
         mCircles.onMarkerMoved(marker);
     }
 
-    private class DraggableCircle {
+    @Override
+    public void onConnected(@Nullable Bundle bundle){}
+
+    @Override
+    public void onConnectionSuspended(int i){}
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult){}
+
+    View.OnClickListener listenerMap = new View.OnClickListener()
+    {
+        @Override
+        public void onClick(View v)
+        {
+            try
+            {
+                if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+                {
+                    String url = "http://maps.google.com/maps/api/staticmap?center=" + latitude + "," + longitude + "&zoom=14&size=400x130&sensor=false";
+                    OkHttpClient client = new OkHttpClient();
+                    Request request = new Request.Builder().url(url)
+                            .build();
+
+                    client.newCall(request).enqueue(new Callback()
+                    {
+                        @Override
+                        public void onFailure(Call call, IOException e)
+                        {
+                            e.printStackTrace();
+                        }
+
+                        @Override
+                        public void onResponse(Call call, Response response) throws IOException
+                        {
+                            InputStream in = response.body().byteStream();
+                            Bitmap myBitmap = BitmapFactory.decodeStream(in);
+                            endActivity(myBitmap);
+                        }
+                    });
+                }
+
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+        }
+    };
+
+    /**
+     * Generate LatLng of radius marker
+     */
+    private static LatLng toRadiusLatLng(LatLng center, double radius)
+    {
+        double radiusAngle = Math.toDegrees(radius / RADIUS_OF_EARTH_METERS) /
+                Math.cos(Math.toRadians(center.latitude));
+        return new LatLng(center.latitude, center.longitude + radiusAngle);
+    }
+
+    private static double toRadiusMeters(LatLng center, LatLng radius)
+    {
+        float[] result = new float[1];
+        Location.distanceBetween(center.latitude, center.longitude,
+                radius.latitude, radius.longitude, result);
+        return result[0];
+    }
+
+
+    private class DraggableCircle
+    {
 
         private final Marker centerMarker;
 
@@ -137,7 +273,8 @@ public class MapRegisterHubActivity extends FragmentActivity implements GoogleMa
 
         private double radius;
 
-        public DraggableCircle(LatLng center, double radius) {
+        public DraggableCircle(LatLng center, double radius)
+        {
             this.radius = radius;
             centerMarker = mMap.addMarker(new MarkerOptions()
                     .position(center)
@@ -146,36 +283,25 @@ public class MapRegisterHubActivity extends FragmentActivity implements GoogleMa
                     .position(toRadiusLatLng(center, radius))
                     .draggable(true)
                     .icon(BitmapDescriptorFactory.defaultMarker(
-                            BitmapDescriptorFactory.HUE_AZURE)));
+                            BitmapDescriptorFactory.HUE_GREEN)));
             circle = mMap.addCircle(new CircleOptions()
                     .center(center)
-                    .strokeWidth(mWidthBar.getProgress())
+                    .fillColor(colorCircle)
                     .radius(radius));
         }
 
-        public DraggableCircle(LatLng center, LatLng radiusLatLng) {
-            this.radius = toRadiusMeters(center, radiusLatLng);
-            centerMarker = mMap.addMarker(new MarkerOptions()
-                    .position(center)
-                    .draggable(true));
-            radiusMarker = mMap.addMarker(new MarkerOptions()
-                    .position(radiusLatLng)
-                    .draggable(true)
-                    .icon(BitmapDescriptorFactory.defaultMarker(
-                            BitmapDescriptorFactory.HUE_AZURE)));
-            circle = mMap.addCircle(new CircleOptions()
-                    .center(center)
-                    .strokeWidth(mWidthBar.getProgress())
-                    .radius(radius));
-        }
-
-        public boolean onMarkerMoved(Marker marker) {
-            if (marker.equals(centerMarker)) {
+        public boolean onMarkerMoved(Marker marker)
+        {
+            if (marker.equals(centerMarker))
+            {
                 circle.setCenter(marker.getPosition());
                 radiusMarker.setPosition(toRadiusLatLng(marker.getPosition(), radius));
+                latitude = marker.getPosition().latitude;
+                longitude = marker.getPosition().longitude;
                 return true;
             }
-            if (marker.equals(radiusMarker)) {
+            if (marker.equals(radiusMarker))
+            {
                 radius = toRadiusMeters(centerMarker.getPosition(), radiusMarker.getPosition());
                 circle.setRadius(radius);
                 return true;
@@ -183,22 +309,6 @@ public class MapRegisterHubActivity extends FragmentActivity implements GoogleMa
             return false;
         }
 
-        public void onStyleChange() {
-            circle.setStrokeWidth(mWidthBar.getProgress());
-        }
-    }
-    /** Generate LatLng of radius marker */
-    private static LatLng toRadiusLatLng(LatLng center, double radius) {
-        double radiusAngle = Math.toDegrees(radius / RADIUS_OF_EARTH_METERS) /
-                Math.cos(Math.toRadians(center.latitude));
-        return new LatLng(center.latitude, center.longitude + radiusAngle);
-    }
-
-    private static double toRadiusMeters(LatLng center, LatLng radius) {
-        float[] result = new float[1];
-        Location.distanceBetween(center.latitude, center.longitude,
-                radius.latitude, radius.longitude, result);
-        return result[0];
     }
 
 
