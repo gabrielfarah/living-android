@@ -27,9 +27,13 @@ public class GridDevicesAdapter extends BaseAdapter {
     }
 
     private int getDrawableFromString(String name){
-        switch (name){
-            case "ligh":
-                return R.drawable.light_icon;
+        if (name != null) {
+            switch (name) {
+                case "ligh":
+                    return R.drawable.light_icon;
+                case "hue":
+                    return R.drawable.hue_icon1;
+            }
         }
         return R.drawable.connect_btn;
     }

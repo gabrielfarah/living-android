@@ -32,7 +32,7 @@ public class Endpoint implements Parcelable{
     /**
      * This field represents if the device is on/off (but plugged in)
      */
-    private boolean state;
+    private int state;
     /**
      * The technology the device uses (zwave, wifi or BT
      */
@@ -118,9 +118,9 @@ public class Endpoint implements Parcelable{
     /**
      * Get the state of the device
      *
-     * @return true if ir reachable
+     * @return 0 if off 255 if on or a value for other devices
      */
-    public boolean isState() {
+    public int isState() {
         return state;
     }
 
@@ -210,7 +210,7 @@ public class Endpoint implements Parcelable{
         dest.writeString(image);
         dest.writeString(uid);
         dest.writeValue(active);
-        dest.writeValue(state);
+        dest.writeInt(state);
         dest.writeString(endpoint_type);
         dest.writeInt(hub);
         dest.writeString(ui_class_command);
@@ -233,7 +233,7 @@ public class Endpoint implements Parcelable{
         image = in.readString();
         uid = in.readString();
         active = (Boolean) in.readValue(getClass().getClassLoader());
-        state = (Boolean) in.readValue(getClass().getClassLoader());
+        state = in.readInt();
         endpoint_type = in.readString();
         hub = in.readInt();
         ui_class_command = in.readString();

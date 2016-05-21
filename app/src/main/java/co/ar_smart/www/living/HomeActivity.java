@@ -34,6 +34,7 @@ import co.ar_smart.www.adapters.GridDevicesAdapter;
 import co.ar_smart.www.analytics.AnalyticsApplication;
 import co.ar_smart.www.controllers.SonosControllerActivity;
 import co.ar_smart.www.controllers.ZwaveLockControllerActivity;
+import co.ar_smart.www.controllers.hue.HueControllerActivity;
 import co.ar_smart.www.endpoints.ManagementEndpointsActivity;
 import co.ar_smart.www.helpers.Constants;
 import co.ar_smart.www.helpers.JWTManager;
@@ -603,9 +604,20 @@ public class HomeActivity extends AppCompatActivity {
                     //TODO
                 }
                 break;
+            case "ui-hue":
+                openHueController(endpoint);
+                break;
             default:
                 AnalyticsApplication.getInstance().trackEvent("Device Image", "DoNotExist", "The device in hub:" + endpoint.getHub() + " named:" + endpoint.getName() + " the image does not correspong. image:" + endpoint.getImage());
         }
+    }
+
+    private void openHueController(Endpoint endpoint) {
+        Intent intent = new Intent(this, HueControllerActivity.class);
+        intent.putExtra(EXTRA_MESSAGE, API_TOKEN);
+        intent.putExtra(EXTRA_MESSAGE_PREF_HUB, PREFERRED_HUB_ID);
+        intent.putExtra(EXTRA_OBJECT, endpoint);
+        startActivity(intent);
     }
 
     /**

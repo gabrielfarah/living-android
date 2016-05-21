@@ -63,4 +63,7 @@
     <string name="label_error_message_passwords_missmatch">You did not retype the password correctly. Please try again. </string>
     <string name="label_error_message_passwords_failed">The old password is either wrong or the new password is too short.</string>
     <string name="label_message_passwords_success">The password was changed!</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

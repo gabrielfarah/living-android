@@ -41,6 +41,13 @@
         <activity android:name="co.ar_smart.www.user.GuestManagementActivity" />
         <activity android:name="co.ar_smart.www.user.ChangePasswordActivity" />
         <activity android:name="co.ar_smart.www.user.EditAccountActivity" />
+        <activity
+            android:name="co.ar_smart.www.controllers.hue.HueColorControllerActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name="co.ar_smart.www.controllers.hue.HueControllerActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name="co.ar_smart.www.controllers.ZwavePresenceBinarySensorControllerActivity" />
     </application>
 
 </manifest>
