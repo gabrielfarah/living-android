@@ -18,8 +18,16 @@
 
     <string name="addDevice_success_dialog">The device was added successfully</string>
     <string name="lblnameroom_dialog">Room Name: </string>
+    <string name="lblnamedev">Device Name: </string>
     <string name="acept">Acept</string>
     <string name="cancel">Cancel</string>
+
+
+    <string name="label_deletedev_activity_title">Delete Device</string>
+    <string name="label_devices_activity_title">Devices</string>
+    <string name="label_icon_activity_title">Select Icon</string>
+    <string name="label_room_activity_title">Select Room</string>
+    <string name="label_newdev_activity_title">New Devices</string>
 
     <string name="app_name">Living</string>
     <string name="login_title">Login to your account</string>

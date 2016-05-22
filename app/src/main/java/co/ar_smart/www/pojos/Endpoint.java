@@ -264,4 +264,11 @@ public class Endpoint implements Parcelable{
             return new Endpoint[size];
         }
     };
+
+    public void setAtributes(String n,String i,String r)
+    {
+        name=n;
+        image=i;
+        room=r;
+    }
 }

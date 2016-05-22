@@ -14,12 +14,13 @@
         android:text="Iconos: "
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/gradient_border_btn"/>
+        android:background="@drawable/gradient_border_btn"
+        android:layout_marginBottom="30dp"/>
     <GridView
         android:id="@+id/gridIcons"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="9"
+        android:layout_weight="8"
         android:numColumns="3">
     </GridView>
 </LinearLayout>

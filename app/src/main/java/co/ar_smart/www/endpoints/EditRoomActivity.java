@@ -41,6 +41,7 @@ public class EditRoomActivity extends AppCompatActivity {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setHomeButtonEnabled(true);
+            getSupportActionBar().setTitle(getString(R.string.label_room_activity_title));
         }
 
         checks=new HashMap<>();
@@ -69,7 +70,6 @@ public class EditRoomActivity extends AppCompatActivity {
                 lb.setText(rooms.get(position));
 
                 checks.put(position,(CheckBox)view.findViewById(R.id.chkRoom));
-                //chk.setChecked(checked[position]);
                 return view;
 
             }
@@ -107,14 +107,12 @@ public class EditRoomActivity extends AppCompatActivity {
 
     public void showDialog()
     {
-        // custom dialog
         final Dialog dialog = new Dialog(EditRoomActivity.this);
         dialog.setTitle("Luces Sala");
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.dialog_add_room);
         final TextView txtname=(TextView) dialog.findViewById(R.id.txtNameNewRoom);
         Button dialogButton = (Button) dialog.findViewById(R.id.btnAddNewRoom);
-        // if button is clicked, close the custom dialog
         dialogButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -129,7 +127,6 @@ public class EditRoomActivity extends AppCompatActivity {
         });
 
         dialogButton = (Button) dialog.findViewById(R.id.btnCancelNewRoom);
-        // if button is clicked, close the custom dialog
         dialogButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

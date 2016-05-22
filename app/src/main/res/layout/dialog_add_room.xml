@@ -11,9 +11,9 @@
         android:layout_height="wrap_content"
         android:gravity="left"
         android:layout_marginTop="10dp"
-        android:textSize="20dp"
+        android:textSize="15dp"
         android:text="@string/lblnameroom_dialog"
-        android:textColor="@color/colorPrimaryDark"/>
+        android:textColor="#848484"/>
     <EditText
         android:id="@+id/txtNameNewRoom"
         android:textSize="20dp"
@@ -26,20 +26,22 @@
         android:orientation="horizontal"
         android:layout_marginBottom="20dp">
         <Button
-            android:id="@+id/btnAddNewRoom"
+            android:id="@+id/btnCancelNewRoom"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/cancel"
+            android:textColor="#fff"
             android:background="@drawable/dark_color_btn"
             android:layout_gravity="left"
             android:layout_marginRight="5dp"
             android:layout_marginLeft="50dp"
             android:layout_weight="1"/>
         <Button
-            android:id="@+id/btnCancelNewRoom"
+            android:id="@+id/btnAddNewRoom"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/accept"
+            android:textColor="#fff"
             android:background="@drawable/dark_color_btn"
             android:layout_gravity="right"
             android:layout_marginRight="50dp"

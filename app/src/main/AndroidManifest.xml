@@ -51,11 +51,7 @@
             android:name="co.ar_smart.www.controllers.hue.HueControllerActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name="co.ar_smart.www.controllers.ZwavePresenceBinarySensorControllerActivity" />
-        <activity android:name="co.ar_smart.www.endpoints.ManagementEndpointsActivity"/>
-        <activity android:name="co.ar_smart.www.actions.ActionActivity"/>
-        <activity android:name="co.ar_smart.www.user.GuestManagementActivity"/>
-        <activity android:name="co.ar_smart.www.user.ChangePasswordActivity"/>
-        <activity android:name="co.ar_smart.www.user.EditAccountActivity"/>
+
         <activity android:name="co.ar_smart.www.register.PropertiesRegisterHubActivity"/>
         <activity android:name="co.ar_smart.www.register.MapRegisterHubActivity"/>
         <!--
@@ -74,10 +70,7 @@
         <activity android:name="co.ar_smart.www.register.RegisterHubActivity"/>
         <activity android:name="co.ar_smart.www.register.RegisteredHubActivity"
             android:theme="@style/AppTheme.NoActionBar"/>
-        <activity
-            android:name="co.ar_smart.www.endpoints.NewDevicesActivity"
-            android:label="@string/title_activity_new_devices"
-            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name="co.ar_smart.www.endpoints.NewDevicesActivity"/>
         <activity android:name="co.ar_smart.www.endpoints.EditDeviceActivity" />
         <activity android:name="co.ar_smart.www.endpoints.EditIconActivity" />
         <activity android:name="co.ar_smart.www.endpoints.EditRoomActivity" />

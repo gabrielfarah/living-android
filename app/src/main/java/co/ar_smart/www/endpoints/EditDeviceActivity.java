@@ -8,6 +8,7 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Handler;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -43,14 +44,13 @@ import retrofit2.http.Path;
 
 public class EditDeviceActivity extends AppCompatActivity {
 
-    private Map<String,String> dic;
-    private TextView labelName;
-    private EditText txtName;
     private MenuItem btnPost;
     private String icon;
     private String room;
     private String API_TOKEN;
     private Activity myact;
+    private EditText txtName;
+    private Endpoint dev;
 
 
     @Override
@@ -58,9 +58,11 @@ public class EditDeviceActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_device);
         myact=this;
+        dev=getIntent().getExtras().getParcelable("EndPoint");
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setHomeButtonEnabled(true);
+            getSupportActionBar().setTitle(dev.getName());
         }
         Intent intent = getIntent();
         API_TOKEN = intent.getStringExtra(EXTRA_MESSAGE);
@@ -68,20 +70,13 @@ public class EditDeviceActivity extends AppCompatActivity {
         room="";
         icon="";
 
-        dic=new HashMap<>();
-        dic.put("Iluminacion-Nombre","Nombra tu luz");
-        dic.put("Iluminacion-EJ","P.E. Luces,Lamparas");
+
         Intent i=getIntent();
-        String categoria=i.getStringExtra(EXTRA_CATEGORY_DEVICE);
 
-        labelName=(TextView) findViewById(R.id.labelName);
-        labelName.setText(dic.get(categoria+"-Nombre"));
-
-        txtName=(EditText) findViewById(R.id.txtNameDev);
-        labelName.setText(dic.get(categoria+"-EJ"));
 
         Button btnIcon=(Button) findViewById(R.id.btnEditIcon);
         Button btnRoom=(Button) findViewById(R.id.btnEditRoom);
+        txtName=(EditText) findViewById(R.id.txtNameDev);
 
         btnIcon.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -145,7 +140,7 @@ public class EditDeviceActivity extends AppCompatActivity {
             if(resultCode == Activity.RESULT_OK){
                 icon=data.getStringExtra("result");
                 if(checkFields())
-                btnPost.setIcon(getResources().getDrawable(R.drawable.light_icon));
+                btnPost.setIcon(ContextCompat.getDrawable(myact, R.drawable.new_cross_btn));
             }else if (resultCode == Activity.RESULT_CANCELED) {
 
             }
@@ -154,7 +149,7 @@ public class EditDeviceActivity extends AppCompatActivity {
             if(resultCode == Activity.RESULT_OK){
                 room=data.getStringExtra("result");
                 if(checkFields())
-                    btnPost.setEnabled(true);
+                    btnPost.setIcon(ContextCompat.getDrawable(myact, R.drawable.new_cross_btn));
             }else if (resultCode == Activity.RESULT_CANCELED) {
 
             }
@@ -169,23 +164,10 @@ public class EditDeviceActivity extends AppCompatActivity {
         }
         return false;
     }
-    private  class ResponseEndPoints{
-        private List<Endpoint> response;
-        private String status;
 
-        public List<Endpoint> getResponse() {
-            return response;
-        }
-        public String getStatus()
-        {
-            return status;
-        }
-
-
-    }
     public void registerDevice()
     {
-        Endpoint dev=(Endpoint)getIntent().getExtras().getParcelable("EndPoint");
+        dev.setAtributes(txtName.getText().toString(),icon,room);
         RegDeviceClient client = RetrofitServiceGenerator.createService(RegDeviceClient.class, API_TOKEN);
         Call<Endpoint> call = client.regDevice(""+1, dev);
         call.enqueue(new Callback<Endpoint>()
@@ -213,10 +195,12 @@ public class EditDeviceActivity extends AppCompatActivity {
 
     public void editDevice()
     {
+        dev.setAtributes(txtName.getText().toString(),icon,room);
+
         String uid=getIntent().getStringExtra(EXTRA_UID);
 
         RegDeviceClient client = RetrofitServiceGenerator.createService(RegDeviceClient.class, API_TOKEN);
-        Call<Endpoint> call = client.editDev(""+1, uid);
+        Call<Endpoint> call = client.editDev(""+1, uid,dev);
         call.enqueue(new Callback<Endpoint>()
         {
             @Override
@@ -273,6 +257,6 @@ public class EditDeviceActivity extends AppCompatActivity {
         Call<Endpoint> regDevice(@Path("hub_id") String hub_id,@Body Endpoint en );
 
         @PATCH("hubs/{hub_id}/endpoints/{endp_id}/")
-        Call<Endpoint> editDev(@Path("hub_id") String hub_id,@Path("endp_id") String endp_id);
+        Call<Endpoint> editDev(@Path("hub_id") String hub_id,@Path("endp_id") String endp_id,@Body Endpoint en);
     }
 }

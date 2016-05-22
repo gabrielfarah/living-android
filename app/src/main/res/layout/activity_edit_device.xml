@@ -10,19 +10,20 @@
     android:orientation="vertical"
     tools:context="co.ar_smart.www.endpoints.EditDeviceActivity">
     <TextView
+        android:layout_marginTop="10dp"
         android:id="@+id/labelName"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:text="Nombre: "
-        android:textSize="30dp"
-        android:textColor="@color/colorPrimaryDark"/>
+        android:layout_height="wrap_content"
+        android:gravity="bottom"
+        android:text="@string/lblnamedev"
+        android:textSize="25dp"
+        android:textColor="#848484"/>
     <EditText
         android:id="@+id/txtNameDev"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:layout_marginBottom="10dp"/>
+        android:layout_marginBottom="10dp" />
     <Button
         android:id="@+id/btnEditIcon"
         android:layout_width="match_parent"
@@ -31,27 +32,33 @@
         android:text="@string/editicon_btntext"
         android:drawableRight="@drawable/right_arrow_icon"
         android:drawableLeft="@drawable/light_icon"
-        android:background="@drawable/filled_button"
-        android:layout_marginBottom="5dp"/>
+        android:background="@drawable/gradient_border_btn"/>
     <Button
         android:id="@+id/btnEditRoom"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
         android:text="@string/editroom_btntext"
-        android:background="@drawable/filled_button"
+        android:background="@drawable/gradient_border_btn"
         android:drawableRight="@drawable/right_arrow_icon"
-        android:drawableLeft="@drawable/light_icon"
-        android:layout_marginBottom="10dp"/>
-    <CheckBox
-        android:gravity="center"
-        android:layout_gravity="center"
-        android:id="@+id/chkAddFav"
+        android:drawableLeft="@drawable/light_icon"/>
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:text="@string/addfavorites_chktext"
-        android:textAlignment="center"
-        android:background="@drawable/filled_button"/>
+        android:orientation="horizontal"
+        android:background="@drawable/gradient_border_btn">
+        <TextView
+            android:gravity="center"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:text="@string/addfavorites_chktext"
+            android:layout_weight="9"/>
+        <CheckBox
+            android:layout_width="0dp"
+            android:text="@string/addfavorites_chktext"
+            android:layout_height="match_parent"
+            android:layout_weight="1"/>
+    </LinearLayout>
 
 </LinearLayout>

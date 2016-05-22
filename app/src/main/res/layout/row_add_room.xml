@@ -2,7 +2,9 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:focusable="false">
+    android:focusable="false"
+    android:background="@drawable/gradient_btn_dark"
+    android:paddingTop="13dp">
     <TextView
         android:id="@+id/labelRoom"
         android:layout_width="0dp"

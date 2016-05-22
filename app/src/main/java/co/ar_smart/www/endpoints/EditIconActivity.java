@@ -39,7 +39,7 @@ public class EditIconActivity extends AppCompatActivity {
 
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setTitle(getString(R.string.label_user_management_title));
+            getSupportActionBar().setTitle(getString(R.string.label_icon_activity_title));
         }
 
         grid=(GridView) findViewById(R.id.gridIcons);
@@ -51,11 +51,8 @@ public class EditIconActivity extends AppCompatActivity {
         ImageView ima=new ImageView(getApplicationContext());
         ima.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.light_icon));
 
+        //Prueba
         ic=new ArrayList<>();
-        ic.add(new Icons("ligh"));
-        ic.add(new Icons("ligh"));
-        ic.add(new Icons("ligh"));
-        ic.add(new Icons("ligh"));
         ic.add(new Icons("ligh"));
         ic.add(new Icons("ligh"));
         ic.add(new Icons("ligh"));
