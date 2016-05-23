@@ -99,7 +99,7 @@ public class LoginActivity extends AppCompatActivity {
         editor.putString(PREF_EMAIL, EMAIL);
         editor.putString(PREF_PASSWORD, PASSWORD);
         editor.putString(PREF_JWT, API_TOKEN);
-        editor.commit();
+        editor.apply();
     }
 
     /**

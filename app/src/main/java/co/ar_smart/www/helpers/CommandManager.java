@@ -151,6 +151,10 @@ public class CommandManager {
         });
     }
 
+    public static String getFormattedCommand(String command) {
+        return "[" + command + "]";
+    }
+
 
     /**
      * This interface implements the callbacks for the sendCommandWithResult method

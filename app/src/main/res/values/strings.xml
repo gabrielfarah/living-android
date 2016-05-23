@@ -116,4 +116,5 @@
     <string name="label_registered_hub_message">Has conectado correctamente \ntu estación.\n \nComienza ahora a automatizar \ntu hogar y vive más cómodo y \nseguro con Living.</string>
     <string name="btn_registered_hub">END</string>
     <string name="title_activity_new_devices">NewDevicesActivity</string>
+    <string name="label_manage_modes">Manage Scenes</string>
 </resources>

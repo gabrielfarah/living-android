@@ -10,14 +10,12 @@ import android.widget.ImageView;
 
 import java.util.List;
 
-import co.ar_smart.www.Interfaces.IDrawable;
 import co.ar_smart.www.living.R;
-import co.ar_smart.www.pojos.Endpoint;
 
 /**
  * Created by Gabriel on 5/3/2016.
  */
-public class GridDevicesAdapter<T extends IDrawable> extends BaseAdapter{
+public class GridDevicesAdapter<T extends co.ar_smart.www.interfaces.IDrawable> extends BaseAdapter {
 
     private Context context;
     private List<T> endpoints;
@@ -70,7 +68,8 @@ public class GridDevicesAdapter<T extends IDrawable> extends BaseAdapter{
         }
         if(endpoints.get(position)!=null)
         {
-            imageView.setImageResource(getDrawableFromString(endpoints.get(position).getImage()));
+            int temp = getDrawableFromString(endpoints.get(position).getImage());
+            imageView.setImageResource(temp);
         }
         return imageView;
     }

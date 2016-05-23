@@ -1,46 +1,36 @@
 package co.ar_smart.www.endpoints;
 
-import static co.ar_smart.www.helpers.Constants.*;
-
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.Handler;
+import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import co.ar_smart.www.helpers.Constants;
 import co.ar_smart.www.helpers.RetrofitServiceGenerator;
-import co.ar_smart.www.living.HomeActivity;
 import co.ar_smart.www.living.R;
 import co.ar_smart.www.pojos.Endpoint;
-import co.ar_smart.www.pojos.EndpointClassCommand;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.http.Body;
-import retrofit2.http.Field;
-import retrofit2.http.GET;
 import retrofit2.http.PATCH;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
+
+import static co.ar_smart.www.helpers.Constants.ACTION_ADD;
+import static co.ar_smart.www.helpers.Constants.EXTRA_ACTION;
+import static co.ar_smart.www.helpers.Constants.EXTRA_MESSAGE;
+import static co.ar_smart.www.helpers.Constants.EXTRA_UID;
 
 public class EditDeviceActivity extends AppCompatActivity {
 
@@ -169,7 +159,9 @@ public class EditDeviceActivity extends AppCompatActivity {
     {
         dev.setAtributes(txtName.getText().toString(),icon,room);
         RegDeviceClient client = RetrofitServiceGenerator.createService(RegDeviceClient.class, API_TOKEN);
+        Log.d("ENDPOINT", dev.getEndpoint_type() + " " + dev.getEndpoint_type() + " " + dev.getCategory());
         Call<Endpoint> call = client.regDevice(""+1, dev);
+        Log.d("REQUEST", call.request().toString());
         call.enqueue(new Callback<Endpoint>()
         {
             @Override
@@ -182,6 +174,8 @@ public class EditDeviceActivity extends AppCompatActivity {
                 }
                 else{
 
+                    Log.d("Fallo", call.request().toString());
+                    Log.d("Fallo", response.errorBody().toString());
                 }
             }
 

@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -154,7 +155,9 @@ public class SonosControllerActivity extends AppCompatActivity {
      * This method send a "play track" command to the sonos
      */
     private void playCommand() {
-        CommandManager.sendCommandWithoutResult(API_TOKEN, PREFERRED_HUB_ID, sonosEndpoint.get_play(), new CommandManager.ResponseCallbackInterface() {
+        Log.d("PLAY COMMAND", sonosEndpoint.get_play());
+        CommandManager.sendCommandWithoutResult(API_TOKEN, PREFERRED_HUB_ID,
+                CommandManager.getFormattedCommand(sonosEndpoint.get_play()), new CommandManager.ResponseCallbackInterface() {
             @Override
             public void onFailureCallback() {
                 Constants.showNoInternetMessage(getApplicationContext());
@@ -166,6 +169,7 @@ public class SonosControllerActivity extends AppCompatActivity {
             @Override
             public void onUnsuccessfulCallback() {
                 //TODO bad request
+                Log.d("??", "??");
             }
         });
     }
@@ -174,7 +178,8 @@ public class SonosControllerActivity extends AppCompatActivity {
      * This method send a "pause track" command to the sonos
      */
     private void pauseCommand() {
-        CommandManager.sendCommandWithoutResult(API_TOKEN, PREFERRED_HUB_ID, sonosEndpoint.get_pause(), new CommandManager.ResponseCallbackInterface() {
+        CommandManager.sendCommandWithoutResult(API_TOKEN, PREFERRED_HUB_ID,
+                CommandManager.getFormattedCommand(sonosEndpoint.get_pause()), new CommandManager.ResponseCallbackInterface() {
             @Override
             public void onFailureCallback() {
                 Constants.showNoInternetMessage(getApplicationContext());
@@ -195,7 +200,8 @@ public class SonosControllerActivity extends AppCompatActivity {
      * This method send a "play previous track" command to the sonos
      */
     private void backCommand() {
-        CommandManager.sendCommandWithoutResult(API_TOKEN, PREFERRED_HUB_ID, sonosEndpoint.getBack(), new CommandManager.ResponseCallbackInterface() {
+        CommandManager.sendCommandWithoutResult(API_TOKEN, PREFERRED_HUB_ID,
+                CommandManager.getFormattedCommand(sonosEndpoint.getBack()), new CommandManager.ResponseCallbackInterface() {
             @Override
             public void onFailureCallback() {
                 Constants.showNoInternetMessage(getApplicationContext());
@@ -216,7 +222,8 @@ public class SonosControllerActivity extends AppCompatActivity {
      * This method send a "play next track" command to the sonos
      */
     private void nextCommand() {
-        CommandManager.sendCommandWithoutResult(API_TOKEN, PREFERRED_HUB_ID, sonosEndpoint.getNext(), new CommandManager.ResponseCallbackInterface() {
+        CommandManager.sendCommandWithoutResult(API_TOKEN, PREFERRED_HUB_ID,
+                CommandManager.getFormattedCommand(sonosEndpoint.getNext()), new CommandManager.ResponseCallbackInterface() {
             @Override
             public void onFailureCallback() {
                 Constants.showNoInternetMessage(getApplicationContext());
@@ -239,7 +246,8 @@ public class SonosControllerActivity extends AppCompatActivity {
      * @param volume the new volume to set in the sonos device
      */
     private void volumeCommand(int volume) {
-        CommandManager.sendCommandWithoutResult(API_TOKEN, PREFERRED_HUB_ID, sonosEndpoint.getVolumeCommand(volume), new CommandManager.ResponseCallbackInterface() {
+        CommandManager.sendCommandWithoutResult(API_TOKEN, PREFERRED_HUB_ID,
+                CommandManager.getFormattedCommand(sonosEndpoint.getVolumeCommand(volume)), new CommandManager.ResponseCallbackInterface() {
             @Override
             public void onFailureCallback() {
                 Constants.showNoInternetMessage(getApplicationContext());
@@ -262,7 +270,8 @@ public class SonosControllerActivity extends AppCompatActivity {
      * @param position the position of the song to play in the queue
      */
     private void playTrackFromQueue(int position) {
-        CommandManager.sendCommandWithoutResult(API_TOKEN, PREFERRED_HUB_ID, sonosEndpoint.getPlayTrackFromQueueCommand(position), new CommandManager.ResponseCallbackInterface() {
+        CommandManager.sendCommandWithoutResult(API_TOKEN, PREFERRED_HUB_ID,
+                CommandManager.getFormattedCommand(sonosEndpoint.getPlayTrackFromQueueCommand(position)), new CommandManager.ResponseCallbackInterface() {
             @Override
             public void onFailureCallback() {
                 Constants.showNoInternetMessage(getApplicationContext());

@@ -2,6 +2,7 @@ package co.ar_smart.www.pojos;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +13,24 @@ import java.util.List;
  */
 public class Endpoint implements Parcelable{
 
+    /**
+     * The Parcelable creator
+     */
+    public static final Creator<Endpoint> CREATOR = new Creator<Endpoint>() {
+        @Override
+        public Endpoint createFromParcel(Parcel in) {
+            return new Endpoint(in);
+        }
+
+        @Override
+        public Endpoint[] newArray(int size) {
+            return new Endpoint[size];
+        }
+    };
+    /**
+     * The name of the device
+     */
+    private int id;
     /**
      * The name of the device
      */
@@ -64,10 +83,6 @@ public class Endpoint implements Parcelable{
      * The category of the device (Lighting, entertainment, security, etc)
      */
     private Category category;
-    /**
-     * The classes this device can use
-     */
-    //private List<EndpointClass> endpoint_classes = new ArrayList<>();
 
     /**
      * Get the list of classes this device can use
@@ -76,6 +91,43 @@ public class Endpoint implements Parcelable{
     /*public List<EndpointClass> getEndpoint_classes() {
         return endpoint_classes;
     }*/
+    /**
+     * The classes this device can use
+     */
+    private List<EndpointClass> endpoint_classes = new ArrayList<>();
+    /**
+     * This flags if the endpoint has performed the setting of the variables for the commands
+     */
+    private boolean flag = true;
+
+    public Endpoint() {
+    }
+
+    /**
+     * This constructor method creates an Endpoint object from a Parcel
+     * @param in The parcer to deserialize the object
+     */
+    private Endpoint(Parcel in) {
+        name = in.readString();
+        manufacturer_name = in.readString();
+        image = in.readString();
+        uid = in.readString();
+        active = (Boolean) in.readValue(getClass().getClassLoader());
+        state = in.readInt();
+        endpoint_type = in.readString();
+        hub = in.readInt();
+        ui_class_command = in.readString();
+        ip_address = in.readString();
+        node = in.readInt();
+        room = in.readString();
+        category = in.readParcelable(getClass().getClassLoader());
+        in.readTypedList(endpoint_classes, EndpointClass.CREATOR);
+        id = in.readInt();
+        Log.d("DEVICE ID", "" + id);
+        //in.readTypedList(endpoint_classes, EndpointClass.CREATOR);
+
+        //flag = in.readByte() != 0;
+    }
 
     /**
      * Get the device node
@@ -164,6 +216,7 @@ public class Endpoint implements Parcelable{
 
     /**
      * Get the manufacturer name
+     *
      * @return the manufacturer name
      */
     public String getManufacturer_name() {
@@ -188,22 +241,14 @@ public class Endpoint implements Parcelable{
         return category;
     }
 
-    /**
-     * This flags if the endpoint has performed the setting of the variables for the commands
-     */
-    private boolean flag = true;
-
     @Override
-    public String toString(){
-        return "("+name+" - "+endpoint_type+" - "+ui_class_command+")";
+    public String toString() {
+        return "(" + name + " - " + endpoint_type + " - " + ui_class_command + ")";
     }
 
     @Override
     public int describeContents() {
         return 0;
-    }
-
-    public Endpoint() {
     }
 
     @Override
@@ -220,50 +265,12 @@ public class Endpoint implements Parcelable{
         dest.writeString(ip_address);
         dest.writeInt(node);
         dest.writeString(room);
-        dest.writeParcelable(category,flags);
-        //dest.writeTypedList(endpoint_classes);
+        dest.writeParcelable(category, flags);
+        dest.writeTypedList(endpoint_classes);
+        dest.writeInt(id);
 
         //dest.writeByte((byte) (flag ? 1 : 0));
     }
-
-    /**
-     * This constructor method creates an Endpoint object from a Parcel
-     * @param in The parcer to deserialize the object
-     */
-    private Endpoint(Parcel in) {
-        name = in.readString();
-        manufacturer_name = in.readString();
-        image = in.readString();
-        uid = in.readString();
-        active = (Boolean) in.readValue(getClass().getClassLoader());
-        state = in.readInt();
-        endpoint_type = in.readString();
-        hub = in.readInt();
-        ui_class_command = in.readString();
-        ip_address = in.readString();
-        node = in.readInt();
-        room = in.readString();
-        category = in.readParcelable(getClass().getClassLoader());
-        //in.readTypedList(endpoint_classes, EndpointClass.CREATOR);
-        //in.readTypedList(endpoint_classes, EndpointClass.CREATOR);
-
-        //flag = in.readByte() != 0;
-    }
-
-    /**
-     * The Parcelable creator
-     */
-    public static final Creator<Endpoint> CREATOR = new Creator<Endpoint>() {
-        @Override
-        public Endpoint createFromParcel(Parcel in) {
-            return new Endpoint(in);
-        }
-
-        @Override
-        public Endpoint[] newArray(int size) {
-            return new Endpoint[size];
-        }
-    };
 
     public void setAtributes(String n,String i,String r)
     {

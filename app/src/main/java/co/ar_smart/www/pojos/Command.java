@@ -10,6 +10,57 @@ import org.json.JSONObject;
  * Created by Gabriel on 5/4/2016.
  */
 public class Command implements Parcelable {
+    public static final Creator<Command> CREATOR = new Creator<Command>() {
+        @Override
+        public Command createFromParcel(Parcel in) {
+            return new Command(in);
+        }
+
+        @Override
+        public Command[] newArray(int size) {
+            return new Command[size];
+        }
+    };
+    private String type = "";
+    private String target = "";
+    private String function = "";
+    private String ip = "";
+    private int node = 0;
+    private int v = 0;
+    private JSONObject parameters;
+    private String endpoint_id = "";
+
+    public Command() {
+    }
+
+    public Command(Endpoint endpoint) {
+        ip = endpoint.getIp_address();
+        node = endpoint.getNode();
+        type = endpoint.getEndpoint_type();
+        endpoint_id = endpoint.getUid();
+        try {
+            parameters = new JSONObject("{}");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    protected Command(Parcel in) {
+        type = in.readString();
+        target = in.readString();
+        function = in.readString();
+        ip = in.readString();
+        node = in.readInt();
+        v = in.readInt();
+        try {
+            parameters = new JSONObject("{}");
+            parameters = new JSONObject(in.readString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        endpoint_id = in.readString();
+    }
+
     public String getTarget() {
         return target;
     }
@@ -66,40 +117,6 @@ public class Command implements Parcelable {
         this.type = type;
     }
 
-    private String type;
-    private String target;
-    private String function;
-    private String ip;
-    private int node;
-    private int v;
-    private JSONObject parameters;
-
-    protected Command(Parcel in) {
-        type = in.readString();
-        target = in.readString();
-        function = in.readString();
-        ip = in.readString();
-        node = in.readInt();
-        v = in.readInt();
-        try {
-            parameters = new JSONObject(in.readString());
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static final Creator<Command> CREATOR = new Creator<Command>() {
-        @Override
-        public Command createFromParcel(Parcel in) {
-            return new Command(in);
-        }
-
-        @Override
-        public Command[] newArray(int size) {
-            return new Command[size];
-        }
-    };
-
     @Override
     public int describeContents() {
         return 0;
@@ -114,10 +131,13 @@ public class Command implements Parcelable {
         dest.writeInt(node);
         dest.writeInt(v);
         dest.writeString(parameters.toString());
+        dest.writeString(endpoint_id);
     }
 
     @Override
     public String toString() {
-        return "(" + ip + " - " + node + " - " + function + " - " + parameters + " - " + v + ")";
+        return "{\"type\":\"" + getType() + "\",\"target\":\"" + getTarget() + "\",\"ip\":\"" + getIp() +
+                "\",\"function\":\"" + getFunction() + "\",\"parameters\":" + getParameters().toString() +
+                ",\"node\":" + getNode() + ",\"v\":" + getV() + "}";
     }
 }

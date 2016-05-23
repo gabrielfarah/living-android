@@ -4,9 +4,10 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +18,8 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -79,6 +82,7 @@ public class DevicesActivity extends AppCompatActivity {
     public void getDevices()
     {
         DevicesHubClient client = RetrofitServiceGenerator.createService(DevicesHubClient.class, API_TOKEN);
+        Log.d("TOKEN >>>>>>>>>>>>>>>>", "" + API_TOKEN);
         Call<List<Endpoint>> call2 = client.getendpoints(""+1);
 
         call2.enqueue(new Callback<List<Endpoint>>()
@@ -145,6 +149,11 @@ public class DevicesActivity extends AppCompatActivity {
 
                 }
                 else {
+                    try {
+                        Log.d("RESPUESTA", response.errorBody().string());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                     Toast.makeText(DevicesActivity.this, "Error al solicitar los dispositivos",
                             Toast.LENGTH_SHORT).show();
                     progress.setVisibility(View.GONE);
@@ -164,14 +173,7 @@ public class DevicesActivity extends AppCompatActivity {
 
     }
 
-
-    private interface DevicesHubClient {
-        @GET("hubs/{hub_id}/endpoints/")
-        Call<List<Endpoint>> getendpoints(@Path("hub_id") String hub_id);
-    }
-
-
-    private int getPreferredHub(){
+    private int getPreferredHub() {
         SharedPreferences settings = getSharedPreferences(PREFS_NAME,
                 Context.MODE_PRIVATE);
         // Get values using keys
@@ -188,5 +190,10 @@ public class DevicesActivity extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private interface DevicesHubClient {
+        @GET("hubs/{hub_id}/endpoints/")
+        Call<List<Endpoint>> getendpoints(@Path("hub_id") String hub_id);
     }
 }

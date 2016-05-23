@@ -28,6 +28,7 @@ import java.util.List;
 
 import co.ar_smart.www.helpers.RetrofitServiceGenerator;
 import co.ar_smart.www.living.R;
+import co.ar_smart.www.pojos.Category;
 import co.ar_smart.www.pojos.Endpoint;
 import co.ar_smart.www.pojos.EndpointClassCommand;
 import okhttp3.OkHttpClient;
@@ -41,6 +42,7 @@ import retrofit2.http.POST;
 import retrofit2.http.Path;
 
 import static co.ar_smart.www.helpers.Constants.ACTION_ADD;
+import static co.ar_smart.www.helpers.Constants.BASE_URL;
 import static co.ar_smart.www.helpers.Constants.DEFAULT_HUB;
 import static co.ar_smart.www.helpers.Constants.EXTRA_ACTION;
 import static co.ar_smart.www.helpers.Constants.EXTRA_CATEGORY_DEVICE;
@@ -51,7 +53,6 @@ import static co.ar_smart.www.helpers.Constants.PREFS_NAME;
 import static co.ar_smart.www.helpers.Constants.PREF_HUB;
 import static co.ar_smart.www.helpers.Constants.TYPE_DEVICE_WIFI;
 import static co.ar_smart.www.helpers.Constants.TYPE_DEVICE_ZWAVE;
-import static co.ar_smart.www.helpers.Constants.BASE_URL;
 
 public class NewDevicesActivity extends AppCompatActivity {
 
@@ -168,20 +169,6 @@ public class NewDevicesActivity extends AppCompatActivity {
         });
     }
 
-    private  class ResponseEndPoints{
-        private List<Endpoint> response;
-        private String status;
-
-        public List<Endpoint> getResponse() {
-            return response;
-        }
-        public String getStatus()
-        {
-            return status;
-        }
-
-    }
-
     public void getDevices(final String taskid)
     {
         NewDeviceClient client = RetrofitServiceGenerator.createService(NewDeviceClient.class, API_TOKEN);
@@ -191,7 +178,7 @@ public class NewDevicesActivity extends AppCompatActivity {
         call2.enqueue(new Callback<ResponseEndPoints>()
         {
             @Override
-            public void onResponse(Call<ResponseEndPoints> call, Response<ResponseEndPoints> response)
+            public void onResponse(final Call<ResponseEndPoints> call, Response<ResponseEndPoints> response)
             {
                 if (response.isSuccessful()) {
                     ResponseEndPoints li=response.body();
@@ -220,7 +207,10 @@ public class NewDevicesActivity extends AppCompatActivity {
                                     TextView lb=(TextView)view.findViewById(R.id.labelDevadd);
                                     lb.setText(devices.get(position).getName());
                                     lb=(TextView)view.findViewById(R.id.labelDevCategoryadd);
-                                    lb.setText(devices.get(position).getCategory().getCat());
+                                    Category cat = devices.get(position).getCategory();
+                                    if (cat != null) {
+                                        lb.setText(cat.getCat());
+                                    }
                                     ImageView i=(ImageView) view.findViewById(R.id.iconlistad);
                                     i.setImageDrawable(ContextCompat.getDrawable(myact, R.drawable.new_cross_btn));
                                 }
@@ -236,7 +226,10 @@ public class NewDevicesActivity extends AppCompatActivity {
                                 Bundle b=new Bundle();
                                 b.putParcelable("EndPoint", devices.get(position));
                                 i.putExtras(b);
-                                i.putExtra(EXTRA_CATEGORY_DEVICE,devices.get(position).getCategory().getCat());
+                                Category cat = devices.get(position).getCategory();
+                                if (cat != null) {
+                                    i.putExtra(EXTRA_CATEGORY_DEVICE, cat.getCat());
+                                }
                                 i.putExtra(EXTRA_MESSAGE,API_TOKEN);
                                 i.putExtra(EXTRA_ACTION,ACTION_ADD);
                                 startActivity(i);
@@ -276,34 +269,11 @@ public class NewDevicesActivity extends AppCompatActivity {
                         Toast.LENGTH_SHORT).show();
                 progress.setVisibility(View.GONE);
                 list.setVisibility(View.VISIBLE);
+                t.printStackTrace();
             }
         });
 
     }
-
-
-    private interface NewDeviceClient {
-
-        @POST("hubs/{hub_id}/command/add/wifi/")
-        Call<List<EndpointClassCommand>> addwifi(
-                @Path("hub_id") String hub_id
-        );
-
-        @POST("hubs/{hub_id}/command/add/zwave/")
-        Call<List<Endpoint>> addzwave(
-                @Path("hub_id") String hub_id
-        );
-
-        @GET("hubs/{hub_id}/command/response/{task_id}/")
-        Call<ResponseEndPoints> getEndPoint(
-                @Path("hub_id") String hub_id,@Path("task_id") String task_id
-        );
-        @POST("hubs/{hub_id}/command/response/{task_id}/")
-        Call<List<Endpoint>> postEndPoint(
-                @Path("hub_id") String hub_id,@Path("task_id") String task_id
-        );
-    }
-
 
     private int getPreferredHub(){
         SharedPreferences settings = getSharedPreferences(PREFS_NAME,
@@ -343,6 +313,43 @@ public class NewDevicesActivity extends AppCompatActivity {
                     break;
             }
         }
+    }
+
+    private interface NewDeviceClient {
+
+        @POST("hubs/{hub_id}/command/add/wifi/")
+        Call<List<EndpointClassCommand>> addwifi(
+                @Path("hub_id") String hub_id
+        );
+
+        @POST("hubs/{hub_id}/command/add/zwave/")
+        Call<List<Endpoint>> addzwave(
+                @Path("hub_id") String hub_id
+        );
+
+        @GET("hubs/{hub_id}/command/response/{task_id}/")
+        Call<ResponseEndPoints> getEndPoint(
+                @Path("hub_id") String hub_id, @Path("task_id") String task_id
+        );
+
+        @POST("hubs/{hub_id}/command/response/{task_id}/")
+        Call<List<Endpoint>> postEndPoint(
+                @Path("hub_id") String hub_id, @Path("task_id") String task_id
+        );
+    }
+
+    private class ResponseEndPoints {
+        private List<Endpoint> response;
+        private String status;
+
+        public List<Endpoint> getResponse() {
+            return response;
+        }
+
+        public String getStatus() {
+            return status;
+        }
+
     }
 
 }

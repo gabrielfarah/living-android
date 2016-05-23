@@ -38,10 +38,14 @@ import co.ar_smart.www.controllers.hue.HueControllerActivity;
 import co.ar_smart.www.endpoints.ManagementEndpointsActivity;
 import co.ar_smart.www.helpers.Constants;
 import co.ar_smart.www.helpers.JWTManager;
+import co.ar_smart.www.helpers.ModeManager;
 import co.ar_smart.www.helpers.RetrofitServiceGenerator;
 import co.ar_smart.www.helpers.UserManager;
+import co.ar_smart.www.interfaces.IDrawable;
+import co.ar_smart.www.modes.ModeManagementActivity;
 import co.ar_smart.www.pojos.Endpoint;
 import co.ar_smart.www.pojos.Hub;
+import co.ar_smart.www.pojos.Mode;
 import co.ar_smart.www.pojos.User;
 import co.ar_smart.www.register.LivingLocalConfigurationActivity;
 import co.ar_smart.www.user.GuestManagementActivity;
@@ -71,6 +75,10 @@ import static co.ar_smart.www.helpers.Constants.PREF_PASSWORD;
 public class HomeActivity extends AppCompatActivity {
 
     /**
+     * This handler will be used to update the states of all the devices every 5 seconds
+     */
+    private final Handler backgroundPollingHandler = new Handler();
+    /**
      * The backend auth token
      */
     private String API_TOKEN = "";
@@ -82,10 +90,6 @@ public class HomeActivity extends AppCompatActivity {
      * The flag that should be set true if handler should stop
      */
     private boolean backgroundStopHandlerFlag = false;
-    /**
-     * This handler will be used to update the states of all the devices every 5 seconds
-     */
-    private final Handler backgroundPollingHandler = new Handler();
     /**
      * The list of devices (endpoints) a particular hub has
      */
@@ -110,6 +114,14 @@ public class HomeActivity extends AppCompatActivity {
      * The current user logged in
      */
     private User currentUSer;
+    /**
+     * The list of modes (scenes) a particular hub has
+     */
+    private ArrayList<Mode> modes = new ArrayList<>();
+    /**
+     * The list of devices (endpoints) a particular hub has
+     */
+    private ArrayList<Endpoint> endpoint_devices = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -229,7 +241,11 @@ public class HomeActivity extends AppCompatActivity {
      * This method opens the scenes manager activity (from which the user can do the scenes CRUD)
      */
     private void openScenesActivity() {
-        //TODO
+        Intent intent = new Intent(this, ModeManagementActivity.class);
+        intent.putExtra(EXTRA_MESSAGE, API_TOKEN);
+        intent.putExtra(EXTRA_MESSAGE_PREF_HUB, PREFERRED_HUB_ID);
+        intent.putParcelableArrayListExtra(EXTRA_OBJECT, modes);
+        startActivity(intent);
     }
 
     /**
@@ -358,10 +374,12 @@ public class HomeActivity extends AppCompatActivity {
                 Context.MODE_PRIVATE);
         // Get values using keys
         PREFERRED_HUB_ID = Integer.parseInt(settings.getString(PREF_HUB, DEFAULT_HUB));
-        if (PREFERRED_HUB_ID == -1)
+        if (PREFERRED_HUB_ID == -1) {
             getHubs();
-        else
+        } else {
             getEndpoints();
+        }
+
     }
 
     /**
@@ -456,11 +474,14 @@ public class HomeActivity extends AppCompatActivity {
             public void onResponse(Call<List<Endpoint>> call, Response<List<Endpoint>> response) {
                 if (response.isSuccessful()) {
                     for (Endpoint endpoint : response.body()) {
-                        if (!devices.contains(endpoint.getName()))
+                        if (!devices.contains(endpoint.getName())) {
                             devices.add(endpoint.getName());
-                        Log.d("DEVICE:", endpoint.getName());
+                            endpoint_devices.add(endpoint);
+                            Log.d("DEVICE:", endpoint.getName());
+                        }
                         //Log.d("COMMAND:", endpoint.getEndpoint_classes().get(0).getCommands().get(0).toString());
                     }
+                    getModes();
                     // If user got no endpoints redirect to management activity. set grid layout otherwise.
                     if (response.body().isEmpty()) {
                         openManagementDevicesActivity();
@@ -476,6 +497,53 @@ public class HomeActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<List<Endpoint>> call, Throwable t) {
+                // something went completely south (like no internet connection)
+                Constants.showNoInternetMessage(getApplicationContext());
+                try {
+                    Log.d("Error", call.request().body().toString());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                t.printStackTrace();
+                AnalyticsApplication.getInstance().trackException(new Exception(t));
+            }
+        });
+    }
+
+    /**
+     * This method will try to obtain all the devices (endpoints) for a given hub of the user.
+     */
+    private void getModes() {
+        HomeClient livingHomeClient = RetrofitServiceGenerator.createService(HomeClient.class, API_TOKEN);
+        Call<List<Mode>> call = livingHomeClient.modes("" + PREFERRED_HUB_ID);
+        //Log.d("OkHttp", String.format("Sending request %s ",call.request().toString()));
+        call.enqueue(new Callback<List<Mode>>() {
+            @Override
+            public void onResponse(Call<List<Mode>> call, Response<List<Mode>> response) {
+                if (response.isSuccessful()) {
+                    for (Mode mode : response.body()) {
+                        if (!modes.contains(mode.getName()))
+                            modes.add(mode);
+                        Log.d("MODE:", mode.getName());
+                        //Log.d("COMMAND:", endpoint.getEndpoint_classes().get(0).getCommands().get(0).toString());
+                    }
+                    modes.addAll(ModeManager.getDefaultModes(endpoint_devices));
+                    Log.d("MODE:", modes.toString());
+                    // If user got no endpoints redirect to management activity. set grid layout otherwise.
+                    if (modes.isEmpty()) {
+                        openScenesActivity();
+                    } else {
+                        //setGridLayout(response.body());
+                    }
+                } else {
+                    // error response, no access to resource?
+                    // if the user no longer has access to the endpoints (because he got uninvited) ask for select new hub.
+                    getHubs();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Mode>> call, Throwable t) {
                 // something went completely south (like no internet connection)
                 Constants.showNoInternetMessage(getApplicationContext());
                 try {
@@ -579,9 +647,13 @@ public class HomeActivity extends AppCompatActivity {
      * @param listaEndpoints The list of devices (endpoints) the user has access in this hub
      */
     private void setGridLayout(final List<Endpoint> listaEndpoints){
+        ArrayList<EndpointIcons> dum = new ArrayList<>();
+        for (Endpoint e : listaEndpoints) {
+            dum.add(new EndpointIcons(e.getImage()));
+        }
         final GridView homeMainGridView = (GridView) findViewById(R.id.gridView);
         if (homeMainGridView != null) {
-            homeMainGridView.setAdapter(new GridDevicesAdapter(HomeActivity.this, listaEndpoints));
+            homeMainGridView.setAdapter(new GridDevicesAdapter(HomeActivity.this, dum));
             homeMainGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
                     Toast.makeText(HomeActivity.this, listaEndpoints.get(position).getName(),
@@ -626,9 +698,10 @@ public class HomeActivity extends AppCompatActivity {
 
     /**
      * This method open the activity that handles a SONOS sound player
+     *
      * @param sonos the endpoint representing a wifi sonos system
      */
-    private void openSONOSController(Endpoint sonos){
+    private void openSONOSController(Endpoint sonos) {
         Intent intent = new Intent(this, SonosControllerActivity.class);
         intent.putExtra(EXTRA_MESSAGE, API_TOKEN);
         intent.putExtra(EXTRA_MESSAGE_PREF_HUB, PREFERRED_HUB_ID);
@@ -640,7 +713,7 @@ public class HomeActivity extends AppCompatActivity {
      * This method open the activity that handles a simple door lock device (No keypad)
      * @param lock the endpoint representing a z-wave door lock
      */
-    private void openZwaveLockController(Endpoint lock){
+    private void openZwaveLockController(Endpoint lock) {
         Intent intent = new Intent(this, ZwaveLockControllerActivity.class);
         intent.putExtra(EXTRA_MESSAGE, API_TOKEN);
         intent.putExtra(EXTRA_OBJECT, lock);
@@ -677,5 +750,30 @@ public class HomeActivity extends AppCompatActivity {
         Call<Hub> hub(
                 @Path("hub_id") String hub_id
         );
+
+        /**
+         * This function get all the modes inside a hub given a hub id.
+         *
+         * @param hub_id The ID of the hub from which to get the endpoints
+         * @return A list containing all the endpoints
+         */
+        @GET("hubs/{hub_id}/modes/")
+        Call<List<Mode>> modes(
+                @Path("hub_id") String hub_id
+        );
+    }
+
+    private class EndpointIcons implements IDrawable {
+
+        private String image;
+
+        public EndpointIcons(String path) {
+            image = path;
+        }
+
+        @Override
+        public String getImage() {
+            return image;
+        }
     }
 }

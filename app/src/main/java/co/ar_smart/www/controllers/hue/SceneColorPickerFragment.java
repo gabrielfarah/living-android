@@ -119,7 +119,7 @@ public class SceneColorPickerFragment extends Fragment {
         int r = Color.red(color);
         int g = Color.green(color);
         int b = Color.blue(color);
-        CommandManager.sendCommandWithoutResult(parentActivity.getAPI_TOKEN(), parentActivity.getPREFERRED_HUB_ID(), hueEndpoint.getRGB(lid, r, g, b), new CommandManager.ResponseCallbackInterface() {
+        CommandManager.sendCommandWithoutResult(parentActivity.getAPI_TOKEN(), parentActivity.getPREFERRED_HUB_ID(), hueEndpoint.getSetRGBColorCommand(lid, r, g, b).toString(), new CommandManager.ResponseCallbackInterface() {
             @Override
             public void onFailureCallback() {
                 Constants.showNoInternetMessage(getActivity().getApplicationContext());

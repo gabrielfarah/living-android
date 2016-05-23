@@ -121,7 +121,8 @@ public class ColorPickerFragment extends Fragment {
         int r = Color.red(color);
         int g = Color.green(color);
         int b = Color.blue(color);
-        CommandManager.sendCommandWithoutResult(parentActivity.getAPI_TOKEN(), parentActivity.getPREFERRED_HUB_ID(), hueEndpoint.getRGB(lid, r, g, b), new CommandManager.ResponseCallbackInterface() {
+        CommandManager.sendCommandWithoutResult(parentActivity.getAPI_TOKEN(), parentActivity.getPREFERRED_HUB_ID(),
+                CommandManager.getFormattedCommand(hueEndpoint.getSetRGBColorCommand(lid, r, g, b).toString()), new CommandManager.ResponseCallbackInterface() {
             @Override
             public void onFailureCallback() {
                 Constants.showNoInternetMessage(getActivity().getApplicationContext());
@@ -140,7 +141,8 @@ public class ColorPickerFragment extends Fragment {
 
     private void changeBrightness(int value) {
         int lid = hueLight.getLight_id();
-        CommandManager.sendCommandWithoutResult(parentActivity.getAPI_TOKEN(), parentActivity.getPREFERRED_HUB_ID(), hueEndpoint.getBrightness(lid, value), new CommandManager.ResponseCallbackInterface() {
+        CommandManager.sendCommandWithoutResult(parentActivity.getAPI_TOKEN(), parentActivity.getPREFERRED_HUB_ID(),
+                CommandManager.getFormattedCommand(hueEndpoint.getBrightnessCommand(lid, value).toString()), new CommandManager.ResponseCallbackInterface() {
             @Override
             public void onFailureCallback() {
                 Constants.showNoInternetMessage(getActivity().getApplicationContext());
@@ -159,7 +161,8 @@ public class ColorPickerFragment extends Fragment {
 
     private void changeSaturation(int value) {
         int lid = hueLight.getLight_id();
-        CommandManager.sendCommandWithoutResult(parentActivity.getAPI_TOKEN(), parentActivity.getPREFERRED_HUB_ID(), hueEndpoint.getSaturation(lid, value), new CommandManager.ResponseCallbackInterface() {
+        CommandManager.sendCommandWithoutResult(parentActivity.getAPI_TOKEN(), parentActivity.getPREFERRED_HUB_ID(),
+                CommandManager.getFormattedCommand(hueEndpoint.getSaturationCommand(lid, value).toString()), new CommandManager.ResponseCallbackInterface() {
             @Override
             public void onFailureCallback() {
                 Constants.showNoInternetMessage(getActivity().getApplicationContext());

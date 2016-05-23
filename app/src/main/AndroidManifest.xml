@@ -76,6 +76,7 @@
         <activity android:name="co.ar_smart.www.endpoints.EditRoomActivity" />
         <activity android:name="co.ar_smart.www.endpoints.DevicesActivity" />
         <activity android:name="co.ar_smart.www.endpoints.DeleteDeviceActivity"></activity>
+        <activity android:name="co.ar_smart.www.modes.ModeManagementActivity" />
     </application>
 
 </manifest>

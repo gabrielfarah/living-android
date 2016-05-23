@@ -1,6 +1,4 @@
-package co.ar_smart.www.Interfaces;
-
-import android.media.Image;
+package co.ar_smart.www.interfaces;
 
 /**
  * Created by user on 19/05/2016.

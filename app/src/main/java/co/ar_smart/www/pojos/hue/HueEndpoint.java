@@ -3,13 +3,18 @@ package co.ar_smart.www.pojos.hue;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import co.ar_smart.www.interfaces.ICommandClass;
+import co.ar_smart.www.pojos.Command;
 import co.ar_smart.www.pojos.Endpoint;
 
 /**
  * This class will contain all the commands and attributes of an endpoint (device) of kind SONOS Music Player
  * Created by Gabriel on 5/16/2016.
  */
-public class HueEndpoint implements Parcelable {
+public class HueEndpoint implements Parcelable, ICommandClass {
 
     public static final Creator<HueEndpoint> CREATOR = new Creator<HueEndpoint>() {
         @Override
@@ -77,21 +82,72 @@ public class HueEndpoint implements Parcelable {
         return endpoint;
     }
 
-    public String getRGB(int lid, int r, int g, int b) {
-        return "[{\"type\":\"wifi\",\"target\":\"hue\",\"ip\":\"" + endpoint.getIp_address() +
-                "\",\"function\":\"set_color_to_light_by_id\",\"parameters\":{\"light_id\":" +
-                lid + ",\"r\":" + r + ",\"g\":" + g + ",\"b\":" + b + "}}]";
+    public Command getSetRGBColorCommand(int lid, int r, int g, int b) {
+        Command c = new Command(endpoint);
+        c.setFunction("set_color_to_light_by_id");
+        c.setTarget("hue");
+        JSONObject jp = new JSONObject();
+        try {
+            jp.put("r", r);
+            jp.put("g", g);
+            jp.put("b", b);
+            jp.put("light_id", lid);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        c.setParameters(jp);
+        return c;
     }
 
-    public String getBrightness(int lid, int value) {
-        return "[{\"type\":\"wifi\",\"target\":\"hue\",\"ip\":\"" + endpoint.getIp_address() +
+    public Command getBrightnessCommand(int lid, int value) {
+        Command c = new Command(endpoint);
+        c.setFunction("set_brightness_to_light_by_id");
+        c.setTarget("hue");
+        JSONObject jp = new JSONObject();
+        try {
+            jp.put("brightness", value);
+            jp.put("light_id", lid);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        c.setParameters(jp);
+        return c;
+        /*return "[{\"type\":\"wifi\",\"target\":\"hue\",\"ip\":\"" + endpoint.getIp_address() +
                 "\",\"function\":\"set_brightness_to_light_by_id\",\"parameters\":{\"light_id\":" +
-                lid + ",\"brightness\":" + value + "}}]";
+                lid + ",\"brightness\":" + value + "}}]";*/
     }
 
-    public String getSaturation(int lid, int value) {
-        return "[{\"type\":\"wifi\",\"target\":\"hue\",\"ip\":\"" + endpoint.getIp_address() +
+    public Command getSaturationCommand(int lid, int value) {
+        Command c = new Command(endpoint);
+        c.setFunction("set_saturation_to_light_by_id");
+        c.setTarget("hue");
+        JSONObject jp = new JSONObject();
+        try {
+            jp.put("saturation", value);
+            jp.put("light_id", lid);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        c.setParameters(jp);
+        return c;
+        /*return "[{\"type\":\"wifi\",\"target\":\"hue\",\"ip\":\"" + endpoint.getIp_address() +
                 "\",\"function\":\"set_saturation_to_light_by_id\",\"parameters\":{\"light_id\":" +
-                lid + ",\"saturation\":" + value + "}}]";
+                lid + ",\"saturation\":" + value + "}}]";*/
+    }
+
+    @Override
+    public Command getTurnOnCommand() {
+        Command c = new Command(endpoint);
+        c.setFunction("turn_on_all_lights");
+        c.setTarget("hue");
+        return c;
+    }
+
+    @Override
+    public Command getTurnOffCommand() {
+        Command c = new Command(endpoint);
+        c.setFunction("turn_off_all_lights");
+        c.setTarget("hue");
+        return c;
     }
 }

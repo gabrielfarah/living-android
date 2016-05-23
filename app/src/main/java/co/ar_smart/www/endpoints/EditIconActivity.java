@@ -1,30 +1,23 @@
 package co.ar_smart.www.endpoints;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
+import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.ListAdapter;
-import android.widget.ListView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import co.ar_smart.www.Interfaces.IDrawable;
 import co.ar_smart.www.adapters.GridDevicesAdapter;
+import co.ar_smart.www.interfaces.IDrawable;
 import co.ar_smart.www.living.R;
 
 public class EditIconActivity extends AppCompatActivity {
@@ -71,6 +64,18 @@ public class EditIconActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                // app icon in action bar clicked; go home
+                this.finish();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
     private class Icons implements IDrawable{
 
         private String image;
@@ -83,20 +88,6 @@ public class EditIconActivity extends AppCompatActivity {
         @Override
         public String getImage() {
             return image;
-        }
-    }
-
-
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                // app icon in action bar clicked; go home
-                this.finish();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
         }
     }
 
