@@ -217,6 +217,15 @@ public class Endpoint implements Parcelable{
         return category;
     }
 
+    /**
+     * Get the ID of the endpoint
+     *
+     * @return the endpoint ID
+     */
+    public int getId() {
+        return id;
+    }
+
     @Override
     public String toString() {
         return "(" + name + " - " + endpoint_type + " - " + ui_class_command + ")";

@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.IOException;
@@ -30,8 +31,10 @@ import retrofit2.http.POST;
 import retrofit2.http.Path;
 
 import static co.ar_smart.www.helpers.Constants.ACTION_ADD;
+import static co.ar_smart.www.helpers.Constants.ACTION_EDIT;
 import static co.ar_smart.www.helpers.Constants.EXTRA_ACTION;
 import static co.ar_smart.www.helpers.Constants.EXTRA_MESSAGE;
+import static co.ar_smart.www.helpers.Constants.EXTRA_ROOM;
 import static co.ar_smart.www.helpers.Constants.EXTRA_UID;
 
 public class EditDeviceActivity extends AppCompatActivity {
@@ -59,21 +62,29 @@ public class EditDeviceActivity extends AppCompatActivity {
         Intent intent = getIntent();
         API_TOKEN = intent.getStringExtra(EXTRA_MESSAGE);
 
-        room="";
-        icon="";
-
-
-        Intent i=getIntent();
-
-
         Button btnIcon=(Button) findViewById(R.id.btnEditIcon);
         Button btnRoom=(Button) findViewById(R.id.btnEditRoom);
         txtName=(EditText) findViewById(R.id.txtNameDev);
+
+        String act=myact.getIntent().getStringExtra(EXTRA_ACTION);
+
+            room="";
+            icon="";
+
+        if(act.equals(ACTION_EDIT))
+        {
+            if(dev.getRoom()!=null)
+            room=dev.getRoom();
+            if(dev.getRoom()!=null)
+            icon=dev.getImage();
+            txtName.setText(dev.getName().toString());
+        }
 
         btnIcon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent i=new Intent(EditDeviceActivity.this,EditIconActivity.class);
+                i.putExtra(EXTRA_ROOM,dev.getRoom());
                 startActivityForResult(i,1);
             }
         });
@@ -81,6 +92,7 @@ public class EditDeviceActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent i=new Intent(EditDeviceActivity.this,EditRoomActivity.class);
+                i.putExtra(EXTRA_MESSAGE,API_TOKEN);
                 startActivityForResult(i,2);
             }
         });
@@ -230,9 +242,11 @@ public class EditDeviceActivity extends AppCompatActivity {
 
         // custom dialog
         final Dialog dialog = new Dialog(EditDeviceActivity.this);
-        dialog.setTitle("Luces Sala");
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.dialog_device_added);
+
+        TextView t=(TextView) dialog.findViewById(R.id.titleAddDevice) ;
+        t.setText(dev.getName());
 
         Button dialogButton = (Button) dialog.findViewById(R.id.btnDialogDevAdd);
         // if button is clicked, close the custom dialog

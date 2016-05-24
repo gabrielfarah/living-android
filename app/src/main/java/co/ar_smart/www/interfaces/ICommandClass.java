@@ -1,4 +1,4 @@
-package co.ar_smart.www.interfaces;
+package co.ar_smart.www.Interfaces;
 
 import co.ar_smart.www.pojos.Command;
 
