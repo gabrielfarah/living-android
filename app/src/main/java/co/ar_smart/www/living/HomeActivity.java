@@ -765,7 +765,7 @@ public class HomeActivity extends AppCompatActivity {
         );
     }
 
-    private class EndpointIcons implements co.ar_smart.www.Interfaces.IDrawable {
+    private class EndpointIcons implements co.ar_smart.www.interfaces.IDrawable {
 
         private String image;
 

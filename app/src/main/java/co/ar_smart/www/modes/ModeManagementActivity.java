@@ -114,6 +114,8 @@ public class ModeManagementActivity extends AppCompatActivity {
 
     private void createUIFromDevices() {
         LinearLayout ll = (LinearLayout) findViewById(R.id.linear_layout_insert_devices_options);
+        boolean music_label_added = false;
+        boolean light_label_added = false;
         for (Endpoint e : endpoint_devices) {
             switch (e.getUi_class_command()) {
                 case "ui-sonos":
@@ -121,8 +123,9 @@ public class ModeManagementActivity extends AppCompatActivity {
                     SonosEndpoint sonosEndpoint = new SonosEndpoint(e);
                     Log.d("ACTIONs", "SONOS");
                     View musicTag = createLabel("Music Players");
-                    if (ll != null && musicTag.getParent() == ll) {
+                    if (ll != null && !music_label_added) {
                         ll.addView(musicTag);
+                        music_label_added = true;
                     }
                     Log.d("ACTION", "PLAY this music player");
                     Log.d("ACTION", "   Sonos  - With this song");
@@ -140,8 +143,9 @@ public class ModeManagementActivity extends AppCompatActivity {
                     HueEndpoint hueEndpoint = new HueEndpoint(e);
                     Log.d("ACTIONs", "HUE");
                     View lightsTag = createLabel("Lights");
-                    if (ll != null && lightsTag.getParent() == ll) {
+                    if (ll != null && !light_label_added) {
                         ll.addView(lightsTag);
+                        light_label_added = true;
                     }
                     Log.d("ACTION", "Turn on these hue lights");
                     Log.d("ACTION", "   HUE  - With this color");

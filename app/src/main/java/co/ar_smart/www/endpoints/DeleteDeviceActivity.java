@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,7 +19,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,6 +45,7 @@ public class DeleteDeviceActivity extends AppCompatActivity {
     private ProgressBar progress;
     private ArrayAdapter<Endpoint> adapter;
     private Activity myact;
+    private int sol;
 
 
     @Override
@@ -190,21 +189,13 @@ public class DeleteDeviceActivity extends AppCompatActivity {
         });
     }
 
-    private interface DevicesHubClient {
-        @GET("hubs/{hub_id}/endpoints/")
-        Call<List<Endpoint>> getendpoints(@Path("hub_id") String hub_id);
-
-        @DELETE("hubs/{hub_id}/endpoints/{endpoint_id}/")
-        Call<Endpoint> delendpoint(@Path("hub_id") String hub_id,@Path("endpoint_id") String endpoint_id);
-    }
-
-
     private int getPreferredHub(){
         SharedPreferences settings = getSharedPreferences(PREFS_NAME,
                 Context.MODE_PRIVATE);
         // Get values using keys
         return Integer.parseInt(settings.getString(PREF_HUB, DEFAULT_HUB));
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -215,5 +206,13 @@ public class DeleteDeviceActivity extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private interface DevicesHubClient {
+        @GET("hubs/{hub_id}/endpoints/")
+        Call<List<Endpoint>> getendpoints(@Path("hub_id") String hub_id);
+
+        @DELETE("hubs/{hub_id}/endpoints/{endpoint_id}/")
+        Call<Endpoint> delendpoint(@Path("hub_id") String hub_id, @Path("endpoint_id") String endpoint_id);
     }
 }

@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 import co.ar_smart.www.adapters.GridDevicesAdapter;
-import co.ar_smart.www.Interfaces.IDrawable;
+import co.ar_smart.www.interfaces.IDrawable;
 import co.ar_smart.www.living.R;
 
 public class EditIconActivity extends AppCompatActivity {

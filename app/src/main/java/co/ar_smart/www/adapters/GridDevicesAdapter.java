@@ -15,7 +15,7 @@ import co.ar_smart.www.living.R;
 /**
  * Created by Gabriel on 5/3/2016.
  */
-public class GridDevicesAdapter<T extends co.ar_smart.www.Interfaces.IDrawable> extends BaseAdapter {
+public class GridDevicesAdapter<T extends co.ar_smart.www.interfaces.IDrawable> extends BaseAdapter {
 
     private Context context;
     private List<T> endpoints;

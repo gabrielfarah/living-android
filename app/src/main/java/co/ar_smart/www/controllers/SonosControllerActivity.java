@@ -122,10 +122,10 @@ public class SonosControllerActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     if (isPlaying) {
                         pauseCommand();
-                        playPauseButton.setBackgroundResource(R.drawable.ic_media_play);
+                        playPauseButton.setBackgroundResource(R.drawable.common_ic_googleplayservices);
                     } else {
                         playCommand();
-                        playPauseButton.setBackgroundResource(R.drawable.ic_media_pause);
+                        playPauseButton.setBackgroundResource(R.drawable.btn_listo_off);
                     }
                     isPlaying = !isPlaying;
                 }
@@ -376,7 +376,7 @@ public class SonosControllerActivity extends AppCompatActivity {
                 volControl.setProgress(sonosEndpoint.getVolume());
                 if (sonosEndpoint.getState().equalsIgnoreCase("PLAYING")) {
                     isPlaying = true;
-                    playPauseButton.setBackgroundResource(R.drawable.ic_media_pause);
+                    playPauseButton.setBackgroundResource(R.drawable.btn_listo_off);
                 }
             }
         });
