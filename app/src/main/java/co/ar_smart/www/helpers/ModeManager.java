@@ -159,7 +159,7 @@ public class ModeManager {
                     on_commands.add(hueEndpoint.getTurnOnCommand());
                     break;
                 default:
-                    AnalyticsApplication.getInstance().trackEvent("Device Image", "DoNotExist", "The device in hub:" + e.getHub() + " named:" + e.getName() + " the image does not correspong. image:" + e.getImage());
+                    AnalyticsApplication.getInstance().trackEvent("Device UI Class", "DoNotExist", "The device in hub:" + e.getHub() + " named:" + e.getName() + " the ui class does not correspond. UI:" + e.getUi_class_command());
             }
         }
         mode_all_off.setPayload(off_commands);

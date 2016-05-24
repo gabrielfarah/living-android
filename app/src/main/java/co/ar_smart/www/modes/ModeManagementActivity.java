@@ -3,6 +3,7 @@ package co.ar_smart.www.modes;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
@@ -12,7 +13,9 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONObject;
@@ -21,12 +24,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import co.ar_smart.www.adapters.ModeAdapter;
+import co.ar_smart.www.analytics.AnalyticsApplication;
 import co.ar_smart.www.helpers.CommandManager;
 import co.ar_smart.www.helpers.Constants;
 import co.ar_smart.www.helpers.ModeManager;
 import co.ar_smart.www.living.R;
+import co.ar_smart.www.pojos.Endpoint;
 import co.ar_smart.www.pojos.Mode;
+import co.ar_smart.www.pojos.hue.HueEndpoint;
+import co.ar_smart.www.pojos.sonos.SonosEndpoint;
 
+import static co.ar_smart.www.helpers.Constants.EXTRA_ADDITIONAL_OBJECT;
 import static co.ar_smart.www.helpers.Constants.EXTRA_MESSAGE;
 import static co.ar_smart.www.helpers.Constants.EXTRA_MESSAGE_PREF_HUB;
 import static co.ar_smart.www.helpers.Constants.EXTRA_OBJECT;
@@ -53,6 +61,7 @@ public class ModeManagementActivity extends AppCompatActivity {
      * This var will be filled with a user promted email
      */
     private String new_guest_email_str = "";
+    private ArrayList<Endpoint> endpoint_devices;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +71,7 @@ public class ModeManagementActivity extends AppCompatActivity {
         API_TOKEN = intent.getStringExtra(EXTRA_MESSAGE);
         PREFERRED_HUB_ID = intent.getIntExtra(EXTRA_MESSAGE_PREF_HUB, -1);
         modes = intent.getParcelableArrayListExtra(EXTRA_OBJECT);
+        endpoint_devices = intent.getParcelableArrayListExtra(EXTRA_ADDITIONAL_OBJECT);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setTitle(getResources().getString(R.string.label_manage_modes));
@@ -88,6 +98,58 @@ public class ModeManagementActivity extends AppCompatActivity {
                     performCommand(modes.get(position).getPayload().toString());
                 }
             });
+        }
+        createUIFromDevices();
+    }
+
+    private View createLabel(String text) {
+        TextView actionLabel = new TextView(this);
+        actionLabel.setText(text);
+        actionLabel.setId(View.generateViewId());
+        actionLabel.setLayoutParams(new ActionBar.LayoutParams(
+                ActionBar.LayoutParams.MATCH_PARENT,
+                ActionBar.LayoutParams.WRAP_CONTENT));
+        return actionLabel;
+    }
+
+    private void createUIFromDevices() {
+        LinearLayout ll = (LinearLayout) findViewById(R.id.linear_layout_insert_devices_options);
+        for (Endpoint e : endpoint_devices) {
+            switch (e.getUi_class_command()) {
+                case "ui-sonos":
+                    Log.d("meto modos1", "sonos");
+                    SonosEndpoint sonosEndpoint = new SonosEndpoint(e);
+                    Log.d("ACTIONs", "SONOS");
+                    View musicTag = createLabel("Music Players");
+                    if (ll != null && musicTag.getParent() == ll) {
+                        ll.addView(musicTag);
+                    }
+                    Log.d("ACTION", "PLAY this music player");
+                    Log.d("ACTION", "   Sonos  - With this song");
+                    Log.d("ACTION", "Stop this music player");
+                    break;
+                case "ui-lock":
+                    if (e.getEndpoint_type().equalsIgnoreCase("zwave")) {
+                        //TODO
+                    } else {
+                        //TODO
+                    }
+                    break;
+                case "ui-hue":
+                    Log.d("meto modos1", "hue");
+                    HueEndpoint hueEndpoint = new HueEndpoint(e);
+                    Log.d("ACTIONs", "HUE");
+                    View lightsTag = createLabel("Lights");
+                    if (ll != null && lightsTag.getParent() == ll) {
+                        ll.addView(lightsTag);
+                    }
+                    Log.d("ACTION", "Turn on these hue lights");
+                    Log.d("ACTION", "   HUE  - With this color");
+                    Log.d("ACTION", "Turn off these hue lights");
+                    break;
+                default:
+                    AnalyticsApplication.getInstance().trackEvent("Device UI Class", "DoNotExist", "The device in hub:" + e.getHub() + " named:" + e.getName() + " the ui class does not correspond. UI:" + e.getUi_class_command());
+            }
         }
     }
 

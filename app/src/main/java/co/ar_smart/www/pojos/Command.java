@@ -58,6 +58,7 @@ public class Command implements Parcelable {
      * the uid of the endpoint
      */
     private String endpoint_id = "";
+    private String label_ui;
 
     /**
      * a constructor for the commnd
