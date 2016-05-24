@@ -2,7 +2,7 @@ package co.ar_smart.www.pojos.sonos;
 
 import java.util.ArrayList;
 
-import co.ar_smart.www.interfaces.ICommandClass;
+import co.ar_smart.www.Interfaces.ICommandClass;
 import co.ar_smart.www.pojos.Command;
 import co.ar_smart.www.pojos.Endpoint;
 import co.ar_smart.www.pojos.music_player.MusicTrack;

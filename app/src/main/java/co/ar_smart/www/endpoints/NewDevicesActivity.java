@@ -52,6 +52,8 @@ import static co.ar_smart.www.helpers.Constants.EXTRA_TYPE_DEVICE;
 import static co.ar_smart.www.helpers.Constants.JSON;
 import static co.ar_smart.www.helpers.Constants.PREFS_NAME;
 import static co.ar_smart.www.helpers.Constants.PREF_HUB;
+import static co.ar_smart.www.helpers.Constants.PULL_INTERVAL_SECS;
+import static co.ar_smart.www.helpers.Constants.TIMEOUT_DEVICES__SECS;
 import static co.ar_smart.www.helpers.Constants.TYPE_DEVICE_WIFI;
 import static co.ar_smart.www.helpers.Constants.TYPE_DEVICE_ZWAVE;
 
@@ -241,8 +243,8 @@ public class NewDevicesActivity extends AppCompatActivity {
                     }
                     else
                     {
-                        if(sol<30) {
-                            sol = sol + 5;
+                        if(sol<TIMEOUT_DEVICES__SECS) {
+                            sol = sol + PULL_INTERVAL_SECS;
                             new Handler().postDelayed(new Runnable() {
                                 @Override
                                 public void run() {

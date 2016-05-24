@@ -8,9 +8,20 @@ import android.os.Parcelable;
  * Created by Gabriel on 5/4/2016.
  */
 public class Room implements Parcelable{
-    /**
-     * the parcelable creator
-     */
+    private String description;
+    private int hub;
+
+    protected Room(Parcel in) {
+        description = in.readString();
+        hub = in.readInt();
+    }
+
+    public Room(int h,String d)
+    {
+        hub=h;
+        description=d;
+    }
+
     public static final Creator<Room> CREATOR = new Creator<Room>() {
         @Override
         public Room createFromParcel(Parcel in) {
@@ -22,26 +33,7 @@ public class Room implements Parcelable{
             return new Room[size];
         }
     };
-    /**
-     * The description (name) of a room
-     */
-    private String description;
-    /**
-     * the id of the hub this room is in
-     */
-    private int hub;
 
-    /**
-     * creates a room from a parcel instance
-     *
-     * @param in the parcel
-     */
-    protected Room(Parcel in) {
-        description = in.readString();
-        hub = in.readInt();
-    }
-
-    @Override
     public String toString(){
         return "("+description+" - "+hub+")";
     }
@@ -55,5 +47,10 @@ public class Room implements Parcelable{
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(description);
         dest.writeInt(hub);
+    }
+
+    public String getDescription()
+    {
+        return description;
     }
 }

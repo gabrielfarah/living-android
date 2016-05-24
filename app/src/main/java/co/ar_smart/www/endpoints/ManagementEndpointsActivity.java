@@ -14,6 +14,7 @@ import co.ar_smart.www.living.LoginActivity;
 import co.ar_smart.www.living.R;
 
 import static co.ar_smart.www.helpers.Constants.ACTION_EDIT;
+import static co.ar_smart.www.helpers.Constants.DEFAULT_HUB;
 import static co.ar_smart.www.helpers.Constants.EXTRA_ACTION;
 import static co.ar_smart.www.helpers.Constants.EXTRA_MESSAGE;
 import static co.ar_smart.www.helpers.Constants.EXTRA_TYPE_DEVICE;
@@ -27,6 +28,8 @@ import static co.ar_smart.www.helpers.Constants.TYPE_DEVICE_ZWAVE;
 
 public class ManagementEndpointsActivity extends AppCompatActivity {
 
+    private String token;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,6 +38,14 @@ public class ManagementEndpointsActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setTitle(getString(R.string.label_user_management_title));
         }
+
+        SharedPreferences settings = getSharedPreferences(PREFS_NAME,
+                Context.MODE_PRIVATE);
+        // Get values using keys
+
+        token= settings.getString(PREF_JWT, "000");
+
+
 
         Button loginButton = (Button) findViewById(R.id.logoutButton);
         if (loginButton != null) {
@@ -88,7 +99,7 @@ public class ManagementEndpointsActivity extends AppCompatActivity {
     {
         Intent i=new Intent(ManagementEndpointsActivity.this,NewDevicesActivity.class);
         i.putExtra(EXTRA_TYPE_DEVICE,TYPE_DEVICE_WIFI);
-        i.putExtra(EXTRA_MESSAGE,getIntent().getStringExtra(EXTRA_MESSAGE));
+        i.putExtra(EXTRA_MESSAGE,token);
         startActivity(i);
     }
 
@@ -96,7 +107,7 @@ public class ManagementEndpointsActivity extends AppCompatActivity {
     {
         Intent i=new Intent(ManagementEndpointsActivity.this,NewDevicesActivity.class);
         i.putExtra(EXTRA_TYPE_DEVICE,TYPE_DEVICE_ZWAVE);
-        i.putExtra(EXTRA_MESSAGE,getIntent().getStringExtra(EXTRA_MESSAGE));
+        i.putExtra(EXTRA_MESSAGE,token);
         startActivity(i);
     }
 
@@ -104,7 +115,7 @@ public class ManagementEndpointsActivity extends AppCompatActivity {
     {
         Intent i=new Intent(ManagementEndpointsActivity.this,DeleteDeviceActivity.class);
         i.putExtra(EXTRA_TYPE_DEVICE,TYPE_DEVICE_WIFI);
-        i.putExtra(EXTRA_MESSAGE,getIntent().getStringExtra(EXTRA_MESSAGE));
+        i.putExtra(EXTRA_MESSAGE,token);
         startActivity(i);
     }
 
@@ -112,7 +123,7 @@ public class ManagementEndpointsActivity extends AppCompatActivity {
     {
         Intent i=new Intent(ManagementEndpointsActivity.this,DeleteDeviceActivity.class);
         i.putExtra(EXTRA_TYPE_DEVICE,TYPE_DEVICE_ZWAVE);
-        i.putExtra(EXTRA_MESSAGE,getIntent().getStringExtra(EXTRA_MESSAGE));
+        i.putExtra(EXTRA_MESSAGE,token);
         startActivity(i);
     }
 
@@ -120,7 +131,7 @@ public class ManagementEndpointsActivity extends AppCompatActivity {
     {
         Intent i=new Intent(ManagementEndpointsActivity.this,DevicesActivity.class);
         i.putExtra(EXTRA_MESSAGE,getIntent().getStringExtra(EXTRA_MESSAGE));
-        i.putExtra(EXTRA_ACTION,ACTION_EDIT);
+        i.putExtra(EXTRA_MESSAGE,token);
         startActivity(i);
     }
 }

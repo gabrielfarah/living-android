@@ -1,4 +1,4 @@
-package co.ar_smart.www.interfaces;
+package co.ar_smart.www.Interfaces;
 
 /**
  * Created by user on 19/05/2016.

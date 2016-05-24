@@ -1,6 +1,7 @@
 package co.ar_smart.www.helpers;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.widget.Toast;
 
 import java.util.Calendar;
@@ -140,7 +141,15 @@ public final class Constants {
     public static final String EXTRA_UID = "EXTRA_UID";
 
     public static final String ACTION_EDIT = "ACTION_edit";
+
     public static final String ACTION_ADD = "ACTION_add";
+
+    public static final int TIMEOUT_DEVICES__SECS = 30;
+
+    public static final int PULL_INTERVAL_SECS = 2;
+
+    public static final String EXTRA_ROOM = "EXTRA_ROOM";
+
 
 
     /**

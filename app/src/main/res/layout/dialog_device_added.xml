@@ -4,11 +4,11 @@
     android:layout_height="wrap_content"
     android:background="#fff">
     <TextView
+        android:id="@+id/titleAddDevice"
         android:layout_marginTop="10dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="Luces Sala"
         android:textSize="20dp"
         android:layout_marginRight="50dp"
         android:layout_marginLeft="50dp"

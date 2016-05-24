@@ -41,7 +41,6 @@ import co.ar_smart.www.helpers.JWTManager;
 import co.ar_smart.www.helpers.ModeManager;
 import co.ar_smart.www.helpers.RetrofitServiceGenerator;
 import co.ar_smart.www.helpers.UserManager;
-import co.ar_smart.www.interfaces.IDrawable;
 import co.ar_smart.www.modes.ModeManagementActivity;
 import co.ar_smart.www.pojos.Endpoint;
 import co.ar_smart.www.pojos.Hub;
@@ -447,6 +446,7 @@ public class HomeActivity extends AppCompatActivity {
                 @Override
                 public void onSuccessCallback(String nToken) {
                     API_TOKEN = nToken;
+
                 }
 
                 @Override
@@ -763,7 +763,7 @@ public class HomeActivity extends AppCompatActivity {
         );
     }
 
-    private class EndpointIcons implements IDrawable {
+    private class EndpointIcons implements co.ar_smart.www.Interfaces.IDrawable {
 
         private String image;
 

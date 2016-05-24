@@ -45,7 +45,6 @@ public class DeleteDeviceActivity extends AppCompatActivity {
     private ArrayList<Endpoint> devices;
     private ListView list;
     private ProgressBar progress;
-    private int sol;
     private ArrayAdapter<Endpoint> adapter;
     private Activity myact;
 
@@ -121,7 +120,7 @@ public class DeleteDeviceActivity extends AppCompatActivity {
                             @Override
                             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                                deleteEndPoint("" + 1, "" + 1);
+                                deleteEndPoint(""+1,""+3);
                             }
                         });
 
@@ -177,11 +176,7 @@ public class DeleteDeviceActivity extends AppCompatActivity {
                     getDevices();
                 }
                 else {
-                    try {
-                        Log.d("DEBUG", response.errorBody().string());
-                    } catch (IOException e1) {
-                        e1.printStackTrace();
-                    }
+
                 }
             }
 
@@ -195,13 +190,21 @@ public class DeleteDeviceActivity extends AppCompatActivity {
         });
     }
 
+    private interface DevicesHubClient {
+        @GET("hubs/{hub_id}/endpoints/")
+        Call<List<Endpoint>> getendpoints(@Path("hub_id") String hub_id);
+
+        @DELETE("hubs/{hub_id}/endpoints/{endpoint_id}/")
+        Call<Endpoint> delendpoint(@Path("hub_id") String hub_id,@Path("endpoint_id") String endpoint_id);
+    }
+
+
     private int getPreferredHub(){
         SharedPreferences settings = getSharedPreferences(PREFS_NAME,
                 Context.MODE_PRIVATE);
         // Get values using keys
         return Integer.parseInt(settings.getString(PREF_HUB, DEFAULT_HUB));
     }
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -212,13 +215,5 @@ public class DeleteDeviceActivity extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
-    }
-
-    private interface DevicesHubClient {
-        @GET("hubs/{hub_id}/endpoints/")
-        Call<List<Endpoint>> getendpoints(@Path("hub_id") String hub_id);
-
-        @DELETE("hubs/{hub_id}/endpoints/{endpoint_id}/")
-        Call<Endpoint> delendpoint(@Path("hub_id") String hub_id, @Path("endpoint_id") String endpoint_id);
     }
 }

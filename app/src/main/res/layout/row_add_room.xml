@@ -12,6 +12,7 @@
         android:layout_weight="9"
         android:focusable="false"/>
     <CheckBox
+        android:shadowColor="#fff"
         android:id="@+id/chkRoom"
         android:layout_width="0dp"
         android:layout_height="match_parent"

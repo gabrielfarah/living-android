@@ -48,7 +48,6 @@ public class DevicesActivity extends AppCompatActivity {
     private String task = "";
     private ListView list;
     private ProgressBar progress;
-    private int sol;
     private Activity myact;
 
 
@@ -56,7 +55,6 @@ public class DevicesActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_devices);
-        sol=0;
         devices=new ArrayList<>();
         myact=this;
 
@@ -130,7 +128,7 @@ public class DevicesActivity extends AppCompatActivity {
                                 i.putExtra(EXTRA_CATEGORY_DEVICE,devices.get(position).getCategory());
                                 i.putExtra(EXTRA_MESSAGE,API_TOKEN);
                                 i.putExtra(EXTRA_ACTION,ACTION_EDIT);
-                                i.putExtra(EXTRA_UID, ""+2);
+                                i.putExtra(EXTRA_UID, String.valueOf(devices.get(position).getId()));
 
                                 startActivity(i);
                             }
