@@ -1,7 +1,5 @@
 package co.ar_smart.www.helpers;
 
-import android.util.Base64;
-
 import java.io.IOException;
 
 import okhttp3.Interceptor;
@@ -14,12 +12,19 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import static co.ar_smart.www.helpers.Constants.BASE_URL;
 
 /**
+ * This class implemments static methods for the REST client
  * Created by Gabriel on 5/4/2016.
  */
 public class RetrofitServiceGenerator {
 
+    /**
+     * The okhttp web client instance
+     */
     private static OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
 
+    /**
+     * The base URL for the retrofit client and gson converter
+     */
     private static Retrofit.Builder builder =
             new Retrofit.Builder()
                     .baseUrl(BASE_URL)
@@ -29,6 +34,14 @@ public class RetrofitServiceGenerator {
         return createService(serviceClass, "");
     }
 
+    /**
+     * Creates a service for a REST interface with a JWT token instance
+     *
+     * @param serviceClass the REST interface to use
+     * @param jwtToken     the JWT token for doing the requests
+     * @param <S>          the type of the response
+     * @return a retrofit service
+     */
     public static <S> S createService(Class<S> serviceClass, String jwtToken) {
         final String token = "JWT  " + jwtToken;
         httpClient.addInterceptor(new Interceptor() {

@@ -47,6 +47,11 @@ public class HueEndpoint implements Parcelable, ICommandClass {
         get_ui = "[{\"type\":\"wifi\",\"target\":\"hue\",\"ip\":\"" + endpoint.getIp_address() + "\",\"function\":\"get_ui_info\",\"parameters\":[]}]";
     }
 
+    /**
+     * The parcelable constructor of a new HueEndpoint
+     *
+     * @param inparcel with information
+     */
     protected HueEndpoint(Parcel in) {
         endpoint = in.readParcelable(Endpoint.class.getClassLoader());
         get_ui = in.readString();
@@ -78,10 +83,22 @@ public class HueEndpoint implements Parcelable, ICommandClass {
         dest.writeString(get_ui);
     }
 
+    /**
+     * returns the base endpoint of this class
+     * @return the endpoint of this class
+     */
     public Endpoint getEndpoint() {
         return endpoint;
     }
 
+    /**
+     * This method get the command for setting a color for a specific hue light
+     * @param lid the ID of the light to set the color
+     * @param r the red value
+     * @param g the green value
+     * @param b the blue value
+     * @return the command class
+     */
     public Command getSetRGBColorCommand(int lid, int r, int g, int b) {
         Command c = new Command(endpoint);
         c.setFunction("set_color_to_light_by_id");
@@ -99,6 +116,12 @@ public class HueEndpoint implements Parcelable, ICommandClass {
         return c;
     }
 
+    /**
+     * This method creates the command for setting the brightness of a hue light
+     * @param lid the ID of the light
+     * @param value the value of the brightness (0-254)
+     * @return the command class
+     */
     public Command getBrightnessCommand(int lid, int value) {
         Command c = new Command(endpoint);
         c.setFunction("set_brightness_to_light_by_id");
@@ -117,6 +140,12 @@ public class HueEndpoint implements Parcelable, ICommandClass {
                 lid + ",\"brightness\":" + value + "}}]";*/
     }
 
+    /**
+     * This method creates the command for setting the saturation of a hue light
+     * @param lid the ID of the light
+     * @param value the value of the saturation (0-254)
+     * @return the command class
+     */
     public Command getSaturationCommand(int lid, int value) {
         Command c = new Command(endpoint);
         c.setFunction("set_saturation_to_light_by_id");

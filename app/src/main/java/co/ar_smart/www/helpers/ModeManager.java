@@ -143,7 +143,7 @@ public class ModeManager {
                     Log.d("meto modos1", "sonos");
                     SonosEndpoint sonosEndpoint = new SonosEndpoint(e);
                     off_commands.add(sonosEndpoint.getTurnOffCommand());
-                    on_commands.add(sonosEndpoint.getTurnOffCommand());
+                    on_commands.add(sonosEndpoint.getTurnOnCommand());
                     break;
                 case "ui-lock":
                     if (e.getEndpoint_type().equalsIgnoreCase("zwave")) {
@@ -156,7 +156,7 @@ public class ModeManager {
                     Log.d("meto modos1", "hue");
                     HueEndpoint hueEndpoint = new HueEndpoint(e);
                     off_commands.add(hueEndpoint.getTurnOffCommand());
-                    on_commands.add(hueEndpoint.getTurnOffCommand());
+                    on_commands.add(hueEndpoint.getTurnOnCommand());
                     break;
                 default:
                     AnalyticsApplication.getInstance().trackEvent("Device Image", "DoNotExist", "The device in hub:" + e.getHub() + " named:" + e.getName() + " the image does not correspong. image:" + e.getImage());

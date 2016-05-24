@@ -7,9 +7,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
+ * This class represents a device command
  * Created by Gabriel on 5/4/2016.
  */
 public class Command implements Parcelable {
+    /**
+     * The parcel creator
+     */
     public static final Creator<Command> CREATOR = new Creator<Command>() {
         @Override
         public Command createFromParcel(Parcel in) {
@@ -21,18 +25,51 @@ public class Command implements Parcelable {
             return new Command[size];
         }
     };
+
+    /**
+     * The type of the command (wifi, zwave, etc)
+     */
     private String type = "";
+    /**
+     * the device target (sonos, hue, etc)
+     */
     private String target = "";
+    /**
+     * the function (play, turn_on, etc)
+     */
     private String function = "";
+    /**
+     * the ip of the device (if the device is type wifi)
+     */
     private String ip = "";
+    /**
+     * the ip of the node id (if the device is type zwave)
+     */
     private int node = 0;
+    /**
+     * the value to set the device to (if the device is type zwave)
+     */
     private int v = 0;
+    /**
+     * The parameters for the function ej: light_id, volume, etc.
+     */
     private JSONObject parameters;
+    /**
+     * the uid of the endpoint
+     */
     private String endpoint_id = "";
 
+    /**
+     * a constructor for the commnd
+     */
     public Command() {
     }
 
+    /**
+     * the constructor for the command class given an endpoint
+     *
+     * @param endpoint the endpoint that provides the necessary information
+     */
     public Command(Endpoint endpoint) {
         ip = endpoint.getIp_address();
         node = endpoint.getNode();
@@ -45,6 +82,10 @@ public class Command implements Parcelable {
         }
     }
 
+    /**
+     * the parcel constructor
+     * @param in the parcel
+     */
     protected Command(Parcel in) {
         type = in.readString();
         target = in.readString();
@@ -61,6 +102,10 @@ public class Command implements Parcelable {
         endpoint_id = in.readString();
     }
 
+    /**
+     * returns the target
+     * @return the target
+     */
     public String getTarget() {
         return target;
     }
@@ -69,6 +114,10 @@ public class Command implements Parcelable {
         this.target = target;
     }
 
+    /**
+     * returns the function
+     * @return the function
+     */
     public String getFunction() {
         return function;
     }
@@ -77,6 +126,10 @@ public class Command implements Parcelable {
         this.function = function;
     }
 
+    /**
+     * returns the ip
+     * @return the ip
+     */
     public String getIp() {
         return ip;
     }
@@ -85,6 +138,10 @@ public class Command implements Parcelable {
         this.ip = ip;
     }
 
+    /**
+     * returns the node
+     * @return the node
+     */
     public int getNode() {
         return node;
     }
@@ -93,6 +150,10 @@ public class Command implements Parcelable {
         this.node = node;
     }
 
+    /**
+     * returns the value
+     * @return the value
+     */
     public int getV() {
         return v;
     }
@@ -101,6 +162,10 @@ public class Command implements Parcelable {
         this.v = v;
     }
 
+    /**
+     * returns the parameters
+     * @return the parameter
+     */
     public JSONObject getParameters() {
         return parameters;
     }
@@ -109,6 +174,10 @@ public class Command implements Parcelable {
         this.parameters = parameters;
     }
 
+    /**
+     * returns the type
+     * @return the type
+     */
     public String getType() {
         return type;
     }

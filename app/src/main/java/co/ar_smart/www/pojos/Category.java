@@ -4,22 +4,13 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 /**
+ * This class represents the category of a device (ilumination, entertaiment, etc)
  * Created by Gabriel on 5/4/2016.
  */
 public class Category implements Parcelable{
-    private String description;
-    private String code;
-
-    public  Category()
-    {
-        code="sddf";
-        description="Iluminación";
-    }
-    protected Category(Parcel in) {
-        description = in.readString();
-        code = in.readString();
-    }
-
+    /**
+     * the parcel creator
+     */
     public static final Creator<Category> CREATOR = new Creator<Category>() {
         @Override
         public Category createFromParcel(Parcel in) {
@@ -31,7 +22,26 @@ public class Category implements Parcelable{
             return new Category[size];
         }
     };
+    /**
+     * the name of the category
+     */
+    private String description;
+    /**
+     * the category code
+     */
+    private String code;
 
+    /**
+     * the parcel constructor
+     *
+     * @param in the parcel
+     */
+    protected Category(Parcel in) {
+        description = in.readString();
+        code = in.readString();
+    }
+
+    @Override
     public String toString(){
         return "("+description+" - "+code+")";
     }
@@ -47,5 +57,9 @@ public class Category implements Parcelable{
         dest.writeString(code);
     }
 
+    /**
+     * returns the name of the category
+     * @return the category name
+     */
     public String getCat(){return description;}
 }

@@ -47,7 +47,7 @@ import co.ar_smart.www.pojos.Endpoint;
 import co.ar_smart.www.pojos.Hub;
 import co.ar_smart.www.pojos.Mode;
 import co.ar_smart.www.pojos.User;
-import co.ar_smart.www.register.LivingLocalConfigurationActivity;
+import co.ar_smart.www.register.CreatedUserActivity;
 import co.ar_smart.www.user.GuestManagementActivity;
 import co.ar_smart.www.user.ManagementUserActivity;
 import retrofit2.Call;
@@ -603,7 +603,7 @@ public class HomeActivity extends AppCompatActivity {
      * This method opens the register new hub activity
      */
     private void openRegisterHubActivity() {
-        Intent intent = new Intent(this, LivingLocalConfigurationActivity.class);
+        Intent intent = new Intent(this, CreatedUserActivity.class);
         intent.putExtra(EXTRA_MESSAGE, API_TOKEN);
         startActivity(intent);
     }

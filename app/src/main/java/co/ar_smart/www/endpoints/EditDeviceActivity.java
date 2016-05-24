@@ -15,6 +15,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import java.io.IOException;
+
 import co.ar_smart.www.helpers.Constants;
 import co.ar_smart.www.helpers.RetrofitServiceGenerator;
 import co.ar_smart.www.living.R;
@@ -159,7 +161,7 @@ public class EditDeviceActivity extends AppCompatActivity {
     {
         dev.setAtributes(txtName.getText().toString(),icon,room);
         RegDeviceClient client = RetrofitServiceGenerator.createService(RegDeviceClient.class, API_TOKEN);
-        Log.d("ENDPOINT", dev.getEndpoint_type() + " " + dev.getEndpoint_type() + " " + dev.getCategory());
+        Log.d("ENDPOINT", dev.getEndpoint_type() + " " + dev.getEndpoint_type() + " " + dev.getCategory() + " " + dev.getRoom());
         Call<Endpoint> call = client.regDevice(""+1, dev);
         Log.d("REQUEST", call.request().toString());
         call.enqueue(new Callback<Endpoint>()
@@ -175,7 +177,11 @@ public class EditDeviceActivity extends AppCompatActivity {
                 else{
 
                     Log.d("Fallo", call.request().toString());
-                    Log.d("Fallo", response.errorBody().toString());
+                    try {
+                        Log.d("Fallo", response.errorBody().string());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
 

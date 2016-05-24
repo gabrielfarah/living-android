@@ -2,10 +2,6 @@ package co.ar_smart.www.pojos;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * This POJO class represents a Device (Endpoint) in Living.
@@ -84,22 +80,6 @@ public class Endpoint implements Parcelable{
      */
     private Category category;
 
-    /**
-     * Get the list of classes this device can use
-     * @return list of classes this device can use
-     */
-    /*public List<EndpointClass> getEndpoint_classes() {
-        return endpoint_classes;
-    }*/
-    /**
-     * The classes this device can use
-     */
-    private List<EndpointClass> endpoint_classes = new ArrayList<>();
-    /**
-     * This flags if the endpoint has performed the setting of the variables for the commands
-     */
-    private boolean flag = true;
-
     public Endpoint() {
     }
 
@@ -121,12 +101,8 @@ public class Endpoint implements Parcelable{
         node = in.readInt();
         room = in.readString();
         category = in.readParcelable(getClass().getClassLoader());
-        in.readTypedList(endpoint_classes, EndpointClass.CREATOR);
-        id = in.readInt();
-        Log.d("DEVICE ID", "" + id);
         //in.readTypedList(endpoint_classes, EndpointClass.CREATOR);
-
-        //flag = in.readByte() != 0;
+        id = in.readInt();
     }
 
     /**
@@ -266,16 +242,20 @@ public class Endpoint implements Parcelable{
         dest.writeInt(node);
         dest.writeString(room);
         dest.writeParcelable(category, flags);
-        dest.writeTypedList(endpoint_classes);
+        //dest.writeTypedList(endpoint_classes);
         dest.writeInt(id);
-
-        //dest.writeByte((byte) (flag ? 1 : 0));
     }
 
-    public void setAtributes(String n,String i,String r)
-    {
-        name=n;
-        image=i;
-        room=r;
+    /**
+     * This method setssome parameters into the class
+     *
+     * @param nName  the new name
+     * @param nImage the new image
+     * @param nRoom  the new room name
+     */
+    public void setAtributes(String nName, String nImage, String nRoom) {
+        name = nName;
+        image = nImage;
+        room=nRoom;
     }
 }

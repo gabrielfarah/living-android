@@ -4,38 +4,13 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 /**
+ * This class represents a guest user in a hub
  * Created by Gabriel on 5/4/2016.
  */
 public class Guest implements Parcelable {
-    private int id;
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    private String email;
-
-    protected Guest(Parcel in) {
-        id = in.readInt();
-        email = in.readString();
-    }
-
-    public Guest() {
-
-    }
-
+    /**
+     * the parcelable creator
+     */
     public static final Creator<Guest> CREATOR = new Creator<Guest>() {
         @Override
         public Guest createFromParcel(Parcel in) {
@@ -47,7 +22,66 @@ public class Guest implements Parcelable {
             return new Guest[size];
         }
     };
+    /**
+     * The id of the user
+     */
+    private int id;
+    /**
+     * the emails of the user representing a guest
+     */
+    private String email;
 
+    /**
+     * creates a guest from a parcel
+     *
+     * @param in the parcel
+     */
+    protected Guest(Parcel in) {
+        id = in.readInt();
+        email = in.readString();
+    }
+
+    /**
+     * the constructor for a guest
+     */
+    public Guest() {
+
+    }
+
+    /**
+     * returns the user email
+     *
+     * @return
+     */
+    public String getEmail() {
+        return email;
+    }
+
+    /**
+     * sets the email of the user representing a guest
+     * @param email the new email
+     */
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    /**
+     * returns the id of the user
+     * @return the user id
+     */
+    public int getId() {
+        return id;
+    }
+
+    /**
+     * sets the id of the user
+     * @param id the new id
+     */
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    @Override
     public String toString() {
         return "(" + id + " - " + email + ")";
     }

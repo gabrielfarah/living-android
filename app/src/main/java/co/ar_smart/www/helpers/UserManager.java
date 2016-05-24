@@ -16,6 +16,13 @@ import retrofit2.http.PATCH;
  */
 public class UserManager {
 
+    /**
+     * This static methods update a user object in the server given its updated representation
+     *
+     * @param u         the updated user instance
+     * @param API_TOKEN the api token for doing the request
+     * @param callback  the callback for implementing ui responses
+     */
     public static void updateUser(User u, String API_TOKEN, final UserCallbackInterface callback) {
         UserService userClient = RetrofitServiceGenerator.createService(UserService.class, API_TOKEN);
         Call<User> call = userClient.editUser(u);
@@ -38,6 +45,11 @@ public class UserManager {
         });
     }
 
+    /**
+     * This static method returns the current user information from the server
+     * @param API_TOKEN the api token for doing the request
+     * @param callback the callback for implementing ui responses
+     */
     public static void getUser(String API_TOKEN, final UserCallbackInterface callback) {
         UserService userClient = RetrofitServiceGenerator.createService(UserService.class, API_TOKEN);
         Call<User> call = userClient.getUser();
@@ -62,7 +74,7 @@ public class UserManager {
     }
 
     /**
-     * This interface defines the callbacks for the states of the getApiToken method
+     * This interface defines the callbacks for the states of the user methods
      */
     public interface UserCallbackInterface {
         /**
@@ -71,22 +83,33 @@ public class UserManager {
         void onFailureCallback();
 
         /**
-         * This method will contain the API token obtained from the server in case the request was successful.
-         *
-         * @param user The user obtained from the server
+         * This method returns a user once the request was a success
+         * @param user the response user
          */
         void onSuccessCallback(User user);
 
         /**
-         * This method will be called if the credentials provided were not correct.
+         * This method will be called if was a problem with the response
          */
         void onUnsuccessfulCallback();
     }
 
+    /**
+     * the methods available for a user
+     */
     public interface UserService {
+        /**
+         * this method will edit a user
+         * @param user the updated instance of the user
+         * @return the edited user response
+         */
         @PATCH("profile/")
         Call<User> editUser(@Body User user);
 
+        /**
+         * this method returns the current user information stored
+         * @return the information of the user doing the request
+         */
         @GET("profile/")
         Call<User> getUser();
     }

@@ -32,6 +32,9 @@ public class SonosEndpoint implements ICommandClass {
      * This is the command for stop playing songs
      */
     private static Command pause;
+    /**
+     * This is the command to stop the player
+     */
     private static Command stop;
     /**
      * This is the command to play the previous song

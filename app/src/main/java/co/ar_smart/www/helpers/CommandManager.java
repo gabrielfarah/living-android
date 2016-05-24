@@ -17,7 +17,7 @@ import static co.ar_smart.www.helpers.Constants.BASE_URL;
 import static co.ar_smart.www.helpers.Constants.JSON;
 
 /**
- * This class implemments static methods for setting and getting commands to and from the API server
+ * This class implements static methods for setting and getting commands to and from the API server
  * Created by Gabriel on 5/15/2016.
  */
 public class CommandManager {

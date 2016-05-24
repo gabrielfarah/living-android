@@ -4,10 +4,11 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +20,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,12 +34,8 @@ import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
 
-import static co.ar_smart.www.helpers.Constants.ACTION_EDIT;
 import static co.ar_smart.www.helpers.Constants.DEFAULT_HUB;
-import static co.ar_smart.www.helpers.Constants.EXTRA_ACTION;
-import static co.ar_smart.www.helpers.Constants.EXTRA_CATEGORY_DEVICE;
 import static co.ar_smart.www.helpers.Constants.EXTRA_MESSAGE;
-import static co.ar_smart.www.helpers.Constants.EXTRA_UID;
 import static co.ar_smart.www.helpers.Constants.PREFS_NAME;
 import static co.ar_smart.www.helpers.Constants.PREF_HUB;
 
@@ -123,7 +121,7 @@ public class DeleteDeviceActivity extends AppCompatActivity {
                             @Override
                             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                                deleteEndPoint(""+1,""+3);
+                                deleteEndPoint("" + 1, "" + 1);
                             }
                         });
 
@@ -179,7 +177,11 @@ public class DeleteDeviceActivity extends AppCompatActivity {
                     getDevices();
                 }
                 else {
-
+                    try {
+                        Log.d("DEBUG", response.errorBody().string());
+                    } catch (IOException e1) {
+                        e1.printStackTrace();
+                    }
                 }
             }
 
@@ -193,21 +195,13 @@ public class DeleteDeviceActivity extends AppCompatActivity {
         });
     }
 
-    private interface DevicesHubClient {
-        @GET("hubs/{hub_id}/endpoints/")
-        Call<List<Endpoint>> getendpoints(@Path("hub_id") String hub_id);
-
-        @DELETE("hubs/{hub_id}/endpoints/{endpoint_id}/")
-        Call<Endpoint> delendpoint(@Path("hub_id") String hub_id,@Path("endpoint_id") String endpoint_id);
-    }
-
-
     private int getPreferredHub(){
         SharedPreferences settings = getSharedPreferences(PREFS_NAME,
                 Context.MODE_PRIVATE);
         // Get values using keys
         return Integer.parseInt(settings.getString(PREF_HUB, DEFAULT_HUB));
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -218,5 +212,13 @@ public class DeleteDeviceActivity extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private interface DevicesHubClient {
+        @GET("hubs/{hub_id}/endpoints/")
+        Call<List<Endpoint>> getendpoints(@Path("hub_id") String hub_id);
+
+        @DELETE("hubs/{hub_id}/endpoints/{endpoint_id}/")
+        Call<Endpoint> delendpoint(@Path("hub_id") String hub_id, @Path("endpoint_id") String endpoint_id);
     }
 }

@@ -4,17 +4,13 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 /**
+ * This class represents a room in a home
  * Created by Gabriel on 5/4/2016.
  */
 public class Room implements Parcelable{
-    private String description;
-    private int hub;
-
-    protected Room(Parcel in) {
-        description = in.readString();
-        hub = in.readInt();
-    }
-
+    /**
+     * the parcelable creator
+     */
     public static final Creator<Room> CREATOR = new Creator<Room>() {
         @Override
         public Room createFromParcel(Parcel in) {
@@ -26,7 +22,26 @@ public class Room implements Parcelable{
             return new Room[size];
         }
     };
+    /**
+     * The description (name) of a room
+     */
+    private String description;
+    /**
+     * the id of the hub this room is in
+     */
+    private int hub;
 
+    /**
+     * creates a room from a parcel instance
+     *
+     * @param in the parcel
+     */
+    protected Room(Parcel in) {
+        description = in.readString();
+        hub = in.readInt();
+    }
+
+    @Override
     public String toString(){
         return "("+description+" - "+hub+")";
     }

@@ -8,6 +8,7 @@ import java.util.List;
 
 
 /**
+ * This class if a helper function for the phillips hue lights
  * Created by Gabriel on 5/21/2016.
  */
 public class PHUtils {
@@ -74,6 +75,13 @@ public class PHUtils {
         colorPointsDefault.add(new PointF(0.0f, 0.0f));
     }
 
+    /**
+     * This method transform an XY (CIE 1993) color into a RGB given a particular implementation
+     *
+     * @param points the XY values in as a float array of 2 elements
+     * @param model  the model of the light to calculate accordingly
+     * @return an RGB int value for the given XY values
+     */
     public static int colorFromXY(float[] points, String model) {
         if (points == null || model == null) {
             return 0;
