@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ExpandableListView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -114,6 +115,12 @@ public class ModeManagementActivity extends AppCompatActivity {
 
     private void createUIFromDevices() {
         LinearLayout ll = (LinearLayout) findViewById(R.id.linear_layout_insert_devices_options);
+        ExpandableListView elv = new ExpandableListView(this);
+        elv.setLayoutParams(new ActionBar.LayoutParams(
+                ActionBar.LayoutParams.MATCH_PARENT,
+                ActionBar.LayoutParams.WRAP_CONTENT));
+        assert ll != null;
+        ll.addView(elv);
         boolean music_label_added = false;
         boolean light_label_added = false;
         for (Endpoint e : endpoint_devices) {
@@ -123,7 +130,7 @@ public class ModeManagementActivity extends AppCompatActivity {
                     SonosEndpoint sonosEndpoint = new SonosEndpoint(e);
                     Log.d("ACTIONs", "SONOS");
                     View musicTag = createLabel("Music Players");
-                    if (ll != null && !music_label_added) {
+                    if (!music_label_added) {
                         ll.addView(musicTag);
                         music_label_added = true;
                     }
@@ -143,7 +150,7 @@ public class ModeManagementActivity extends AppCompatActivity {
                     HueEndpoint hueEndpoint = new HueEndpoint(e);
                     Log.d("ACTIONs", "HUE");
                     View lightsTag = createLabel("Lights");
-                    if (ll != null && !light_label_added) {
+                    if (!light_label_added) {
                         ll.addView(lightsTag);
                         light_label_added = true;
                     }
