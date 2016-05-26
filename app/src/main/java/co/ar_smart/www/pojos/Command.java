@@ -53,11 +53,14 @@ public class Command implements Parcelable {
     /**
      * The parameters for the function ej: light_id, volume, etc.
      */
-    private JSONObject parameters;
+    private JSONObject parameters = new JSONObject();
     /**
      * the uid of the endpoint
      */
-    private String endpoint_id = "";
+    private int endpoint_id = -1;
+    /**
+     * The string to present in the UI
+     */
     private String label_ui;
 
     /**
@@ -75,7 +78,7 @@ public class Command implements Parcelable {
         ip = endpoint.getIp_address();
         node = endpoint.getNode();
         type = endpoint.getEndpoint_type();
-        endpoint_id = endpoint.getUid();
+        endpoint_id = endpoint.getId();
         try {
             parameters = new JSONObject("{}");
         } catch (JSONException e) {
@@ -100,7 +103,7 @@ public class Command implements Parcelable {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        endpoint_id = in.readString();
+        endpoint_id = in.readInt();
     }
 
     /**
@@ -201,7 +204,7 @@ public class Command implements Parcelable {
         dest.writeInt(node);
         dest.writeInt(v);
         dest.writeString(parameters.toString());
-        dest.writeString(endpoint_id);
+        dest.writeInt(endpoint_id);
     }
 
     @Override

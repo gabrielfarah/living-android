@@ -37,6 +37,12 @@ public class Mode implements Parcelable {
      * a list of commands of the scene
      */
     private List<Command> payload = new ArrayList<>();
+    /**
+     * This indicates the mode will automatically execute on the given minutes_of_day and days_of_the_week
+     */
+    private boolean timed = false;
+    private List<Integer> minute_of_day = new ArrayList<>();
+    private List<Integer> days_of_the_week = new ArrayList<>();
 
     /**
      * a constructor of the scene
@@ -62,6 +68,9 @@ public class Mode implements Parcelable {
     protected Mode(Parcel in) {
         name = in.readString();
         in.readTypedList(payload, Command.CREATOR);
+        in.readList(minute_of_day, getClass().getClassLoader());
+        in.readList(days_of_the_week, getClass().getClassLoader());
+        timed = in.readByte() != 0;
     }
 
     /**
@@ -94,6 +103,9 @@ public class Mode implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(name);
         dest.writeTypedList(payload);
+        dest.writeList(minute_of_day);
+        dest.writeList(days_of_the_week);
+        dest.writeByte((byte) (timed ? 1 : 0));
     }
 
     /**

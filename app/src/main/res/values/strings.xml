@@ -118,6 +118,23 @@
     <string name="title_activity_new_devices">NewDevicesActivity</string>
     <string name="label_manage_modes">Manage Scenes</string>
 
+    <string name="label_select_devices_endpoint_activity">Select the devices you want</string>
+    <string name="label_add_scene_activity">Add a new scene</string>
+    <string name="label_select_devices_activity">Select devices</string>
+    <string name="button_add_new_scene">Add a new scene</string>
+    <string name="text_add_scene_name">Give the scene a name:</string>
+
+    <string name="label_on">%1$s (ON)</string>
+    <string name="label_off">%1$s (OFF)</string>
+    <string name="label_open">%1$s (OPEN)</string>
+    <string name="label_close">%1$s (CLOSE)</string>
+    <string name="label_play">%1$s (PLAY)</string>
+    <string name="label_pause">%1$s (PAUSE)</string>
+    <string name="label_up">%1$s (UP)</string>
+    <string name="label_down">%1$s (DOWN)</string>
+    <string name="label_selected">%1$s (SELECTED)</string>
+    <string name="label_unselected">%1$s (UNSELECTED)</string>
+
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

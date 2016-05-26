@@ -3,20 +3,14 @@ package co.ar_smart.www.modes;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.text.InputType;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ExpandableListView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONObject;
@@ -25,15 +19,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import co.ar_smart.www.adapters.ModeAdapter;
-import co.ar_smart.www.analytics.AnalyticsApplication;
 import co.ar_smart.www.helpers.CommandManager;
 import co.ar_smart.www.helpers.Constants;
 import co.ar_smart.www.helpers.ModeManager;
 import co.ar_smart.www.living.R;
 import co.ar_smart.www.pojos.Endpoint;
 import co.ar_smart.www.pojos.Mode;
-import co.ar_smart.www.pojos.hue.HueEndpoint;
-import co.ar_smart.www.pojos.sonos.SonosEndpoint;
 
 import static co.ar_smart.www.helpers.Constants.EXTRA_ADDITIONAL_OBJECT;
 import static co.ar_smart.www.helpers.Constants.EXTRA_MESSAGE;
@@ -100,69 +91,9 @@ public class ModeManagementActivity extends AppCompatActivity {
                 }
             });
         }
-        createUIFromDevices();
     }
 
-    private View createLabel(String text) {
-        TextView actionLabel = new TextView(this);
-        actionLabel.setText(text);
-        actionLabel.setId(View.generateViewId());
-        actionLabel.setLayoutParams(new ActionBar.LayoutParams(
-                ActionBar.LayoutParams.MATCH_PARENT,
-                ActionBar.LayoutParams.WRAP_CONTENT));
-        return actionLabel;
-    }
 
-    private void createUIFromDevices() {
-        LinearLayout ll = (LinearLayout) findViewById(R.id.linear_layout_insert_devices_options);
-        ExpandableListView elv = new ExpandableListView(this);
-        elv.setLayoutParams(new ActionBar.LayoutParams(
-                ActionBar.LayoutParams.MATCH_PARENT,
-                ActionBar.LayoutParams.WRAP_CONTENT));
-        assert ll != null;
-        ll.addView(elv);
-        boolean music_label_added = false;
-        boolean light_label_added = false;
-        for (Endpoint e : endpoint_devices) {
-            switch (e.getUi_class_command()) {
-                case "ui-sonos":
-                    Log.d("meto modos1", "sonos");
-                    SonosEndpoint sonosEndpoint = new SonosEndpoint(e);
-                    Log.d("ACTIONs", "SONOS");
-                    View musicTag = createLabel("Music Players");
-                    if (!music_label_added) {
-                        ll.addView(musicTag);
-                        music_label_added = true;
-                    }
-                    Log.d("ACTION", "PLAY this music player");
-                    Log.d("ACTION", "   Sonos  - With this song");
-                    Log.d("ACTION", "Stop this music player");
-                    break;
-                case "ui-lock":
-                    if (e.getEndpoint_type().equalsIgnoreCase("zwave")) {
-                        //TODO
-                    } else {
-                        //TODO
-                    }
-                    break;
-                case "ui-hue":
-                    Log.d("meto modos1", "hue");
-                    HueEndpoint hueEndpoint = new HueEndpoint(e);
-                    Log.d("ACTIONs", "HUE");
-                    View lightsTag = createLabel("Lights");
-                    if (!light_label_added) {
-                        ll.addView(lightsTag);
-                        light_label_added = true;
-                    }
-                    Log.d("ACTION", "Turn on these hue lights");
-                    Log.d("ACTION", "   HUE  - With this color");
-                    Log.d("ACTION", "Turn off these hue lights");
-                    break;
-                default:
-                    AnalyticsApplication.getInstance().trackEvent("Device UI Class", "DoNotExist", "The device in hub:" + e.getHub() + " named:" + e.getName() + " the ui class does not correspond. UI:" + e.getUi_class_command());
-            }
-        }
-    }
 
     /**
      * This method send a "play track" command to the sonos
@@ -204,33 +135,12 @@ public class ModeManagementActivity extends AppCompatActivity {
      * The user must be registered for the request to succeed.
      */
     private void addNewMode() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(getResources().getString(R.string.label_add_guest_by_email));
-
-        // Set up the input
-        final EditText input = new EditText(this);
-        // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
-        input.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
-        builder.setView(input);
-
-        // Set up the buttons
-        builder.setPositiveButton(getResources().getString(R.string.label_add_button), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                new_guest_email_str = input.getText().toString();
-                if (!new_guest_email_str.isEmpty()) {
-                }
-                //addNewModeFromEmail();
-            }
-        });
-        builder.setNegativeButton(getResources().getString(R.string.label_cancel_button), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
-        });
-
-        builder.show();
+        Intent intent = new Intent(this, NewModeActivity.class);
+        intent.putExtra(EXTRA_MESSAGE, API_TOKEN);
+        intent.putExtra(EXTRA_MESSAGE_PREF_HUB, PREFERRED_HUB_ID);
+        intent.putParcelableArrayListExtra(EXTRA_OBJECT, modes);
+        intent.putParcelableArrayListExtra(EXTRA_ADDITIONAL_OBJECT, endpoint_devices);
+        startActivity(intent);
     }
 
     /**

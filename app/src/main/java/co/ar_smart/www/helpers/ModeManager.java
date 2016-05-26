@@ -23,21 +23,21 @@ import retrofit2.http.POST;
 import retrofit2.http.Path;
 
 /**
- * This class implements all the methods to manage the guests in a Hub
+ * This class implements all the methods to manage the modess in a Hub
  * Created by Gabriel on 5/11/2016.
  */
 public class ModeManager {
 
     /**
-     * This method will get all the guests for a given Hub
+     * This method will get all the modess for a given Hub
      *
-     * @param hub_id    the id of the hub to add the guest to
+     * @param hub_id    the id of the hub to add the modes to
      * @param API_TOKEN the JWT token of the user doing the request
      * @param callback  the callback interface to implements the UI responses
      */
     public static void getModes(int hub_id, String API_TOKEN, final ModeCallbackInterface callback) {
-        ModeService guestClient = RetrofitServiceGenerator.createService(ModeService.class, API_TOKEN);
-        Call<List<Mode>> call = guestClient.getModes(hub_id);
+        ModeService modesClient = RetrofitServiceGenerator.createService(ModeService.class, API_TOKEN);
+        Call<List<Mode>> call = modesClient.getModes(hub_id);
         Log.d("OkHttp", String.format("Sending request %s ", call.request().toString()));
         call.enqueue(new Callback<List<Mode>>() {
             @Override
@@ -65,16 +65,16 @@ public class ModeManager {
     }
 
     /**
-     * This method will remove a guest from a Hub
+     * This method will remove a modes from a Hub
      *
-     * @param hub_id    the id of the hub to add the guest to
-     * @param guest_id  the id of the guest to be removed
+     * @param hub_id    the id of the hub to add the modes to
+     * @param modes_id  the id of the modes to be removed
      * @param API_TOKEN the JWT token of the user doing the request
      * @param callback  the callback interface to implements the UI responses
      */
-    public static void removeMode(int hub_id, int guest_id, String API_TOKEN, final ModeCallbackInterface callback) {
-        ModeService guestClient = RetrofitServiceGenerator.createService(ModeService.class, API_TOKEN);
-        Call call = guestClient.deleteMode(hub_id, guest_id);
+    public static void removeMode(int hub_id, int modes_id, String API_TOKEN, final ModeCallbackInterface callback) {
+        ModeService modesClient = RetrofitServiceGenerator.createService(ModeService.class, API_TOKEN);
+        Call call = modesClient.deleteMode(hub_id, modes_id);
         Log.d("OkHttp", String.format("Sending request %s ", call.request().toString()));
         call.enqueue(new Callback<ResponseBody>() {
             @Override
@@ -96,16 +96,16 @@ public class ModeManager {
     }
 
     /**
-     * this method will add a new guest into a Hub
+     * this method will add a new modes into a Hub
      *
-     * @param hub_id    the id of the hub to add the guest to
-     * @param email     the email of the new guest to be added
+     * @param hub_id    the id of the hub to add the modes to
+     * @param email     the email of the new modes to be added
      * @param API_TOKEN the JWT token of the user doing the request
      * @param callback  the callback interface to implements the UI responses
      */
     public static void addMode(int hub_id, Mode email, String API_TOKEN, final ModeCallbackInterface callback) {
-        ModeService guestClient = RetrofitServiceGenerator.createService(ModeService.class, API_TOKEN);
-        Call call = guestClient.addMode(hub_id, email);
+        ModeService modesClient = RetrofitServiceGenerator.createService(ModeService.class, API_TOKEN);
+        Call call = modesClient.addMode(hub_id, email);
         Log.d("OkHttp", String.format("Sending request %s ", call.request().toString()));
         call.enqueue(new Callback<ResponseBody>() {
             @Override
@@ -179,11 +179,11 @@ public class ModeManager {
         void onFailureCallback();
 
         /**
-         * This method will return a list of guests from the server in case the request was successful.
+         * This method will return a list of modess from the server in case the request was successful.
          *
-         * @param guest The list of guests accounts for the hub
+         * @param modes The list of modess accounts for the hub
          */
-        void onSuccessCallback(List<Mode> guest);
+        void onSuccessCallback(List<Mode> modes);
 
         /**
          * This method will be called in case the request was successful.
@@ -201,32 +201,31 @@ public class ModeManager {
      */
     public interface ModeService {
         /**
-         * This method will retrieve all the guests given a valid hub id
+         * This method will retrieve all the modes given a valid hub id
          *
-         * @param hub_id the hub id to obtain the guets from
-         * @return a list of guests
+         * @param hub_id the hub id to obtain the modes from
+         * @return a list of modes
          */
-        @GET("hubs/{hub_id}/guests/")
+        @GET("hubs/{hub_id}/modes/")
         Call<List<Mode>> getModes(@Path("hub_id") int hub_id);
 
         /**
-         * This method will create a new guest in the hub
+         * This method will create a new modes in the hub
          *
-         * @param hub_id the hub id into which the guest will be created
-         * @param email  the email of the user to be invited into te hub
+         * @param hub_id the hub id into which the modes will be created
          * @return a JSON containing teh response of the post method
          */
-        @POST("hubs/{hub_id}/guests/")
+        @POST("hubs/{hub_id}/modes/")
         Call<ResponseBody> addMode(@Path("hub_id") int hub_id, @Body Mode email);
 
         /**
-         * This method will remove a guest user from the hub
+         * This method will remove a modes user from the hub
          *
-         * @param hub_id   the hub id into which the guest will be removed
-         * @param guest_id the id of the guest to be removed
+         * @param hub_id   the hub id into which the modes will be removed
+         * @param modes_id the id of the modes to be removed
          * @return a JSON containing teh response of the delete method
          */
-        @DELETE("hubs/{hub_id}/guests/{guest_id}/")
-        Call<ResponseBody> deleteMode(@Path("hub_id") int hub_id, @Path("guest_id") int guest_id);
+        @DELETE("hubs/{hub_id}/modes/{modes_id}/")
+        Call<ResponseBody> deleteMode(@Path("hub_id") int hub_id, @Path("modes_id") int modes_id);
     }
 }
