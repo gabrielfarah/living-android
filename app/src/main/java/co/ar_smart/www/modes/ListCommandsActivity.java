@@ -65,7 +65,7 @@ public class ListCommandsActivity extends AppCompatActivity {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setHomeButtonEnabled(true);
-            getSupportActionBar().setTitle(getString(R.string.label_deletedev_activity_title));
+            getSupportActionBar().setTitle(getString(R.string.label_listcommands_activity_title));
         }
 
         Intent intent = getIntent();
@@ -74,6 +74,9 @@ public class ListCommandsActivity extends AppCompatActivity {
         loadCommands();
     }
 
+    /**
+     * This method load all commands
+     */
     public void loadCommands()
     {
         commands=getIntent().getParcelableArrayListExtra("Commands");
@@ -110,6 +113,10 @@ public class ListCommandsActivity extends AppCompatActivity {
         list.setVisibility(View.VISIBLE);
     }
 
+    /**
+     * Show a warning dialog asking if the user is sure to delete the device selected
+     * @param position item position in the list
+     */
     public void loadDialog(final int position)
     {
 
@@ -139,6 +146,9 @@ public class ListCommandsActivity extends AppCompatActivity {
         dialog.show();
     }
 
+    /**
+     * this method is called when the user click button add comand , this allows add other command to the list
+     */
     public void addnewCommand(View v)
     {
         Intent i=new Intent(ListCommandsActivity.this,NewModeActivity.class);
@@ -148,6 +158,9 @@ public class ListCommandsActivity extends AppCompatActivity {
         startActivity(i);
     }
 
+    /**
+     * this method get preferred hub
+     */
     private int getPreferredHub(){
         SharedPreferences settings = getSharedPreferences(PREFS_NAME,
                 Context.MODE_PRIVATE);

@@ -72,7 +72,7 @@ public class EditModeActivity extends AppCompatActivity {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setHomeButtonEnabled(true);
-            getSupportActionBar().setTitle(getString(R.string.label_deletedev_activity_title));
+            getSupportActionBar().setTitle(getString(R.string.label_selectmodedevice_activity_title));
         }
 
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -105,7 +105,7 @@ public class EditModeActivity extends AppCompatActivity {
                     lb=(TextView)view.findViewById(R.id.label_item2_stand);
                     lb.setText(binders.get(position).en.getUi_class_command());
                     ImageView i=(ImageView) view.findViewById(R.id.icon_list_stand);
-                    i.setImageDrawable(ContextCompat.getDrawable(myact, R.drawable.delete_btn));
+                    i.setImageDrawable(ContextCompat.getDrawable(myact, R.drawable.connect_btn));
                 }
                 //chk.setChecked(checked[position]);
                 return view;
@@ -115,27 +115,10 @@ public class EditModeActivity extends AppCompatActivity {
         //getModes(1);
     }
 
-    private void deleteMode(int hubid,int id) {
-        ModeManager.removeMode(hubid, id, API_TOKEN, new ModeManager.ModeCallbackInterface() {
-            @Override
-            public void onFailureCallback() {
-            }
-
-            @Override
-            public void onSuccessCallback(List<Mode> guest) {
-            }
-
-            @Override
-            public void onSuccessCallback() {
-
-            }
-
-            @Override
-            public void onUnsuccessfulCallback() {
-            }
-        });
-    }
-
+    /**
+     * This method get all devices
+     * @param hubid id preferred hub
+     */
     public void loadEndPoints(int hubid)
     {
         ModeManager.getEndPoints(hubid, API_TOKEN, new ModeManager.EndPointCallbackInterface(){
@@ -167,6 +150,9 @@ public class EditModeActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * this method get preferred hub
+     */
     private int getPreferredHub(){
         SharedPreferences settings = getSharedPreferences(PREFS_NAME,
                 Context.MODE_PRIVATE);
@@ -185,7 +171,9 @@ public class EditModeActivity extends AppCompatActivity {
         }
     }
 
-
+    /**
+     * This method bind endoint to each command in an object CustomBinder
+     */
     public void loadBinders() {
         for(Endpoint e:endpoints)
         {

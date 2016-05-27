@@ -68,19 +68,8 @@ public class NewModeActivity extends AppCompatActivity {
             getSupportActionBar().setTitle(getResources().getString(R.string.label_add_scene_activity));
         }
         sceneName = (TextView) findViewById(R.id.create_new_scene_name);
-        if(modename!=null)
-        {
-            sceneName.setText(modename);
-            sceneName.setEnabled(false);
-            payload =intent.getParcelableArrayListExtra("Commands");
-        }
-        else
-        {
-            payload=new ArrayList<>();
-        }
 
         Button submit = (Button) findViewById(R.id.create_new_scene_button);
-        submit.setText("Save");
         if (submit != null) {
             submit.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -89,6 +78,18 @@ public class NewModeActivity extends AppCompatActivity {
                 }
             });
         }
+        if(modename!=null)
+        {
+            sceneName.setText(modename);
+            sceneName.setEnabled(false);
+            payload =intent.getParcelableArrayListExtra("Commands");
+            submit.setText("Save");
+        }
+        else
+        {
+            payload=new ArrayList<>();
+        }
+
         createUIFromDevices();
     }
 

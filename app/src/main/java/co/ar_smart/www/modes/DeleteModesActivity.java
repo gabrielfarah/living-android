@@ -56,7 +56,7 @@ public class DeleteModesActivity extends AppCompatActivity {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setHomeButtonEnabled(true);
-            getSupportActionBar().setTitle(getString(R.string.label_deletedev_activity_title));
+            getSupportActionBar().setTitle(getString(R.string.label_deletemode_activity_title));
         }
 
         Intent intent = getIntent();
@@ -87,6 +87,12 @@ public class DeleteModesActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * this method delete the mode that the user has selected
+     * @param hubid referred hub
+     * @param id id mode
+     *
+     */
     private void deleteMode(int hubid,int id) {
         ModeManager.removeMode(hubid, id, API_TOKEN, new ModeManager.ModeCallbackInterface() {
             @Override
@@ -107,6 +113,11 @@ public class DeleteModesActivity extends AppCompatActivity {
             }
         });
     }
+    /**
+     * this method get all modes
+     * @param hubid referred hub
+     *
+     */
 
     public void getModes(int hubid)
     {
@@ -149,6 +160,12 @@ public class DeleteModesActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * Show a warning dialog asking if the user is sure to delete the device selected
+     * @param modename name mode
+     * @param hu preferred hub
+     * @param idd id mode
+     */
     public void showDialog(String modename, int hu,int idd)
     {
         final int h=hu;
@@ -178,7 +195,9 @@ public class DeleteModesActivity extends AppCompatActivity {
         dialog.show();
     }
 
-
+    /**
+     * this method get preferred hub
+     */
     private int getPreferredHub(){
         SharedPreferences settings = getSharedPreferences(PREFS_NAME,
                 Context.MODE_PRIVATE);

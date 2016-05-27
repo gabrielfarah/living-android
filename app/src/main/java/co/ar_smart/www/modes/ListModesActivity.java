@@ -66,7 +66,7 @@ public class ListModesActivity extends AppCompatActivity {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setHomeButtonEnabled(true);
-            getSupportActionBar().setTitle(getString(R.string.label_deletedev_activity_title));
+            getSupportActionBar().setTitle(getString(R.string.label_editmode_activity_title));
         }
 
         Intent intent = getIntent();
@@ -80,8 +80,6 @@ public class ListModesActivity extends AppCompatActivity {
 
                     view=getLayoutInflater().inflate(R.layout.row_list_stand,null);
                     TextView lb=(TextView)view.findViewById(R.id.label_item_stand);
-                    lb.setText(modes.get(position).getName());
-                    lb=(TextView)view.findViewById(R.id.label_item2_stand);
                     lb.setText(modes.get(position).getName());
                     ImageView i=(ImageView) view.findViewById(R.id.icon_list_stand);
                     i.setImageDrawable(ContextCompat.getDrawable(myact, R.drawable.connect_btn));

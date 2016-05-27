@@ -34,6 +34,13 @@
     <string name="label_newdev_activity_title">New Devices</string>
     <string name="label_warning_delete_device">Deseas eliminar el dispositivo</string>
 
+
+    <string name="label_deletemode_activity_title">Delete Modes</string>
+    <string name="label_editmode_activity_title">Select Mode</string>
+    <string name="label_listcommands_activity_title">Edit Commands</string>
+    <string name="label_selectmodedevice_activity_title">Select Device</string>
+    <string name="btn_addcommand">Add Command</string>
+
     <string name="app_name">Living</string>
     <string name="login_title">Login to your account</string>
     <string name="login_text">Login</string>

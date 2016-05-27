@@ -161,9 +161,9 @@ public class DeleteDeviceActivity extends AppCompatActivity {
 
     /**
      * Show a warning dialog asking if the user is sure to delete the device selected
-     * @param devi name device that the user selected
+     * @param devi name device selected from the list
      * @param hu preferred hub
-     * @param idd name device that the user selected
+     * @param idd id device
      */
 
     public void showDialog(String devi, String hu,String idd)
