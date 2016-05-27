@@ -19,6 +19,7 @@ import retrofit2.Response;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
+import retrofit2.http.PATCH;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 
@@ -260,6 +261,34 @@ public class ModeManager {
         void onUnsuccessfulCallback();
     }
 
+
+    public static void editMode(int hub_id,Mode modo, String API_TOKEN, final ModeCallbackInterface callback)
+    {
+        ModeService modesClient = RetrofitServiceGenerator.createService(ModeService.class, API_TOKEN);
+        Call call = modesClient.editMode(hub_id,modo.getId(), modo);
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call call, Response response) {
+                if (response.isSuccessful()) {
+                    callback.onSuccessCallback();
+                } else {
+                    try {
+                        Log.d("DEBUGGG", response.message() + " - " + response.code() + " " + response.errorBody().string());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    callback.onUnsuccessfulCallback();
+                }
+            }
+
+            @Override
+            public void onFailure(Call call, Throwable t) {
+                AnalyticsApplication.getInstance().trackException(new Exception(t));
+                callback.onFailureCallback();
+            }
+        });
+    }
+
     /**
      * the interface describing the API urls and their response types
      */
@@ -297,5 +326,8 @@ public class ModeManager {
 
         @GET("hubs/{hub_id}/endpoints/")
         Call<List<Endpoint>> getendpoints(@Path("hub_id") String hub_id);
+
+        @PATCH("hubs/{hub_id}/modes/{mode_id}/")
+        Call<List<Endpoint>> editMode(@Path("hub_id") int hub_id,@Path("mode_id") int mode_id,@Body Mode mode);
     }
 }

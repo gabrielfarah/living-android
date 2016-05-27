@@ -28,16 +28,21 @@ import co.ar_smart.www.helpers.RetrofitServiceGenerator;
 import co.ar_smart.www.living.R;
 import co.ar_smart.www.pojos.Command;
 import co.ar_smart.www.pojos.Endpoint;
+import co.ar_smart.www.pojos.Mode;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
+import retrofit2.http.PATCH;
 import retrofit2.http.Path;
 
 import static co.ar_smart.www.helpers.Constants.DEFAULT_HUB;
 import static co.ar_smart.www.helpers.Constants.EXTRA_ADDITIONAL_OBJECT;
 import static co.ar_smart.www.helpers.Constants.EXTRA_MESSAGE;
+import static co.ar_smart.www.helpers.Constants.EXTRA_MESSAGE_PREF_HUB;
+import static co.ar_smart.www.helpers.Constants.EXTRA_MODE;
 import static co.ar_smart.www.helpers.Constants.PREFS_NAME;
 import static co.ar_smart.www.helpers.Constants.PREF_HUB;
 
@@ -50,6 +55,7 @@ public class ListCommandsActivity extends AppCompatActivity {
     private ArrayAdapter<Command> adapter;
     private ArrayList<Endpoint> endpoints;
     private Activity myact;
+    private Mode mode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +64,7 @@ public class ListCommandsActivity extends AppCompatActivity {
         endpoints=getIntent().getParcelableArrayListExtra(EXTRA_ADDITIONAL_OBJECT);
         commands=new ArrayList<>();
         myact=this;
+        mode=getIntent().getExtras().getParcelable(EXTRA_MODE);
 
         list = (ListView) findViewById(R.id.list_commands);
         progress = (ProgressBar) findViewById(R.id.progresscommands);
@@ -129,8 +136,7 @@ public class ListCommandsActivity extends AppCompatActivity {
         dialogButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                commands.remove(position);
-                adapter.notifyDataSetChanged();
+                rewrite(position);
                 dialog.dismiss();
             }
         });
@@ -152,7 +158,10 @@ public class ListCommandsActivity extends AppCompatActivity {
     public void addnewCommand(View v)
     {
         Intent i=new Intent(ListCommandsActivity.this,NewModeActivity.class);
-        i.putExtra("modename",getIntent().getStringExtra("modename"));
+        i.putExtra("modename",mode.getName());
+        i.putExtra("modeid",mode.getId());
+        i.putExtra(EXTRA_MESSAGE,API_TOKEN);
+        i.putExtra(EXTRA_MESSAGE_PREF_HUB,getPreferredHub());
         i.putParcelableArrayListExtra(EXTRA_ADDITIONAL_OBJECT,endpoints);
         i.putParcelableArrayListExtra("Commands",commands);
         startActivity(i);
@@ -168,6 +177,41 @@ public class ListCommandsActivity extends AppCompatActivity {
         return Integer.parseInt(settings.getString(PREF_HUB, DEFAULT_HUB));
     }
 
+    public void rewrite(final int position)
+    {
+        ArrayList<Command> ctemp=(ArrayList<Command>)commands.clone();
+        ctemp.remove(position);
+        mode.setPayload(ctemp);
+        ListCommandClient client = RetrofitServiceGenerator.createService(ListCommandClient.class, API_TOKEN);
+        Call<Mode> call2 = client.delCommand(""+1,""+mode.getId(),mode);
+
+        call2.enqueue(new Callback<Mode>()
+        {
+            @Override
+            public void onResponse(Call<Mode> call, Response<Mode> response)
+            {
+                if (response.isSuccessful()) {
+                    commands.remove(position);
+                    adapter.notifyDataSetChanged();
+                }
+                else {
+                    Toast.makeText(ListCommandsActivity.this, "Error al eliminar el comandos",
+                            Toast.LENGTH_SHORT).show();
+                    progress.setVisibility(View.GONE);
+                    list.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Mode> call, Throwable t) {
+                Toast.makeText(ListCommandsActivity.this, "Error al eliminar el comandos",
+                        Toast.LENGTH_SHORT).show();
+                progress.setVisibility(View.GONE);
+                list.setVisibility(View.VISIBLE);
+            }
+        });
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -180,11 +224,8 @@ public class ListCommandsActivity extends AppCompatActivity {
         }
     }
 
-    private interface DevicesHubClient {
-        @GET("hubs/{hub_id}/endpoints/")
-        Call<List<Endpoint>> getendpoints(@Path("hub_id") String hub_id);
-
-        @DELETE("hubs/{hub_id}/modes/{endpoint_id}/")
-        Call<Endpoint> delendpoint(@Path("hub_id") String hub_id, @Path("endpoint_id") String endpoint_id);
+    private interface ListCommandClient {
+        @PATCH("hubs/{hub_id}/modes/{mode_id}/")
+        Call<Mode> delCommand(@Path("hub_id") String hub_id, @Path("mode_id") String mode_id,@Body Mode mode);
     }
 }

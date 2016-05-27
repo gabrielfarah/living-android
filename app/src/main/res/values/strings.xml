@@ -132,6 +132,7 @@
 
     <string name="label_select_devices_endpoint_activity">Select the devices you want</string>
     <string name="label_add_scene_activity">Add a new scene</string>
+    <string name="label_edit_scene_activity">Add Command</string>
     <string name="label_select_devices_activity">Select devices</string>
     <string name="button_add_new_scene">Add a new scene</string>
     <string name="text_add_scene_name">Give the scene a name:</string>

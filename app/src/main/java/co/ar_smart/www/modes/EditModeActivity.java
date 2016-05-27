@@ -81,7 +81,9 @@ public class EditModeActivity extends AppCompatActivity {
 
                 Intent i=new Intent(EditModeActivity.this,ListCommandsActivity.class);
                 i.putParcelableArrayListExtra("Commands",binders.get(position).cm);
-                i.putExtra("modename",mode.getName());
+                Bundle b=new Bundle();
+                b.putParcelable(EXTRA_MODE,mode);
+                i.putExtras(b);
                 i.putExtra(EXTRA_MESSAGE,API_TOKEN);
                 i.putParcelableArrayListExtra(EXTRA_ADDITIONAL_OBJECT,endpoints);
                 startActivity(i);

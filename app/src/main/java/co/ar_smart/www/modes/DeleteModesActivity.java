@@ -180,6 +180,7 @@ public class DeleteModesActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 deleteMode(h,i);
+                adapter.notifyDataSetChanged();
                 dialog.dismiss();
             }
         });

@@ -70,6 +70,7 @@ public class Mode implements Parcelable {
         in.readTypedList(payload, Command.CREATOR);
         in.readList(minute_of_day, getClass().getClassLoader());
         in.readList(days_of_the_week, getClass().getClassLoader());
+        id=in.readInt();
         timed = in.readByte() != 0;
     }
 
@@ -105,6 +106,7 @@ public class Mode implements Parcelable {
         dest.writeTypedList(payload);
         dest.writeList(minute_of_day);
         dest.writeList(days_of_the_week);
+        dest.writeInt(id);
         dest.writeByte((byte) (timed ? 1 : 0));
     }
 

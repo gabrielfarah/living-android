@@ -53,6 +53,10 @@ public class NewModeActivity extends AppCompatActivity {
 
     private ArrayList<Command> payload;
 
+    private String modename;
+    private int modeid;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,7 +66,8 @@ public class NewModeActivity extends AppCompatActivity {
         PREFERRED_HUB_ID = intent.getIntExtra(EXTRA_MESSAGE_PREF_HUB, -1);
         modes = intent.getParcelableArrayListExtra(EXTRA_OBJECT);
         endpoint_devices = intent.getParcelableArrayListExtra(EXTRA_ADDITIONAL_OBJECT);
-        String modename=intent.getStringExtra("modename");
+        modename=intent.getStringExtra("modename");
+        modeid=intent.getIntExtra("modeid",-1);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setTitle(getResources().getString(R.string.label_add_scene_activity));
@@ -84,6 +89,9 @@ public class NewModeActivity extends AppCompatActivity {
             sceneName.setEnabled(false);
             payload =intent.getParcelableArrayListExtra("Commands");
             submit.setText("Save");
+            if (getSupportActionBar() != null) {
+                getSupportActionBar().setTitle(getResources().getString(R.string.label_edit_scene_activity));
+            }
         }
         else
         {
@@ -293,11 +301,39 @@ public class NewModeActivity extends AppCompatActivity {
         }
         newMode.setPayload(payload);
         Log.d("PAYLOAD FIELD", newMode.getPayload().toString());
-        postModeToServer(newMode);
+        if(modename!=null)
+            editMode(newMode);
+        else
+            postModeToServer(newMode);
     }
 
     private void postModeToServer(Mode mode) {
         ModeManager.addMode(PREFERRED_HUB_ID, mode, API_TOKEN, new ModeManager.ModeCallbackInterface() {
+            @Override
+            public void onFailureCallback() {
+
+            }
+
+            @Override
+            public void onSuccessCallback(List<Mode> guest) {
+
+            }
+
+            @Override
+            public void onSuccessCallback() {
+
+            }
+
+            @Override
+            public void onUnsuccessfulCallback() {
+
+            }
+        });
+    }
+
+    private void editMode(Mode mode) {
+        mode.setId(modeid);
+        ModeManager.editMode(PREFERRED_HUB_ID, mode, API_TOKEN, new ModeManager.ModeCallbackInterface() {
             @Override
             public void onFailureCallback() {
 
