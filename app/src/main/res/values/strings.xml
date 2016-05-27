@@ -22,12 +22,17 @@
     <string name="acept">Acept</string>
     <string name="cancel">Cancel</string>
 
+    <string name="btnEditMode">Edit Mode</string>
+    <string name="btnDeLMode">Delete Mode</string>
+    <string name="btnAddMode">Add Mode</string>
+
 
     <string name="label_deletedev_activity_title">Delete Device</string>
     <string name="label_devices_activity_title">Devices</string>
     <string name="label_icon_activity_title">Select Icon</string>
     <string name="label_room_activity_title">Select Room</string>
     <string name="label_newdev_activity_title">New Devices</string>
+    <string name="label_warning_delete_device">Deseas eliminar el dispositivo</string>
 
     <string name="app_name">Living</string>
     <string name="login_title">Login to your account</string>

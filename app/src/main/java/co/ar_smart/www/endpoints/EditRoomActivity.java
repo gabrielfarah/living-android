@@ -242,6 +242,10 @@ public class EditRoomActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * This interface implements a Retrofit interface for the RoomClient
+     *
+     */
 
     private interface RoomClient {
         @GET("hubs/{hub_id}/rooms/")

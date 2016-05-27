@@ -77,7 +77,11 @@
         <activity android:name="co.ar_smart.www.endpoints.DevicesActivity" />
         <activity android:name="co.ar_smart.www.endpoints.DeleteDeviceActivity" />
         <activity android:name="co.ar_smart.www.modes.ModeManagementActivity" />
-        <activity android:name="co.ar_smart.www.controllers.BinaryZwaveSensorControllerActivity" />
+        <activity android:name="co.ar_smart.www.modes.ListModesActivity" />
+        <activity android:name="co.ar_smart.www.modes.DeleteModesActivity" />
+        <activity android:name="co.ar_smart.www.modes.EditModeActivity" />
+        <activity android:name="co.ar_smart.www.modes.ListCommandsActivity"></activity>
+        <activity android:name="co.ar_smart.www.controllers.BinaryZwaveSensorControllerActivity"></activity>
         <activity android:name="co.ar_smart.www.modes.NewModeActivity" />
         <activity android:name="co.ar_smart.www.modes.ModeEndpointActivityPicker"></activity>
     </application>

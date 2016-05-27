@@ -59,6 +59,8 @@ public class EndpointClassCommand implements Parcelable{
         }
         Log.d("ID MANA", "" + management_id);
         Log.d("ID MANA", "" + payload);
+
+
     }
 
     public static final Creator<EndpointClassCommand> CREATOR = new Creator<EndpointClassCommand>() {

@@ -172,6 +172,9 @@ public class NewDevicesActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * this method get all new devices thartthe hub has detected
+     */
     public void getDevices(final String taskid)
     {
         NewDeviceClient client = RetrofitServiceGenerator.createService(NewDeviceClient.class, API_TOKEN);
@@ -282,6 +285,10 @@ public class NewDevicesActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * This method get preferred hub from the prefereces
+     */
+
     private int getPreferredHub(){
         SharedPreferences settings = getSharedPreferences(PREFS_NAME,
                 Context.MODE_PRIVATE);
@@ -300,6 +307,9 @@ public class NewDevicesActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * This method update the list devices
+     */
     public void updateDevices(View v)
     {
         String addType = getIntent().getStringExtra(EXTRA_TYPE_DEVICE);
@@ -321,6 +331,10 @@ public class NewDevicesActivity extends AppCompatActivity {
             }
         }
     }
+
+    /**
+     * This interface implements a Retrofit interface for the NewDeviceClient Activity
+     */
 
     private interface NewDeviceClient {
 
@@ -344,6 +358,10 @@ public class NewDevicesActivity extends AppCompatActivity {
                 @Path("hub_id") String hub_id, @Path("task_id") String task_id
         );
     }
+
+    /**
+     * This private class represents the backend response when de app asking for new devices
+     */
 
     private class ResponseEndPoints {
         private List<Endpoint> response;

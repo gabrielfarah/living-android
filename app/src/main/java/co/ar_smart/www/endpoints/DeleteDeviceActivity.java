@@ -1,6 +1,7 @@
 package co.ar_smart.www.endpoints;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -11,8 +12,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -52,7 +55,6 @@ public class DeleteDeviceActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_delete_device);
-        sol=0;
         devices=new ArrayList<>();
         myact=this;
 
@@ -94,6 +96,10 @@ public class DeleteDeviceActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * this method get all devices
+     */
+
     public void getDevices()
     {
         final DevicesHubClient client = RetrofitServiceGenerator.createService(DevicesHubClient.class, API_TOKEN);
@@ -118,8 +124,8 @@ public class DeleteDeviceActivity extends AppCompatActivity {
                         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                             @Override
                             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                                deleteEndPoint(""+1,""+3);
+                                Endpoint e=devices.get(position);
+                                showDialog(e.getName(),""+1,""+devices.get(position).getId());
                             }
                         });
 
@@ -128,15 +134,7 @@ public class DeleteDeviceActivity extends AppCompatActivity {
                     }
                     else
                     {
-                        if(sol<30) {
-                            sol = sol + 5;
-                            new Handler().postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    getDevices();
-                                }
-                            }, 5000);
-                        }
+
                     }
 
                 }
@@ -161,6 +159,47 @@ public class DeleteDeviceActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * Show a warning dialog asking if the user is sure to delete the device selected
+     * @param devi name device that the user selected
+     * @param hu preferred hub
+     * @param idd name device that the user selected
+     */
+
+    public void showDialog(String devi, String hu,String idd)
+    {
+        final String h=hu;
+        final String i=idd;
+        final Dialog dialog = new Dialog(DeleteDeviceActivity.this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.dialog_warning_delete);
+        TextView txtname=(TextView) dialog.findViewById(R.id.btnCancelDel);
+        txtname.setText(getResources().getString(R.string.label_warning_delete_device)+" "+devi+"?");
+        Button dialogButton = (Button) dialog.findViewById(R.id.btnDel);
+        dialogButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                deleteEndPoint(h,i);
+                dialog.dismiss();
+            }
+        });
+
+        dialogButton = (Button) dialog.findViewById(R.id.btnCancelNewRoom);
+        dialogButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        dialog.show();
+    }
+
+    /**
+     * Delete device selected
+     * @param hub preferred hub
+     * @param e id endpoint  selected
+     */
     private void deleteEndPoint(String hub,String e)
     {
         DevicesHubClient client = RetrofitServiceGenerator.createService(DevicesHubClient.class, API_TOKEN);
@@ -208,6 +247,9 @@ public class DeleteDeviceActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * This interface implements a Retrofit interface for the DeviceHubActivity
+     */
     private interface DevicesHubClient {
         @GET("hubs/{hub_id}/endpoints/")
         Call<List<Endpoint>> getendpoints(@Path("hub_id") String hub_id);

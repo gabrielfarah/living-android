@@ -51,6 +51,8 @@ public class NewModeActivity extends AppCompatActivity {
     private ArrayList<Triplet> sent_endpoints = new ArrayList<>();
     private TextView sceneName;
 
+    private ArrayList<Command> payload;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,12 +62,25 @@ public class NewModeActivity extends AppCompatActivity {
         PREFERRED_HUB_ID = intent.getIntExtra(EXTRA_MESSAGE_PREF_HUB, -1);
         modes = intent.getParcelableArrayListExtra(EXTRA_OBJECT);
         endpoint_devices = intent.getParcelableArrayListExtra(EXTRA_ADDITIONAL_OBJECT);
+        String modename=intent.getStringExtra("modename");
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setTitle(getResources().getString(R.string.label_add_scene_activity));
         }
         sceneName = (TextView) findViewById(R.id.create_new_scene_name);
+        if(modename!=null)
+        {
+            sceneName.setText(modename);
+            sceneName.setEnabled(false);
+            payload =intent.getParcelableArrayListExtra("Commands");
+        }
+        else
+        {
+            payload=new ArrayList<>();
+        }
+
         Button submit = (Button) findViewById(R.id.create_new_scene_button);
+        submit.setText("Save");
         if (submit != null) {
             submit.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -237,7 +252,7 @@ public class NewModeActivity extends AppCompatActivity {
             return;
         }
         newMode.setName(mode_name);
-        ArrayList<Command> payload = new ArrayList<>();
+        payload = new ArrayList<>();
         for (Triplet e : sent_endpoints) {
             if (e.isChecked()) {
                 switch (e.getEndpoint().getUi_class_command()) {

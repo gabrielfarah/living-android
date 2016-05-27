@@ -150,6 +150,8 @@ public final class Constants {
 
     public static final String EXTRA_ROOM = "EXTRA_ROOM";
 
+    public static final String EXTRA_MODE = "EXTRA_MODE";
+
 
 
     /**

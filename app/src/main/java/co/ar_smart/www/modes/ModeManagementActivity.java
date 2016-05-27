@@ -209,4 +209,20 @@ public class ModeManagementActivity extends AppCompatActivity {
     private void failedToAddMode() {
         Toast.makeText(getApplicationContext(), getResources().getString(R.string.label_only_failed_add_guest), Toast.LENGTH_LONG).show();
     }
+
+    public void editModes(View v)
+    {
+        Intent intent = new Intent(this, ListModesActivity.class);
+        intent.putExtra(EXTRA_MESSAGE, API_TOKEN);
+        intent.putParcelableArrayListExtra(EXTRA_ADDITIONAL_OBJECT, endpoint_devices);
+        startActivity(intent);
+    }
+
+    public void delModes(View v)
+    {
+        Intent intent = new Intent(this, DeleteModesActivity.class);
+        intent.putExtra(EXTRA_MESSAGE, API_TOKEN);
+        startActivity(intent);
+    }
+
 }

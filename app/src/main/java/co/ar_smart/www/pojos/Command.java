@@ -97,12 +97,12 @@ public class Command implements Parcelable {
         ip = in.readString();
         node = in.readInt();
         v = in.readInt();
-        try {
+        /*try {
             parameters = new JSONObject("{}");
             parameters = new JSONObject(in.readString());
         } catch (JSONException e) {
             e.printStackTrace();
-        }
+        }*/
         endpoint_id = in.readInt();
     }
 
@@ -165,6 +165,9 @@ public class Command implements Parcelable {
     public void setV(int v) {
         this.v = v;
     }
+    public int getEndpoint_id(){
+        return endpoint_id;
+    }
 
     /**
      * returns the parameters
@@ -203,7 +206,7 @@ public class Command implements Parcelable {
         dest.writeString(ip);
         dest.writeInt(node);
         dest.writeInt(v);
-        dest.writeString(parameters.toString());
+        //dest.writeString(parameters.toString());
         dest.writeInt(endpoint_id);
     }
 

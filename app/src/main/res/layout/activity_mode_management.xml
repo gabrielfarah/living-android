@@ -10,15 +10,32 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="co.ar_smart.www.modes.ModeManagementActivity">
-
-    <Button
-        android:id="@+id/add_new_mode_button"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/blanco"
-        android:drawableStart="@drawable/new_cross_btn"
-        android:text="Add new scene" />
-
+        android:orientation="horizontal">
+        <Button
+            android:id="@+id/add_new_mode_button"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:background="@color/blanco"
+            android:text="@string/btnAddMode"/>
+        <Button
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:background="@color/blanco"
+            android:text="@string/btnDeLMode"
+            android:onClick="delModes"/>
+        <Button
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:background="@color/blanco"
+            android:text="@string/btnEditMode"
+            android:onClick="editModes"/>
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/mode_list_container"

@@ -76,6 +76,9 @@ public class DevicesActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * this method get all devices
+     */
 
     public void getDevices()
     {
@@ -171,10 +174,13 @@ public class DevicesActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * This method get preferred hub from the prefereces
+     */
+
     private int getPreferredHub() {
         SharedPreferences settings = getSharedPreferences(PREFS_NAME,
                 Context.MODE_PRIVATE);
-        // Get values using keys
         return Integer.parseInt(settings.getString(PREF_HUB, DEFAULT_HUB));
     }
 
@@ -190,6 +196,9 @@ public class DevicesActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * This interface implements a Retrofit interface for the DevicesHubClient Activity
+     */
     private interface DevicesHubClient {
         @GET("hubs/{hub_id}/endpoints/")
         Call<List<Endpoint>> getendpoints(@Path("hub_id") String hub_id);

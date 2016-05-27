@@ -64,6 +64,43 @@ public class ModeManager {
         });
     }
 
+
+    /**
+     * This method will get all the endpoints for a given Hub
+     *
+     * @param hub_id    the id of the hub to add the guest to
+     * @param API_TOKEN the JWT token of the user doing the request
+     * @param callback  the callback interface to implements the UI responses
+     */
+    public static void getEndPoints(int hub_id, String API_TOKEN, final EndPointCallbackInterface callback) {
+        ModeService guestClient = RetrofitServiceGenerator.createService(ModeService.class, API_TOKEN);
+        Call<List<Endpoint>> call = guestClient.getendpoints(""+hub_id);
+        Log.d("OkHttp", String.format("Sending request %s ", call.request().toString()));
+        call.enqueue(new Callback<List<Endpoint>>() {
+            @Override
+            public void onResponse(Call<List<Endpoint>> call, Response<List<Endpoint>> response) {
+                if (response.isSuccessful()) {
+                    Log.d("DEBUGGG", response.message() + " - " + response.code() + " - " + response.body());
+                    callback.onSuccessCallback(response.body());
+                } else {
+                    Log.d("DEBUGGG", response.message() + " - " + response.code());
+                    try {
+                        Log.d("DEBUGGG", response.errorBody().string());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    callback.onUnsuccessfulCallback();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Endpoint>> call, Throwable t) {
+                AnalyticsApplication.getInstance().trackException(new Exception(t));
+                callback.onFailureCallback();
+            }
+        });
+    }
+
     /**
      * This method will remove a modes from a Hub
      *
@@ -197,6 +234,33 @@ public class ModeManager {
     }
 
     /**
+     * This interface defines the callbacks for the states of the getApiToken method
+     */
+    public interface EndPointCallbackInterface {
+        /**
+         * This method will be called if the request failed. The main cause may be the lack of internet connection.
+         */
+        void onFailureCallback();
+
+        /**
+         * This method will return a list of guests from the server in case the request was successful.
+         *
+         * @param guest The list of guests accounts for the hub
+         */
+        void onSuccessCallback(List<Endpoint> guest);
+
+        /**
+         * This method will be called in case the request was successful.
+         */
+        void onSuccessCallback();
+
+        /**
+         * This method will be called if the user doing the request is not the hub admin
+         */
+        void onUnsuccessfulCallback();
+    }
+
+    /**
      * the interface describing the API urls and their response types
      */
     public interface ModeService {
@@ -223,9 +287,15 @@ public class ModeManager {
          *
          * @param hub_id   the hub id into which the modes will be removed
          * @param modes_id the id of the modes to be removed
+         * @param hub_id   the hub id into which the guest will be removed
+         * @param modes_id the id of the guest to be removed
          * @return a JSON containing teh response of the delete method
          */
         @DELETE("hubs/{hub_id}/modes/{modes_id}/")
         Call<ResponseBody> deleteMode(@Path("hub_id") int hub_id, @Path("modes_id") int modes_id);
+
+
+        @GET("hubs/{hub_id}/endpoints/")
+        Call<List<Endpoint>> getendpoints(@Path("hub_id") String hub_id);
     }
 }
