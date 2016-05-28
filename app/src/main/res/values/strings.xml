@@ -150,4 +150,9 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="dialog_already_have_triggers">You already have some triggers for this action. What do you want to do ?</string>
+    <string name="dialog_create_trigger">Create</string>
+    <string name="dialog_remove_trigger">Remove existing one</string>
+    <string name="dialog_remove_trigger_message">Select the trigger to remove</string>
+    <string name="save">Save</string>
 </resources>

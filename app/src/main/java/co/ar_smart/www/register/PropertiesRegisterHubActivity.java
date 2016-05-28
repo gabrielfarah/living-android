@@ -7,21 +7,18 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Bundle;
 import android.provider.MediaStore;
-import android.provider.SyncStateContract;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
 import java.io.IOException;
-
+import org.florescu.android.rangeseekbar.RangeSeekBar;
 import co.ar_smart.www.helpers.Constants;
 import co.ar_smart.www.living.R;
 
@@ -139,6 +136,7 @@ public class PropertiesRegisterHubActivity extends AppCompatActivity
 
     /**
      * Get the path for the latest capture photo
+     *
      * @return Path of the last captured photo
      */
     public String getOriginalImagePath()
@@ -160,9 +158,10 @@ public class PropertiesRegisterHubActivity extends AppCompatActivity
 
     /**
      * Method executed when an Activity returns a result
+     *
      * @param requestCode - Code of the request
-     * @param resultCode - Code of the response
-     * @param data - data atached to result
+     * @param resultCode  - Code of the response
+     * @param data        - data atached to result
      */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
@@ -221,8 +220,8 @@ public class PropertiesRegisterHubActivity extends AppCompatActivity
                 if (staticMap != null)
                 {
                     staticMap.setImageBitmap(bitmap);
+                    staticMap.invalidate();
                 }
-                staticMap.invalidate();
             }
         }
 
@@ -284,7 +283,7 @@ public class PropertiesRegisterHubActivity extends AppCompatActivity
                 Intent i = new Intent(mContext, MapRegisterHubActivity.class);
                 i.putExtra("lat", lastLat);
                 i.putExtra("long", lastLong);
-                i.putExtra("radius",radius);
+                i.putExtra("radius", radius);
                 startActivityForResult(i, 1890);
 
             }
@@ -306,18 +305,18 @@ public class PropertiesRegisterHubActivity extends AppCompatActivity
             {
 
                 EditText edit_text_hub_name = (EditText) findViewById(R.id.edit_text_hub_name);
-                if(edit_text_hub_name != null)
+                if (edit_text_hub_name != null)
                 {
                     hubName = edit_text_hub_name.getText().toString();
-                    if(hubName.equals(""))
+                    if (hubName.equals(""))
                     {
                         displayMessage("Assign a name for the hub.");
                     }
-                    else if((finalLong==0) || (finalLat==0) || (radius==0))
+                    else if ((finalLong == 0) || (finalLat == 0) || (radius == 0))
                     {
                         displayMessage("Select a location in the map.");
                     }
-                    else if(imagePath.equals(Constants.DEFAULT_BACKGROUND_PATH))
+                    else if (imagePath.equals(Constants.DEFAULT_BACKGROUND_PATH))
                     {
                         new AlertDialog.Builder(mContext)
                                 .setIcon(android.R.drawable.ic_dialog_alert)
@@ -326,7 +325,8 @@ public class PropertiesRegisterHubActivity extends AppCompatActivity
                                 .setPositiveButton("Yes", new DialogInterface.OnClickListener()
                                 {
                                     @Override
-                                    public void onClick(DialogInterface dialog, int which) {
+                                    public void onClick(DialogInterface dialog, int which)
+                                    {
                                         registerHub();
                                     }
 
@@ -355,21 +355,25 @@ public class PropertiesRegisterHubActivity extends AppCompatActivity
     private void registerHub()
     {
         Intent i = new Intent(mContext, RegisterHubActivity.class);
-        i.putExtra("hubName",hubName);
-        i.putExtra("backgroundPath",imagePath);
-        i.putExtra("hubLatitude",finalLat);
-        i.putExtra("hubLongitude",finalLong);
-        i.putExtra("hubRadius",radius);
+        i.putExtra("hubName", hubName);
+        i.putExtra("backgroundPath", imagePath);
+        i.putExtra("hubLatitude", finalLat);
+        i.putExtra("hubLongitude", finalLong);
+        i.putExtra("hubRadius", radius);
         startActivity(i);
     }
 
     /**
      * This method display a dialog message in the UI thread given a message.
+     *
      * @param message The message sent to be displayed in the main UI
      */
-    private void displayMessage(final String message){
-        PropertiesRegisterHubActivity.this.runOnUiThread(new Runnable() {
-            public void run() {
+    private void displayMessage(final String message)
+    {
+        PropertiesRegisterHubActivity.this.runOnUiThread(new Runnable()
+        {
+            public void run()
+            {
                 Toast.makeText(PropertiesRegisterHubActivity.this, message, Toast.LENGTH_LONG).show();
             }
         });

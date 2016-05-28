@@ -6,6 +6,8 @@ import android.widget.Toast;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import co.ar_smart.www.living.R;
 import okhttp3.MediaType;
@@ -84,6 +86,10 @@ public final class Constants {
      */
     public static final String EXTRA_MESSAGE_PREF_HUB = "co.ar-smart.www.living.MESSAGE_PREF_HUB";
     /**
+     * UID of intra activities messages. Is used for passing messages between intents among activities.
+     */
+    public static final String EXTRA_BOOLEAN = "co.ar-smart.www.living.BOOLEAN";
+    /**
      * The header representing JSON media type for he okHttp library
      */
     public static final MediaType JSON
@@ -152,7 +158,67 @@ public final class Constants {
 
     public static final String EXTRA_MODE = "EXTRA_MODE";
 
+    /**
+     * Enum for sensors type for Triggers
+     */
+    public enum Trigger_type{BINARY,RANGE};
+    /**
+     * Enum for operands for triggers
+     */
+    public enum Operand{less,greater,equals,between,not_between,distinc};
+    /**
+     *
+     */
+    public static final String EXTRA_LIST_PARCELABLE_FIRST = "co.ar-smart.www.living.EXTRA_LIST_PARCELABLE_FIRST";
+    /**
+     * Array of the days of the week
+     */
+    public static final String[] daysArray = new String[]{"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
+    /**
+     * HashMap of the days of the week with its abreviatures
+     * key for map is a String
+     */
+    private static Map<String,String> daysMapString;
+    public static Map<String,String> getHashMapDaysFromString()
+    {
+        if(daysMapString == null)
+        {
+            daysMapString = new HashMap<>();
+            daysMapString.put("Monday", "Mon");
+            daysMapString.put("Tuesday", "Tue");
+            daysMapString.put("Wednesday", "Wed");
+            daysMapString.put("Thursday", "Thu");
+            daysMapString.put("Friday", "Fri");
+            daysMapString.put("Saturday", "Sat");
+            daysMapString.put("Sunday", "Sun");
+        }
+        return daysMapString;
+    }
+    /**
+     * HashMap of the days of the week with its abreviatures
+     * key for map is an Integer
+     */
+    private static Map<Integer,String> daysMapInt;
+    public static Map<Integer,String> getHashMapDaysFromInteger()
+    {
+        if(daysMapInt == null)
+        {
+            daysMapInt = new HashMap<>();
+            daysMapInt.put(0, "Mon");
+            daysMapInt.put(1, "Tue");
+            daysMapInt.put(2, "Wed");
+            daysMapInt.put(3, "Thu");
+            daysMapInt.put(4, "Fri");
+            daysMapInt.put(5, "Sat");
+            daysMapInt.put(6, "Sun");
+        }
+        return daysMapInt;
+    }
 
+    /**
+     * Default boolean list of selected days
+     */
+    public static final boolean[] boolSelectedDaysArray = new boolean[]{true, false, true, false, true, false, true};
 
     /**
      * This method will return a future date given a timeout in seconds.
