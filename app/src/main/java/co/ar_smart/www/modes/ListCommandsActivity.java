@@ -21,6 +21,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,6 +32,12 @@ import co.ar_smart.www.living.R;
 import co.ar_smart.www.pojos.Command;
 import co.ar_smart.www.pojos.Endpoint;
 import co.ar_smart.www.pojos.Mode;
+import okhttp3.RequestBody;
+import okio.Buffer;
+import okio.BufferedSink;
+import okio.ByteString;
+import okio.Source;
+import okio.Timeout;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -184,6 +193,7 @@ public class ListCommandsActivity extends AppCompatActivity {
         mode.setPayload(ctemp);
         ListCommandClient client = RetrofitServiceGenerator.createService(ListCommandClient.class, API_TOKEN);
         Call<Mode> call2 = client.delCommand(""+1,""+mode.getId(),mode);
+
 
         call2.enqueue(new Callback<Mode>()
         {

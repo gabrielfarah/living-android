@@ -71,8 +71,6 @@ public class DeleteModesActivity extends AppCompatActivity {
                     view=getLayoutInflater().inflate(R.layout.row_list_stand,null);
                     TextView lb=(TextView)view.findViewById(R.id.label_item_stand);
                     lb.setText(modes.get(position).getName());
-                    lb=(TextView)view.findViewById(R.id.label_item2_stand);
-                    lb.setText(modes.get(position).getName());
                     ImageView i=(ImageView) view.findViewById(R.id.icon_list_stand);
                     i.setImageDrawable(ContextCompat.getDrawable(myact, R.drawable.delete_btn));
                 }
@@ -93,19 +91,23 @@ public class DeleteModesActivity extends AppCompatActivity {
      * @param id id mode
      *
      */
-    private void deleteMode(int hubid,int id) {
+    private void deleteMode(int hubid, int id, final int position) {
         ModeManager.removeMode(hubid, id, API_TOKEN, new ModeManager.ModeCallbackInterface() {
             @Override
             public void onFailureCallback() {
+
             }
 
             @Override
             public void onSuccessCallback(List<Mode> guest) {
+                modes.remove(position);
+                adapter.notifyDataSetChanged();
             }
 
             @Override
             public void onSuccessCallback() {
-
+                modes.remove(position);
+                adapter.notifyDataSetChanged();
             }
 
             @Override
@@ -139,7 +141,7 @@ public class DeleteModesActivity extends AppCompatActivity {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                         Mode e=modes.get(position);
-                        showDialog(e.getName(),1,modes.get(position).getId());
+                        showDialog(e.getName(),1,modes.get(position).getId(),position);
                     }
                 });
 
@@ -165,11 +167,13 @@ public class DeleteModesActivity extends AppCompatActivity {
      * @param modename name mode
      * @param hu preferred hub
      * @param idd id mode
+     * @param pos position item (Mode)
      */
-    public void showDialog(String modename, int hu,int idd)
+    public void showDialog(String modename, int hu,int idd, int pos)
     {
         final int h=hu;
         final int i=idd;
+        final int posi=pos;
         final Dialog dialog = new Dialog(DeleteModesActivity.this);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.dialog_warning_delete);
@@ -179,8 +183,7 @@ public class DeleteModesActivity extends AppCompatActivity {
         dialogButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                deleteMode(h,i);
-                adapter.notifyDataSetChanged();
+                deleteMode(h,i,posi);
                 dialog.dismiss();
             }
         });

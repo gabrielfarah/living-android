@@ -12,7 +12,9 @@ import co.ar_smart.www.pojos.Endpoint;
 import co.ar_smart.www.pojos.Mode;
 import co.ar_smart.www.pojos.hue.HueEndpoint;
 import co.ar_smart.www.pojos.sonos.SonosEndpoint;
+import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
+import okio.Buffer;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -21,6 +23,7 @@ import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.PATCH;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
 import retrofit2.http.Path;
 
 /**
@@ -285,6 +288,7 @@ public class ModeManager {
             public void onFailure(Call call, Throwable t) {
                 AnalyticsApplication.getInstance().trackException(new Exception(t));
                 callback.onFailureCallback();
+
             }
         });
     }
@@ -327,7 +331,7 @@ public class ModeManager {
         @GET("hubs/{hub_id}/endpoints/")
         Call<List<Endpoint>> getendpoints(@Path("hub_id") String hub_id);
 
-        @PATCH("hubs/{hub_id}/modes/{mode_id}/")
+        @PUT("hubs/{hub_id}/modes/{mode_id}/")
         Call<List<Endpoint>> editMode(@Path("hub_id") int hub_id,@Path("mode_id") int mode_id,@Body Mode mode);
     }
 }
