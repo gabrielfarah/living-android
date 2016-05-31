@@ -135,6 +135,7 @@ public class ModeManagementActivity extends AppCompatActivity {
      * The user must be registered for the request to succeed.
      */
     private void addNewMode() {
+        //TODO el add deberia de empezarce para resultado y al agregar un modo se deberia de agregar a la lista del UI de aca
         Intent intent = new Intent(this, NewModeActivity.class);
         intent.putExtra(EXTRA_MESSAGE, API_TOKEN);
         intent.putExtra(EXTRA_MESSAGE_PREF_HUB, PREFERRED_HUB_ID);

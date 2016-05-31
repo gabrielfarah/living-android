@@ -79,10 +79,8 @@ public class Endpoint implements Parcelable{
      * The category of the device (Lighting, entertainment, security, etc)
      */
     private Category category;
-
     public Endpoint() {
     }
-
     /**
      * This constructor method creates an Endpoint object from a Parcel
      * @param in The parcer to deserialize the object
@@ -103,6 +101,14 @@ public class Endpoint implements Parcelable{
         category = in.readParcelable(getClass().getClassLoader());
         //in.readTypedList(endpoint_classes, EndpointClass.CREATOR);
         id = in.readInt();
+    }
+
+    public int getState() {
+        return state;
+    }
+
+    public void setState(int state) {
+        this.state = state;
     }
 
     /**
@@ -180,6 +186,10 @@ public class Endpoint implements Parcelable{
      */
     public boolean isActive() {
         return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 
     /**

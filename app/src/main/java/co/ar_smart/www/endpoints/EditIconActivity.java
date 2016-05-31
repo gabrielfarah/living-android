@@ -89,6 +89,11 @@ public class EditIconActivity extends AppCompatActivity {
         public String getImage() {
             return image;
         }
+
+        @Override
+        public boolean isActive() {
+            return false;
+        }
     }
 
 

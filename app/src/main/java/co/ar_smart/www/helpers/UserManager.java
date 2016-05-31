@@ -2,6 +2,8 @@ package co.ar_smart.www.helpers;
 
 import android.util.Log;
 
+import java.io.IOException;
+
 import co.ar_smart.www.analytics.AnalyticsApplication;
 import co.ar_smart.www.pojos.User;
 import retrofit2.Call;
@@ -58,9 +60,14 @@ public class UserManager {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
                 if (response.isSuccessful()) {
-                    callback.onSuccessCallback(response.body());
+                    User ru = response.body();
+                    callback.onSuccessCallback(ru);
                 } else {
-                    Log.d("DEBUGGG", response.toString());
+                    try {
+                        System.out.print(response.errorBody().string());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                     callback.onUnsuccessfulCallback();
                 }
             }

@@ -6,26 +6,29 @@ import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.BaseAdapter;
-import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import java.util.List;
 
 import co.ar_smart.www.living.R;
+import co.ar_smart.www.pojos.Endpoint;
 
 /**
  * Created by Gabriel on 5/3/2016.
  */
-public class GridDevicesAdapter<T extends co.ar_smart.www.interfaces.IDrawable> extends BaseAdapter {
+public class HomeGridDevicesAdapter extends BaseAdapter {
 
     private Context context;
-    private List<T> endpoints;
+    private List<Endpoint> endpoints;
 
-    public GridDevicesAdapter(Context c, List<T> endpointGrid){
+    public HomeGridDevicesAdapter(Context c, List<Endpoint> endpointGrid) {
         context = c;
         endpoints = endpointGrid;
     }
@@ -37,7 +40,7 @@ public class GridDevicesAdapter<T extends co.ar_smart.www.interfaces.IDrawable> 
         return wrappedDrawable;
     }
 
-    private int getDrawableFromString(String name){
+    private int getDrawableFromString(String name) {
         if (name != null) {
             switch (name) {
                 case "ligh":
@@ -72,23 +75,36 @@ public class GridDevicesAdapter<T extends co.ar_smart.www.interfaces.IDrawable> 
         if (convertView == null) {
             // if it's not recycled, initialize some attributes
             imageView = new ImageView(context);
-            imageView.setLayoutParams(new GridView.LayoutParams(250, 250));
-            imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-            imageView.setPadding(8, 8, 8, 8);
+            //params.setLayoutDirection(1);
+            DisplayMetrics metrics = context.getResources().getDisplayMetrics();
+            int screenHeight = metrics.heightPixels;
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                    AbsListView.LayoutParams.MATCH_PARENT,
+                    screenHeight / 4, 1.0f);
+            imageView.setLayoutParams(params);
+            //imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+
+            //imageView.setPadding(4, 4, 4, 4);
             imageView.setBackgroundColor(ContextCompat.getColor(context, R.color.subBarras));//R.color.subBarras);
-        } else
-        {
+        } else {
             imageView = (ImageView) convertView;
         }
-        if(endpoints.get(position)!=null)
-        {
+        if (endpoints.get(position) != null) {
             int temp = getDrawableFromString(endpoints.get(position).getImage());
             if (!endpoints.get(position).isActive()) {
-                imageView.setImageDrawable(setTint(temp, Color.GREEN));
+                imageView.setImageResource(temp);
+                imageView.setAlpha((float) 0.4);
                 Log.d("color", "GRIS");
             } else {
-                imageView.setImageResource(temp);
-                Log.d("color", "ORIGINAL");
+                imageView.setAlpha((float) 1.0);
+                if (endpoints.get(position).getState() > 0) {
+                    imageView.setImageDrawable(setTint(temp, Color.GREEN));
+                    //imageView.setImageResource(temp);
+                    Log.d("color", "ORIGINAL");
+                } else {
+                    //imageView.setImageResource(temp);
+                    imageView.setImageDrawable(setTint(temp, Color.GRAY));
+                }
             }
         }
         return imageView;

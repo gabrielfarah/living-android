@@ -1,5 +1,7 @@
 package co.ar_smart.www.helpers;
 
+import android.util.Log;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -51,6 +53,7 @@ public class CommandManager {
                 String jsonData = response.body().string();
                 response.body().close();
                 if (!response.isSuccessful()) {
+                    Log.d("UNSEUCCESS", response.body().string());
                     callback.onUnsuccessfulCallback();
                 } else {
                     try {
@@ -95,6 +98,7 @@ public class CommandManager {
                 String jsonData = response.body().string();
                 response.body().close();
                 if (!response.isSuccessful()) {
+                    Log.d("getresponse unsuccess", response.body().string());
                     callback.onUnsuccessfulCallback();
                 } else {
                     try {
@@ -137,6 +141,7 @@ public class CommandManager {
                 String jsonData = response.body().string();
                 response.body().close();
                 if (!response.isSuccessful()) {
+                    Log.d("unsuccessful", jsonData.toString());
                     callback.onUnsuccessfulCallback();
                 } else {
                     try {

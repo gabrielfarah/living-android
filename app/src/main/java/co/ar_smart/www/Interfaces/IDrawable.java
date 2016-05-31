@@ -5,5 +5,7 @@ package co.ar_smart.www.interfaces;
  */
 public interface IDrawable {
 
-    public String getImage();
+    String getImage();
+
+    boolean isActive();
 }

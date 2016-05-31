@@ -262,6 +262,7 @@ public class NewModeActivity extends AppCompatActivity {
         }
         newMode.setName(mode_name);
         payload = new ArrayList<>();
+        //TODO esto no sirve. solo envia los que se prenden no los que se apagan.
         for (Triplet e : sent_endpoints) {
             if (e.isChecked()) {
                 switch (e.getEndpoint().getUi_class_command()) {
@@ -300,14 +301,14 @@ public class NewModeActivity extends AppCompatActivity {
             return;
         }
         newMode.setPayload(payload);
-        Log.d("PAYLOAD FIELD", newMode.getPayload().toString());
+        Log.d("PAYLOAD FIELD", newMode.getDays_of_the_week().toString());
         if(modename!=null)
             editMode(newMode);
         else
             postModeToServer(newMode);
     }
 
-    private void postModeToServer(Mode mode) {
+    private void postModeToServer(final Mode mode) {
         ModeManager.addMode(PREFERRED_HUB_ID, mode, API_TOKEN, new ModeManager.ModeCallbackInterface() {
             @Override
             public void onFailureCallback() {
@@ -321,12 +322,14 @@ public class NewModeActivity extends AppCompatActivity {
 
             @Override
             public void onSuccessCallback() {
+                Toast.makeText(getApplicationContext(), "Modo: " + mode.getName() + " creado exitosamente", Toast.LENGTH_SHORT).show();
+                finish();
 
             }
 
             @Override
             public void onUnsuccessfulCallback() {
-
+                Toast.makeText(getApplicationContext(), "there was a problem doing the request please try again", Toast.LENGTH_SHORT).show();
             }
         });
     }

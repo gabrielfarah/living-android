@@ -8,6 +8,17 @@ import android.os.Parcelable;
  * Created by Gabriel on 5/4/2016.
  */
 public class Room implements Parcelable{
+    public static final Creator<Room> CREATOR = new Creator<Room>() {
+        @Override
+        public Room createFromParcel(Parcel in) {
+            return new Room(in);
+        }
+
+        @Override
+        public Room[] newArray(int size) {
+            return new Room[size];
+        }
+    };
     private String description;
     private int hub;
 
@@ -22,17 +33,9 @@ public class Room implements Parcelable{
         description=d;
     }
 
-    public static final Creator<Room> CREATOR = new Creator<Room>() {
-        @Override
-        public Room createFromParcel(Parcel in) {
-            return new Room(in);
-        }
-
-        @Override
-        public Room[] newArray(int size) {
-            return new Room[size];
-        }
-    };
+    public int getHub() {
+        return hub;
+    }
 
     public String toString(){
         return "("+description+" - "+hub+")";
@@ -52,5 +55,16 @@ public class Room implements Parcelable{
     public String getDescription()
     {
         return description;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        boolean sameSame = false;
+
+        if (object != null && object instanceof Mode) {
+            sameSame = this.description == ((Room) object).getDescription();
+        }
+
+        return sameSame;
     }
 }

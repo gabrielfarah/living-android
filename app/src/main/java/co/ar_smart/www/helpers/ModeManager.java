@@ -4,24 +4,21 @@ import android.util.Log;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import co.ar_smart.www.analytics.AnalyticsApplication;
+import co.ar_smart.www.interfaces.ICommandClass;
 import co.ar_smart.www.pojos.Command;
 import co.ar_smart.www.pojos.Endpoint;
 import co.ar_smart.www.pojos.Mode;
-import co.ar_smart.www.pojos.hue.HueEndpoint;
-import co.ar_smart.www.pojos.sonos.SonosEndpoint;
-import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
-import okio.Buffer;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
-import retrofit2.http.PATCH;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
@@ -155,7 +152,9 @@ public class ModeManager {
                     callback.onSuccessCallback();
                 } else {
                     try {
-                        Log.d("DEBUGGG", response.message() + " - " + response.code() + " " + response.errorBody().string());
+                        String errorMessage = response.message() + " - " + response.code() + " " + response.errorBody().string();
+                        Log.d("DEBUGGG", errorMessage);
+                        AnalyticsApplication.getInstance().trackEvent("ERROR", "CREATEMODE", errorMessage);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -171,36 +170,28 @@ public class ModeManager {
         });
     }
 
+
     public static ArrayList<Mode> getDefaultModes(ArrayList<Endpoint> endpoint_devices) {
         ArrayList<Mode> response = new ArrayList<>();
         Mode mode_all_off = new Mode(0, "Turn Off All");
         Mode mode_all_on = new Mode(1, "Turn On All");
         ArrayList<Command> off_commands = new ArrayList<>();
         ArrayList<Command> on_commands = new ArrayList<>();
+        HashMap<String, ICommandClass> map = Constants.getUiMapClasses();
+        ICommandClass te;
         for (Endpoint e : endpoint_devices) {
             Log.d("meto modos1", e.toString());
-            switch (e.getUi_class_command()) {
-                case "ui-sonos":
-                    Log.d("meto modos1", "sonos");
-                    SonosEndpoint sonosEndpoint = new SonosEndpoint(e);
-                    off_commands.add(sonosEndpoint.getTurnOffCommand());
-                    on_commands.add(sonosEndpoint.getTurnOnCommand());
-                    break;
-                case "ui-lock":
-                    if (e.getEndpoint_type().equalsIgnoreCase("zwave")) {
-                        //TODO
-                    } else {
-                        //TODO
-                    }
-                    break;
-                case "ui-hue":
-                    Log.d("meto modos1", "hue");
-                    HueEndpoint hueEndpoint = new HueEndpoint(e);
-                    off_commands.add(hueEndpoint.getTurnOffCommand());
-                    on_commands.add(hueEndpoint.getTurnOnCommand());
-                    break;
-                default:
-                    AnalyticsApplication.getInstance().trackEvent("Device UI Class", "DoNotExist", "The device in hub:" + e.getHub() + " named:" + e.getName() + " the ui class does not correspond. UI:" + e.getUi_class_command());
+            if (e.getEndpoint_type().equalsIgnoreCase("zwave")) {
+                te = map.get(e.getUi_class_command() + "-zwave");
+            } else {
+                te = map.get(e.getUi_class_command());
+            }
+            if (te != null) {
+                te.setEndpoint(e);
+                off_commands.add(te.getTurnOffCommand());
+                on_commands.add(te.getTurnOnCommand());
+            } else {
+                AnalyticsApplication.getInstance().trackEvent("Device UI Class", "DoNotExist", "The device in hub:" + e.getHub() + " named:" + e.getName() + " the ui class does not correspond. UI:" + e.getUi_class_command());
             }
         }
         mode_all_off.setPayload(off_commands);
@@ -208,6 +199,33 @@ public class ModeManager {
         response.add(mode_all_off);
         response.add(mode_all_on);
         return response;
+    }
+
+    public static void editMode(int hub_id, Mode modo, String API_TOKEN, final ModeCallbackInterface callback) {
+        ModeService modesClient = RetrofitServiceGenerator.createService(ModeService.class, API_TOKEN);
+        Call call = modesClient.editMode(hub_id, modo.getId(), modo);
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call call, Response response) {
+                if (response.isSuccessful()) {
+                    callback.onSuccessCallback();
+                } else {
+                    try {
+                        Log.d("DEBUGGG", response.message() + " - " + response.code() + " " + response.errorBody().string());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    callback.onUnsuccessfulCallback();
+                }
+            }
+
+            @Override
+            public void onFailure(Call call, Throwable t) {
+                AnalyticsApplication.getInstance().trackException(new Exception(t));
+                callback.onFailureCallback();
+
+            }
+        });
     }
 
     /**
@@ -237,6 +255,7 @@ public class ModeManager {
         void onUnsuccessfulCallback();
     }
 
+
     /**
      * This interface defines the callbacks for the states of the getApiToken method
      */
@@ -262,35 +281,6 @@ public class ModeManager {
          * This method will be called if the user doing the request is not the hub admin
          */
         void onUnsuccessfulCallback();
-    }
-
-
-    public static void editMode(int hub_id,Mode modo, String API_TOKEN, final ModeCallbackInterface callback)
-    {
-        ModeService modesClient = RetrofitServiceGenerator.createService(ModeService.class, API_TOKEN);
-        Call call = modesClient.editMode(hub_id,modo.getId(), modo);
-        call.enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(Call call, Response response) {
-                if (response.isSuccessful()) {
-                    callback.onSuccessCallback();
-                } else {
-                    try {
-                        Log.d("DEBUGGG", response.message() + " - " + response.code() + " " + response.errorBody().string());
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    callback.onUnsuccessfulCallback();
-                }
-            }
-
-            @Override
-            public void onFailure(Call call, Throwable t) {
-                AnalyticsApplication.getInstance().trackException(new Exception(t));
-                callback.onFailureCallback();
-
-            }
-        });
     }
 
     /**

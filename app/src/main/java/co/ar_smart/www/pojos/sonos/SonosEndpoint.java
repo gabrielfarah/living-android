@@ -66,7 +66,7 @@ public class SonosEndpoint implements ICommandClass {
     private ArrayList<MusicTrack> queue = new ArrayList<>();
 
     /**
-     * The constructor of a new SonosEndpoint class
+     * The constructor of a new ZwaveBinaryEndpoint class
      * @param nEndpoint the base endpoint with the required fields (specially ip)
      */
     public SonosEndpoint(Endpoint nEndpoint) {
@@ -108,6 +108,10 @@ public class SonosEndpoint implements ICommandClass {
         stop.setTarget("sonos");
     }
 
+    public SonosEndpoint() {
+
+    }
+
     /**
      * This method will get the previous song command
      *
@@ -124,6 +128,45 @@ public class SonosEndpoint implements ICommandClass {
      */
     public static String getNext() {
         return next.toString();
+    }
+
+    public void setEndpoint(Endpoint nEndpoint) {
+        endpoint = nEndpoint;
+        //get_playlists = "[{\"type\":\"wifi\",\"target\":\"sonos\",\"ip\":\"" + endpoint.getIp_address() + "\",\"function\":\"get_sonos_playlists\",\"parameters\":[]}]";
+        get_playlists = new Command(nEndpoint);
+        get_playlists.setFunction("get_sonos_playlists");
+        get_playlists.setTarget("sonos");
+
+        //get_current_queue = "[{\"type\":\"wifi\",\"target\":\"sonos\",\"ip\":\"" + endpoint.getIp_address() + "\",\"function\":\"get_queue\",\"parameters\":[]}]";
+        get_current_queue = new Command(nEndpoint);
+        get_current_queue.setFunction("get_queue");
+        get_current_queue.setTarget("sonos");
+
+        get_ui = "[{\"type\":\"wifi\",\"target\":\"sonos\",\"ip\":\"" + endpoint.getIp_address() + "\",\"function\":\"get_ui_info\",\"parameters\":[]}]";
+
+        //play = "[{\"type\":\"wifi\",\"target\":\"sonos\",\"ip\":\"" + endpoint.getIp_address() + "\",\"function\":\"play\",\"parameters\":[]}]";
+        play = new Command(nEndpoint);
+        play.setFunction("play");
+        play.setTarget("sonos");
+
+        //pause = "[{\"type\":\"wifi\",\"target\":\"sonos\",\"ip\":\"" + endpoint.getIp_address() + "\",\"function\":\"pause\",\"parameters\":[]}]";
+        pause = new Command(nEndpoint);
+        pause.setFunction("pause");
+        pause.setTarget("sonos");
+
+        //back = "[{\"type\":\"wifi\",\"target\":\"sonos\",\"ip\":\"" + endpoint.getIp_address() + "\",\"function\":\"play_previous\",\"parameters\":[]}]";
+        back = new Command(nEndpoint);
+        back.setFunction("play_previous");
+        back.setTarget("sonos");
+
+        //next = "[{\"type\":\"wifi\",\"target\":\"sonos\",\"ip\":\"" + endpoint.getIp_address() + "\",\"function\":\"play_next\",\"parameters\":[]}]";
+        next = new Command(nEndpoint);
+        next.setFunction("play_next");
+        next.setTarget("sonos");
+
+        stop = new Command(nEndpoint);
+        stop.setFunction("stop");
+        stop.setTarget("sonos");
     }
 
     /**

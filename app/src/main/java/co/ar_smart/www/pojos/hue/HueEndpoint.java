@@ -3,8 +3,7 @@ package co.ar_smart.www.pojos.hue;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.google.gson.JsonObject;
 
 import co.ar_smart.www.interfaces.ICommandClass;
 import co.ar_smart.www.pojos.Command;
@@ -38,13 +37,16 @@ public class HueEndpoint implements Parcelable, ICommandClass {
 
 
     /**
-     * The constructor of a new SonosEndpoint class
+     * The constructor of a new ZwaveBinaryEndpoint class
      *
      * @param nEndpoint the base endpoint with the required fields (specially ip)
      */
     public HueEndpoint(Endpoint nEndpoint) {
         endpoint = nEndpoint;
         get_ui = "[{\"type\":\"wifi\",\"target\":\"hue\",\"ip\":\"" + endpoint.getIp_address() + "\",\"function\":\"get_ui_info\",\"parameters\":[]}]";
+    }
+
+    public HueEndpoint() {
     }
 
     /**
@@ -65,7 +67,6 @@ public class HueEndpoint implements Parcelable, ICommandClass {
     public String get_ui() {
         return get_ui;
     }
-
 
     @Override
     public String toString() {
@@ -91,6 +92,11 @@ public class HueEndpoint implements Parcelable, ICommandClass {
         return endpoint;
     }
 
+    public void setEndpoint(Endpoint nEndpoint) {
+        endpoint = nEndpoint;
+        get_ui = "[{\"type\":\"wifi\",\"target\":\"hue\",\"ip\":\"" + endpoint.getIp_address() + "\",\"function\":\"get_ui_info\",\"parameters\":[]}]";
+    }
+
     /**
      * This method get the command for setting a color for a specific hue light
      * @param lid the ID of the light to set the color
@@ -103,15 +109,11 @@ public class HueEndpoint implements Parcelable, ICommandClass {
         Command c = new Command(endpoint);
         c.setFunction("set_color_to_light_by_id");
         c.setTarget("hue");
-        JSONObject jp = new JSONObject();
-        try {
-            jp.put("r", r);
-            jp.put("g", g);
-            jp.put("b", b);
-            jp.put("light_id", lid);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        JsonObject jp = new JsonObject();
+        jp.addProperty("r", r);
+        jp.addProperty("g", g);
+        jp.addProperty("b", b);
+        jp.addProperty("light_id", lid);
         c.setParameters(jp);
         return c;
     }
@@ -126,13 +128,9 @@ public class HueEndpoint implements Parcelable, ICommandClass {
         Command c = new Command(endpoint);
         c.setFunction("set_brightness_to_light_by_id");
         c.setTarget("hue");
-        JSONObject jp = new JSONObject();
-        try {
-            jp.put("brightness", value);
-            jp.put("light_id", lid);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        JsonObject jp = new JsonObject();
+        jp.addProperty("brightness", value);
+        jp.addProperty("light_id", lid);
         c.setParameters(jp);
         return c;
         /*return "[{\"type\":\"wifi\",\"target\":\"hue\",\"ip\":\"" + endpoint.getIp_address() +
@@ -150,13 +148,9 @@ public class HueEndpoint implements Parcelable, ICommandClass {
         Command c = new Command(endpoint);
         c.setFunction("set_saturation_to_light_by_id");
         c.setTarget("hue");
-        JSONObject jp = new JSONObject();
-        try {
-            jp.put("saturation", value);
-            jp.put("light_id", lid);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        JsonObject jp = new JsonObject();
+        jp.addProperty("saturation", value);
+        jp.addProperty("light_id", lid);
         c.setParameters(jp);
         return c;
         /*return "[{\"type\":\"wifi\",\"target\":\"hue\",\"ip\":\"" + endpoint.getIp_address() +

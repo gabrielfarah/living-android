@@ -2,12 +2,10 @@ package co.ar_smart.www.endpoints;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,21 +14,18 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import co.ar_smart.www.helpers.RetrofitServiceGenerator;
 import co.ar_smart.www.living.R;
-import co.ar_smart.www.pojos.Endpoint;
 import co.ar_smart.www.pojos.Room;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -40,15 +35,8 @@ import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 
-import static co.ar_smart.www.helpers.Constants.ACTION_EDIT;
-import static co.ar_smart.www.helpers.Constants.DEFAULT_HUB;
-import static co.ar_smart.www.helpers.Constants.EXTRA_ACTION;
-import static co.ar_smart.www.helpers.Constants.EXTRA_CATEGORY_DEVICE;
 import static co.ar_smart.www.helpers.Constants.EXTRA_MESSAGE;
 import static co.ar_smart.www.helpers.Constants.EXTRA_ROOM;
-import static co.ar_smart.www.helpers.Constants.EXTRA_UID;
-import static co.ar_smart.www.helpers.Constants.PREFS_NAME;
-import static co.ar_smart.www.helpers.Constants.PREF_HUB;
 
 public class EditRoomActivity extends AppCompatActivity {
 
@@ -182,10 +170,14 @@ public class EditRoomActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if(!txtname.getText().equals(""))
                 {
-                    addRoom(String.valueOf(txtname.getText()));
-                    adapter.notifyDataSetChanged();
+                    if (!rooms.contains(String.valueOf(txtname.getText()).toUpperCase())) {
+                        addRoom(String.valueOf(txtname.getText()).toUpperCase());
+                        adapter.notifyDataSetChanged();
+                    } else {
+                        Toast.makeText(EditRoomActivity.this, "A room with that name already exits",
+                                Toast.LENGTH_SHORT).show();
+                    }
                 }
-
                 dialog.dismiss();
             }
         });
@@ -206,11 +198,11 @@ public class EditRoomActivity extends AppCompatActivity {
     {
         final Room newRoom=new Room(Integer.parseInt(getHub()),room);
         RoomClient client = RetrofitServiceGenerator.createService(RoomClient.class, API_TOKEN);
-        Call<List<Room>> call2 = client.addroom(getHub(),newRoom);
+        Call<Room> call2 = client.addroom(getHub(), newRoom);
 
-        call2.enqueue(new Callback<List<Room>>() {
+        call2.enqueue(new Callback<Room>() {
             @Override
-            public void onResponse(Call<List<Room>> call, Response<List<Room>> response) {
+            public void onResponse(Call<Room> call, Response<Room> response) {
                 if (response.isSuccessful()) {
                      //     rooms.clear//
                     // rooms.addAll(getRooms());();
@@ -219,13 +211,21 @@ public class EditRoomActivity extends AppCompatActivity {
                 } else {
                     Toast.makeText(EditRoomActivity.this, "Error al agregar área",
                             Toast.LENGTH_SHORT).show();
+                    try {
+                        Log.d("ERROR Agregar AREA 1", response.errorBody().string());
+                        Log.d("ERROR Agregar AREA 1", response.message());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
 
             @Override
-            public void onFailure(Call<List<Room>> call, Throwable t) {
+            public void onFailure(Call<Room> call, Throwable t) {
                 Toast.makeText(EditRoomActivity.this, "Error al agregar área",
                         Toast.LENGTH_SHORT).show();
+                Log.d("ERROR Agregar AREA 2", t.getMessage());
+                t.printStackTrace();
             }
         });
 
@@ -242,6 +242,14 @@ public class EditRoomActivity extends AppCompatActivity {
         }
     }
 
+    public String getHub() {
+        /*SharedPreferences settings = getSharedPreferences(PREFS_NAME,
+                Context.MODE_PRIVATE);
+        return settings.getString(PREF_HUB, DEFAULT_HUB);*/
+        return "" + 1;
+
+    }
+
     /**
      * This interface implements a Retrofit interface for the RoomClient
      *
@@ -252,15 +260,6 @@ public class EditRoomActivity extends AppCompatActivity {
         Call<List<Room>> getrooms(@Path("hub_id") String hub_id);
 
         @POST("hubs/{hub_id}/rooms/")
-        Call<List<Room>> addroom(@Path("hub_id") String hub_id,@Body Room r);
-    }
-
-    public String getHub()
-    {
-        /*SharedPreferences settings = getSharedPreferences(PREFS_NAME,
-                Context.MODE_PRIVATE);
-        return settings.getString(PREF_HUB, DEFAULT_HUB);*/
-        return ""+1;
-
+        Call<Room> addroom(@Path("hub_id") String hub_id, @Body Room r);
     }
 }

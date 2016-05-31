@@ -1,7 +1,6 @@
 package co.ar_smart.www.helpers;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.widget.Toast;
 
 import java.util.Calendar;
@@ -9,7 +8,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import co.ar_smart.www.interfaces.ICommandClass;
 import co.ar_smart.www.living.R;
+import co.ar_smart.www.pojos.hue.HueEndpoint;
+import co.ar_smart.www.pojos.sonos.SonosEndpoint;
+import co.ar_smart.www.pojos.zwave_binary.ZwaveBinaryEndpoint;
 import okhttp3.MediaType;
 
 /**
@@ -157,28 +160,31 @@ public final class Constants {
     public static final String EXTRA_ROOM = "EXTRA_ROOM";
 
     public static final String EXTRA_MODE = "EXTRA_MODE";
-
-    /**
-     * Enum for sensors type for Triggers
-     */
-    public enum Trigger_type{BINARY,RANGE};
-    /**
-     * Enum for operands for triggers
-     */
-    public enum Operand{less,greater,equals,between,not_between,distinc};
     /**
      *
      */
     public static final String EXTRA_LIST_PARCELABLE_FIRST = "co.ar-smart.www.living.EXTRA_LIST_PARCELABLE_FIRST";
+    ;
     /**
      * Array of the days of the week
      */
     public static final String[] daysArray = new String[]{"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
+    ;
+    /**
+     * Default boolean list of selected days
+     */
+    public static final boolean[] boolSelectedDaysArray = new boolean[]{true, false, true, false, true, false, true};
     /**
      * HashMap of the days of the week with its abreviatures
      * key for map is a String
      */
     private static Map<String,String> daysMapString;
+    /**
+     * HashMap of the days of the week with its abreviatures
+     * key for map is an Integer
+     */
+    private static Map<Integer, String> daysMapInt;
+
     public static Map<String,String> getHashMapDaysFromString()
     {
         if(daysMapString == null)
@@ -194,11 +200,7 @@ public final class Constants {
         }
         return daysMapString;
     }
-    /**
-     * HashMap of the days of the week with its abreviatures
-     * key for map is an Integer
-     */
-    private static Map<Integer,String> daysMapInt;
+
     public static Map<Integer,String> getHashMapDaysFromInteger()
     {
         if(daysMapInt == null)
@@ -214,11 +216,6 @@ public final class Constants {
         }
         return daysMapInt;
     }
-
-    /**
-     * Default boolean list of selected days
-     */
-    public static final boolean[] boolSelectedDaysArray = new boolean[]{true, false, true, false, true, false, true};
 
     /**
      * This method will return a future date given a timeout in seconds.
@@ -248,4 +245,26 @@ public final class Constants {
                 Toast.LENGTH_LONG).show();
     }
 
+    public static HashMap<String, ICommandClass> getUiMapClasses() {
+        HashMap<String, ICommandClass> uiMapClasses = new HashMap<>();
+        uiMapClasses.put("ui-sonos", new SonosEndpoint());
+        uiMapClasses.put("ui-binary-light-zwave", new ZwaveBinaryEndpoint());
+        uiMapClasses.put("ui-binary-outlet-zwave", new ZwaveBinaryEndpoint());
+        uiMapClasses.put("ui-hue", new HueEndpoint());
+        return uiMapClasses;
+    }
+
+    /**
+     * Enum for sensors type for Triggers
+     */
+    public enum Trigger_type {
+        BINARY, RANGE
+    }
+
+    /**
+     * Enum for operands for triggers
+     */
+    public enum Operand {
+        less, greater, equals, between, not_between, distinc
+    }
 }

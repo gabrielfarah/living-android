@@ -3,8 +3,8 @@ package co.ar_smart.www.pojos;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 /**
  * This class represents a device command
@@ -53,7 +53,7 @@ public class Command implements Parcelable {
     /**
      * The parameters for the function ej: light_id, volume, etc.
      */
-    private JSONObject parameters = new JSONObject();
+    private JsonObject parameters = new JsonObject();
     /**
      * the uid of the endpoint
      */
@@ -79,11 +79,7 @@ public class Command implements Parcelable {
         node = endpoint.getNode();
         type = endpoint.getEndpoint_type();
         endpoint_id = endpoint.getId();
-        try {
-            parameters = new JSONObject("{}");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        parameters = new JsonObject();
     }
 
     /**
@@ -103,7 +99,11 @@ public class Command implements Parcelable {
         } catch (JSONException e) {
             e.printStackTrace();
         }*/
+        String temp = in.readString();
         endpoint_id = in.readInt();
+        JsonParser parser = new JsonParser();
+        parameters = parser.parse(temp).getAsJsonObject();
+
     }
 
     /**
@@ -173,11 +173,11 @@ public class Command implements Parcelable {
      * returns the parameters
      * @return the parameter
      */
-    public JSONObject getParameters() {
+    public JsonObject getParameters() {
         return parameters;
     }
 
-    public void setParameters(JSONObject parameters) {
+    public void setParameters(JsonObject parameters) {
         this.parameters = parameters;
     }
 
@@ -206,7 +206,7 @@ public class Command implements Parcelable {
         dest.writeString(ip);
         dest.writeInt(node);
         dest.writeInt(v);
-        //dest.writeString(parameters.toString());
+        dest.writeString(parameters.toString());
         dest.writeInt(endpoint_id);
     }
 

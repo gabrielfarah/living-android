@@ -22,20 +22,31 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.GridView;
 import android.widget.ListView;
+import android.widget.SeekBar;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.onesignal.OneSignal;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import co.ar_smart.www.actions.ActionActivity;
-import co.ar_smart.www.adapters.GridDevicesAdapter;
+import co.ar_smart.www.adapters.HomeGridDevicesAdapter;
 import co.ar_smart.www.analytics.AnalyticsApplication;
 import co.ar_smart.www.controllers.SonosControllerActivity;
 import co.ar_smart.www.controllers.ZwaveLockControllerActivity;
 import co.ar_smart.www.controllers.hue.HueControllerActivity;
+import co.ar_smart.www.endpoints.EditRoomActivity;
 import co.ar_smart.www.endpoints.ManagementEndpointsActivity;
+import co.ar_smart.www.helpers.CommandManager;
 import co.ar_smart.www.helpers.Constants;
 import co.ar_smart.www.helpers.JWTManager;
 import co.ar_smart.www.helpers.ModeManager;
@@ -43,9 +54,12 @@ import co.ar_smart.www.helpers.RetrofitServiceGenerator;
 import co.ar_smart.www.helpers.UserManager;
 import co.ar_smart.www.modes.ModeManagementActivity;
 import co.ar_smart.www.pojos.Endpoint;
+import co.ar_smart.www.pojos.EndpointState;
 import co.ar_smart.www.pojos.Hub;
 import co.ar_smart.www.pojos.Mode;
 import co.ar_smart.www.pojos.User;
+import co.ar_smart.www.pojos.zwave_binary.ZwaveBinaryEndpoint;
+import co.ar_smart.www.pojos.zwave_level.ZwaveLevelEndpoint;
 import co.ar_smart.www.register.CreatedUserActivity;
 import co.ar_smart.www.user.GuestManagementActivity;
 import co.ar_smart.www.user.ManagementUserActivity;
@@ -67,6 +81,52 @@ import static co.ar_smart.www.helpers.Constants.PREF_EMAIL;
 import static co.ar_smart.www.helpers.Constants.PREF_HUB;
 import static co.ar_smart.www.helpers.Constants.PREF_JWT;
 import static co.ar_smart.www.helpers.Constants.PREF_PASSWORD;
+
+/**
+ * This interface implements a Retrofit interface for the Home Activity
+ */
+interface HomeClient {
+    /**
+     * This function get all the endpoints inside a hub given a hub id.
+     *
+     * @param hub_id The ID of the hub from which to get the endpoints
+     * @return A list containing all the endpoints
+     */
+    @GET("hubs/{hub_id}/endpoints/")
+    Call<List<Endpoint>> endpoints(
+            @Path("hub_id") String hub_id
+    );
+
+    /**
+     * This function obtains all the hubs for the current user
+     *
+     * @return A list of all the hubs the user is available to query
+     */
+    @GET("hubs/")
+    Call<List<Hub>> hubs();
+
+    /**
+     * This function obtains a particular hub given a valid hub ID
+     *
+     * @param hub_id The ID of the hub to get
+     * @return The hub matching the hub ID
+     */
+    @GET("hubs/{hub_id}/")
+    Call<Hub> hub(
+            @Path("hub_id") String hub_id
+    );
+
+    /**
+     * This function get all the modes inside a hub given a hub id.
+     *
+     * @param hub_id The ID of the hub from which to get the endpoints
+     * @return A list containing all the endpoints
+     */
+    @GET("hubs/{hub_id}/modes/")
+    Call<List<Mode>> modes(
+            @Path("hub_id") String hub_id
+    );
+}
 
 /**
  * This activity implements the main screen of the Living application.
@@ -122,6 +182,18 @@ public class HomeActivity extends AppCompatActivity {
      * The list of devices (endpoints) a particular hub has
      */
     private ArrayList<Endpoint> endpoint_devices = new ArrayList<>();
+    private boolean endpointsPolledsuccessfully = false;
+    private boolean modesPolledSuccesfully = false;
+    private boolean hubsPolledSuccesfully = false;
+    private Date endpointStatesTimeoutDate;
+    private String endpointStatesPollingURL;
+    private boolean stopHandlerFlag = false;
+    private Handler pollingResponseHandler = new Handler();
+    private ArrayList<Hub> hubs = new ArrayList<>();
+    private ArrayList<EndpointIcons> endpointIcons = new ArrayList<>();
+    private HomeGridDevicesAdapter gridAdapter = new HomeGridDevicesAdapter(HomeActivity.this, endpoint_devices);
+    private Runnable runnableEndpointStatesResponse;
+    private Runnable runnableEndpointStates;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -141,6 +213,7 @@ public class HomeActivity extends AppCompatActivity {
 
         loadPreferredHub();
         performPushNotificationRegistration();
+        loadEndpointStates();
     }
 
     /**
@@ -153,23 +226,23 @@ public class HomeActivity extends AppCompatActivity {
             public void idsAvailable(final String userId, String registrationId) {
                 if ((userId != null)) {
                     if (!userId.isEmpty()) {
-                    UserManager.getUser(API_TOKEN, new UserManager.UserCallbackInterface() {
-                        @Override
-                        public void onFailureCallback() {
-                        }
+                        UserManager.getUser(API_TOKEN, new UserManager.UserCallbackInterface() {
+                            @Override
+                            public void onFailureCallback() {
+                            }
 
-                        @Override
-                        public void onSuccessCallback(User user) {
-                            currentUSer = user;
-                            currentUSer.setPush_token(userId);
-                            Log.d("DEBUGGG", currentUSer.toString());
-                        }
+                            @Override
+                            public void onSuccessCallback(User user) {
+                                currentUSer = user;
+                                currentUSer.setPush_token(userId);
+                                Log.d("DEBUGGG", currentUSer.toString());
+                            }
 
-                        @Override
-                        public void onUnsuccessfulCallback() {
-                        }
-                    });
-                }
+                            @Override
+                            public void onUnsuccessfulCallback() {
+                            }
+                        });
+                    }
                 }
             }
         });
@@ -185,6 +258,7 @@ public class HomeActivity extends AppCompatActivity {
 
                 @Override
                 public void onUnsuccessfulCallback() {
+                    Log.d("No paso", "fuck");
                 }
             });
         }
@@ -227,13 +301,17 @@ public class HomeActivity extends AppCompatActivity {
         });
     }
 
+    private void stopPolling() {
+        backgroundStopHandlerFlag = true;
+        stopHandlerFlag = true;
+    }
+
     /**
      * This method opens the devices manager activity (from which the user can do the devices CRUD)
      */
     private void openDevicesActivity() {
-        //TODO
-        Intent i=new Intent(HomeActivity.this, ManagementEndpointsActivity.class);
-        i.putExtra(EXTRA_MESSAGE,API_TOKEN);
+        Intent i = new Intent(HomeActivity.this, ManagementEndpointsActivity.class);
+        i.putExtra(EXTRA_MESSAGE, API_TOKEN);
         startActivity(i);
     }
 
@@ -253,7 +331,10 @@ public class HomeActivity extends AppCompatActivity {
      * This method opens the rooms manager activity (from which the user can do the rooms CRUD)
      */
     private void openRoomsActivity() {
-        //TODO
+        Intent intent = new Intent(this, EditRoomActivity.class);
+        intent.putExtra(EXTRA_MESSAGE, API_TOKEN);
+        intent.putExtra(EXTRA_MESSAGE_PREF_HUB, PREFERRED_HUB_ID);
+        startActivity(intent);
     }
 
     /**
@@ -370,7 +451,7 @@ public class HomeActivity extends AppCompatActivity {
     /**
      * This method will load the preferred hub the user selected the last time (if any).
      */
-    private void loadPreferredHub(){
+    private void loadPreferredHub() {
         SharedPreferences settings = getSharedPreferences(PREFS_NAME,
                 Context.MODE_PRIVATE);
         // Get values using keys
@@ -387,7 +468,7 @@ public class HomeActivity extends AppCompatActivity {
      * This method will clear the saved credentials of the user in the shared preferences.
      * It will also redirect the user to the login activity.
      */
-    private void successfulLogout(){
+    private void successfulLogout() {
         SharedPreferences settings = getSharedPreferences(PREFS_NAME,
                 Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = settings.edit();
@@ -413,19 +494,131 @@ public class HomeActivity extends AppCompatActivity {
      * every device.
      * This method will automatically poll every 5 seconds
      */
-    private void loadEndpointStates(){
-        Runnable runnable = new Runnable() {
+    private void loadEndpointStates() {
+        runnableEndpointStates = new Runnable() {
             @Override
             public void run() {
-                // while the handler is not stoped create a new request every time delta
+                // while the handler is not stopped create a new request every time delta
                 if (!backgroundStopHandlerFlag) {
-                    // TODO pollStates();
-                    backgroundPollingHandler.postDelayed(this, 5000);
+                    if (endpointsPolledsuccessfully) {
+                        stopHandlerFlag = false;
+                        getEndpointStates();
+                    }
+                    backgroundPollingHandler.postDelayed(this, 10000);
                 }
             }
         };
         // start it with:
-        backgroundPollingHandler.post(runnable);
+        backgroundPollingHandler.post(runnableEndpointStates);
+    }
+
+    private void getEndpointStates() {
+        /**
+         *[{"node":6,"state":[0,1],"mainCC":30,"sensor":0,"sleep_cap":1, "active":true},{"node":7,"state":[0,1],"mainCC":30,"sensor":0,"sleep_cap":1, "active":true},]
+         *String json = "[{\"type\":\"zwave\",\"function\":\"zwave_get_all_status\",\"parameters\":{}}]";
+         *
+         * {"type":"zwave","function":"zwave_get_all_status","parameters":{}},
+         */
+        String command = "[{\"type\":\"wifi\",\"action\":\"wifi_get_all_status\",\"parameters\":{}}]";
+        CommandManager.sendCommandWithResult(API_TOKEN, PREFERRED_HUB_ID, command, new CommandManager.CommandWithResultsCallbackInterface() {
+            @Override
+            public void onFailureCallback() {
+
+            }
+
+            @Override
+            public void onSuccessCallback(String pollingUrl, int timeout) {
+                endpointStatesTimeoutDate = Constants.calculateTimeout(timeout);
+                endpointStatesPollingURL = pollingUrl;
+                loadAsyncEndpointStatesResponse();
+            }
+
+            @Override
+            public void onUnsuccessfulCallback() {
+
+            }
+        });
+    }
+
+    /**
+     * This method will poll the server response every 2 seconds until is stopped by the flag or the timeout expires
+     */
+    private void loadAsyncEndpointStatesResponse() {
+        runnableEndpointStatesResponse = new Runnable() {
+            @Override
+            public void run() {
+                // while the handler is not stoped create a new request every time delta
+                if (!stopHandlerFlag && endpointStatesTimeoutDate.after(new Date())) {
+                    processEndpointStatesResponse();
+                    pollingResponseHandler.postDelayed(this, 2000);
+                }
+            }
+        };
+        // start it with:
+        pollingResponseHandler.post(runnableEndpointStatesResponse);
+    }
+
+    private void processEndpointStatesResponse() {
+        CommandManager.getCommandResult(API_TOKEN, endpointStatesPollingURL, new CommandManager.ResponseCallbackInterface() {
+            @Override
+            public void onFailureCallback() {
+                stopHandlerFlag = true;
+            }
+
+            @Override
+            public void onSuccessCallback(JSONObject jObject) {
+                Log.d("Response", jObject.toString());
+                try {
+                    if (jObject.has("status")) {
+                        if (!jObject.getString("status").equalsIgnoreCase("processing")) {
+                            stopHandlerFlag = true;
+                            JSONArray states = jObject.getJSONArray("response");
+                            Type listType = new TypeToken<List<EndpointState>>() {
+                            }.getType();
+                            ArrayList<EndpointState> endpointStates = new Gson().fromJson(states.toString(), listType);
+                            Log.d("ENDPOINT STATES", endpointStates.toString());
+                            updateEndpointStates(endpointStates);
+                        }
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onUnsuccessfulCallback() {
+                stopHandlerFlag = true;
+            }
+        });
+    }
+
+    private void updateEndpointStates(ArrayList<EndpointState> endpointStates) {
+        for (int i = 0; i < endpoint_devices.size(); i++) {
+            for (int j = 0; j < endpointStates.size(); j++) {
+                EndpointState es = endpointStates.get(j);
+                Endpoint e = endpoint_devices.get(i);
+                if (es.getUid() != null && e.getUid() != null && es.getUid().equalsIgnoreCase(e.getUid())) {
+                    e.setState(es.getMainState());
+                    e.setActive(es.isActive());
+
+                }
+                if (es.getNode() == e.getNode()) {
+                    e.setState(es.getMainState());
+                    e.setActive(es.isActive());
+                }
+                endpoint_devices.set(i, e);
+                updateUIWithStates();
+            }
+        }
+    }
+
+    private void updateUIWithStates() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                gridAdapter.notifyDataSetChanged();
+            }
+        });
     }
 
     @Override
@@ -433,7 +626,7 @@ public class HomeActivity extends AppCompatActivity {
         super.onResume();  // Always call the superclass method first
         // If user paused this activity and the token expired while idled, then we must automatically
         // get a new one when this activity resumes.
-        if (!JWTManager.validateJWT(API_TOKEN)){
+        if (!JWTManager.validateJWT(API_TOKEN)) {
             SharedPreferences settings = getSharedPreferences(PREFS_NAME,
                     Context.MODE_PRIVATE);
             // Get values using keys
@@ -462,14 +655,25 @@ public class HomeActivity extends AppCompatActivity {
                 }
             });
         }
+        backgroundStopHandlerFlag = false;
+        stopHandlerFlag = false;
+        loadEndpointStates();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        backgroundPollingHandler.removeCallbacks(runnableEndpointStates);
+        pollingResponseHandler.removeCallbacks(runnableEndpointStatesResponse);
+        stopPolling();
     }
 
     /**
      * This method will try to obtain all the devices (endpoints) for a given hub of the user.
      */
-    private void getEndpoints(){
+    private void getEndpoints() {
         HomeClient livingHomeClient = RetrofitServiceGenerator.createService(HomeClient.class, API_TOKEN);
-        Call<List<Endpoint>> call = livingHomeClient.endpoints(""+PREFERRED_HUB_ID);
+        Call<List<Endpoint>> call = livingHomeClient.endpoints("" + PREFERRED_HUB_ID);
         //Log.d("OkHttp", String.format("Sending request %s ",call.request().toString()));
         call.enqueue(new Callback<List<Endpoint>>() {
             @Override
@@ -489,6 +693,7 @@ public class HomeActivity extends AppCompatActivity {
                         openManagementDevicesActivity();
                     } else {
                         setGridLayout(response.body());
+                        endpointsPolledsuccessfully = true;
                     }
                 } else {
                     // error response, no access to resource?
@@ -524,23 +729,17 @@ public class HomeActivity extends AppCompatActivity {
             public void onResponse(Call<List<Mode>> call, Response<List<Mode>> response) {
                 if (response.isSuccessful()) {
                     for (Mode mode : response.body()) {
-                        if (!modes.contains(mode.getName()))
+                        if (!modes.contains(mode))
                             modes.add(mode);
-                        Log.d("MODE:", mode.getName());
-                        //Log.d("COMMAND:", endpoint.getEndpoint_classes().get(0).getCommands().get(0).toString());
                     }
-                    modes.addAll(ModeManager.getDefaultModes(endpoint_devices));
-                    Log.d("MODE:", modes.toString());
-                    // If user got no endpoints redirect to management activity. set grid layout otherwise.
-                    if (modes.isEmpty()) {
-                        openScenesActivity();
-                    } else {
-                        //setGridLayout(response.body());
+                    if (!endpoint_devices.isEmpty()) {
+                        ArrayList<Mode> defaultmodes = ModeManager.getDefaultModes(endpoint_devices);
+                        if (!modes.containsAll(defaultmodes)) {
+                            modes.addAll(defaultmodes);
+                            Log.d("MODE:", modes.toString());
+                        }
                     }
-                } else {
-                    // error response, no access to resource?
-                    // if the user no longer has access to the endpoints (because he got uninvited) ask for select new hub.
-                    getHubs();
+                    modesPolledSuccesfully = true;
                 }
             }
 
@@ -571,7 +770,7 @@ public class HomeActivity extends AppCompatActivity {
     /**
      * This method will try to obtain all the Living hubs the user owns/is invited.
      */
-    private void getHubs(){
+    private void getHubs() {
         HomeClient livingHomeClient = RetrofitServiceGenerator.createService(HomeClient.class, API_TOKEN);
         // Create a call instance for looking up Retrofit contributors.
         Call<List<Hub>> call = livingHomeClient.hubs();
@@ -582,10 +781,12 @@ public class HomeActivity extends AppCompatActivity {
                 if (response.isSuccessful()) {
                     // If the user got hubs he can select one to use. If he do not then send it to register one activity.
                     if (!response.body().isEmpty()) {
-                        showSelectHubDialog(response.body());
+                        hubs.addAll(response.body());
+                        showSelectHubDialog(hubs);
                     } else {
                         openRegisterHubActivity();
                     }
+                    hubsPolledSuccesfully = true;
                 } else {
                     AnalyticsApplication.getInstance().trackEvent("Weird Event", "NoAccessToHubs", "The user do not have access to the hubs? token:" + API_TOKEN);
                 }
@@ -613,11 +814,12 @@ public class HomeActivity extends AppCompatActivity {
     /**
      * If the user have not selected a preferred hub to use, this method will be called and a pupop
      * will be displayed asking for one.
+     *
      * @param hubs the list of all available hubs of the user.
      */
-    private void showSelectHubDialog(final List<Hub> hubs){
+    private void showSelectHubDialog(final List<Hub> hubs) {
         String[] temp = new String[hubs.size()];
-        for (int i=0;i<hubs.size();i++)
+        for (int i = 0; i < hubs.size(); i++)
             temp[i] = hubs.get(i).getCustom_name();
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Pick a home");
@@ -637,7 +839,7 @@ public class HomeActivity extends AppCompatActivity {
      * Since every user can own multiple hubs, is necessary to pick at least one for this session.
      * The user can change the hub or this will be deleted on logout.
      */
-    private void savePreferredHub(){
+    private void savePreferredHub() {
         SharedPreferences settings = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = settings.edit();
         editor.putString(PREF_HUB, String.valueOf(PREFERRED_HUB_ID));
@@ -646,16 +848,17 @@ public class HomeActivity extends AppCompatActivity {
 
     /**
      * This method created the grid layout of the home activity. It will take the list of endpoints and will output it into the UI
+     *
      * @param listaEndpoints The list of devices (endpoints) the user has access in this hub
      */
-    private void setGridLayout(final List<Endpoint> listaEndpoints){
-        ArrayList<EndpointIcons> dum = new ArrayList<>();
+    private void setGridLayout(final List<Endpoint> listaEndpoints) {
         for (Endpoint e : listaEndpoints) {
-            dum.add(new EndpointIcons(e.getImage()));
+            endpointIcons.add(new EndpointIcons(e.getImage()));
         }
+        gridAdapter.notifyDataSetChanged();
         final GridView homeMainGridView = (GridView) findViewById(R.id.gridView);
         if (homeMainGridView != null) {
-            homeMainGridView.setAdapter(new GridDevicesAdapter(HomeActivity.this, dum));
+            homeMainGridView.setAdapter(gridAdapter);
             homeMainGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
                     Toast.makeText(HomeActivity.this, listaEndpoints.get(position).getName(),
@@ -668,17 +871,39 @@ public class HomeActivity extends AppCompatActivity {
 
     /**
      * This method is in charge of opening the corresponding controller for each device depending the UI parameter of the device
+     *
      * @param endpoint the endpoint clicked by the user in the app UI
      */
-    private void processEndpointClick(Endpoint endpoint){
-        switch (endpoint.getUi_class_command()){
+    private void processEndpointClick(Endpoint endpoint) {
+        switch (endpoint.getUi_class_command()) {
             case "ui-sonos":
                 openSONOSController(endpoint);
                 break;
             case "ui-lock":
                 if (endpoint.getEndpoint_type().equalsIgnoreCase("zwave")) {
                     openZwaveLockController(endpoint);
-                }else{
+                } else {
+                    //TODO
+                }
+                break;
+            case "ui-binary-light":
+                if (endpoint.getEndpoint_type().equalsIgnoreCase("zwave")) {
+                    performZwaveBinaryCommand(endpoint);
+                } else {
+                    //TODO
+                }
+                break;
+            case "ui-binary-outlet":
+                if (endpoint.getEndpoint_type().equalsIgnoreCase("zwave")) {
+                    performZwaveBinaryCommand(endpoint);
+                } else {
+                    //TODO
+                }
+                break;
+            case "ui-level-light":
+                if (endpoint.getEndpoint_type().equalsIgnoreCase("zwave")) {
+                    performZwaveLevelCommand(endpoint);
+                } else {
                     //TODO
                 }
                 break;
@@ -688,6 +913,79 @@ public class HomeActivity extends AppCompatActivity {
             default:
                 AnalyticsApplication.getInstance().trackEvent("Device Image", "DoNotExist", "The device in hub:" + endpoint.getHub() + " named:" + endpoint.getName() + " the image does not correspong. image:" + endpoint.getImage());
         }
+    }
+
+    private void performZwaveLevelCommand(final Endpoint endpoint) {
+        final AlertDialog.Builder popDialog = new AlertDialog.Builder(this);
+        final SeekBar seek = new SeekBar(this);
+        seek.setMax(255);
+        seek.setKeyProgressIncrement(1);
+        seek.setProgress(endpoint.getState());
+
+        popDialog.setIcon(R.drawable.light_icon);
+        popDialog.setTitle("Please Select Into Your Desired Brightness ");
+        popDialog.setView(seek);
+        seek.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                int progress = seekBar.getProgress();
+                ZwaveLevelEndpoint le = new ZwaveLevelEndpoint(endpoint);
+                sendSetCommand(le.getSetValueCommand(progress).toString());
+                endpoint.setState(progress);
+                endpoint_devices.set(endpoint_devices.indexOf(endpoint), endpoint);
+                updateUIWithStates();
+            }
+        });
+        // Button OK
+        popDialog.setPositiveButton("OK",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+        popDialog.create();
+        popDialog.show();
+    }
+
+    private void performZwaveBinaryCommand(Endpoint endpoint) {
+        ZwaveBinaryEndpoint device = new ZwaveBinaryEndpoint(endpoint);
+        if (endpoint.getState() != 255) {
+            sendSetCommand(device.getTurnOnCommand().toString());
+            endpoint.setState(255);
+        } else {
+            sendSetCommand(device.getTurnOffCommand().toString());
+            endpoint.setState(0);
+        }
+        endpoint_devices.set(endpoint_devices.indexOf(endpoint), endpoint);
+        updateUIWithStates();
+    }
+
+    private void sendSetCommand(String command) {
+        Log.d("SE ENVIO", command);
+        CommandManager.sendCommandWithoutResult(API_TOKEN, PREFERRED_HUB_ID, "[" + command + "]", new CommandManager.ResponseCallbackInterface() {
+            @Override
+            public void onFailureCallback() {
+
+            }
+
+            @Override
+            public void onSuccessCallback(JSONObject jObject) {
+                Log.d("RESPONSE", jObject.toString());
+            }
+
+            @Override
+            public void onUnsuccessfulCallback() {
+
+            }
+        });
     }
 
     private void openHueController(Endpoint endpoint) {
@@ -713,6 +1011,7 @@ public class HomeActivity extends AppCompatActivity {
 
     /**
      * This method open the activity that handles a simple door lock device (No keypad)
+     *
      * @param lock the endpoint representing a z-wave door lock
      */
     private void openZwaveLockController(Endpoint lock) {
@@ -722,60 +1021,22 @@ public class HomeActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    /**
-     * This interface implements a Retrofit interface for the Home Activity
-     */
-    private interface HomeClient {
-        /**
-         * This function get all the endpoints inside a hub given a hub id.
-         * @param hub_id The ID of the hub from which to get the endpoints
-         * @return A list containing all the endpoints
-         */
-        @GET("hubs/{hub_id}/endpoints/")
-        Call<List<Endpoint>> endpoints(
-                @Path("hub_id") String hub_id
-        );
-
-        /**
-         * This function obtains all the hubs for the current user
-         * @return A list of all the hubs the user is available to query
-         */
-        @GET("hubs/")
-        Call<List<Hub>> hubs();
-
-        /**
-         * This function obtains a particular hub given a valid hub ID
-         * @param hub_id The ID of the hub to get
-         * @return The hub matching the hub ID
-         */
-        @GET("hubs/{hub_id}/")
-        Call<Hub> hub(
-                @Path("hub_id") String hub_id
-        );
-
-        /**
-         * This function get all the modes inside a hub given a hub id.
-         *
-         * @param hub_id The ID of the hub from which to get the endpoints
-         * @return A list containing all the endpoints
-         */
-        @GET("hubs/{hub_id}/modes/")
-        Call<List<Mode>> modes(
-                @Path("hub_id") String hub_id
-        );
-    }
-
     private class EndpointIcons implements co.ar_smart.www.interfaces.IDrawable {
 
         private String image;
 
         public EndpointIcons(String path) {
             image = path;
-        }
+    }
 
         @Override
         public String getImage() {
             return image;
+    }
+
+        @Override
+        public boolean isActive() {
+            return false;
         }
     }
 }
