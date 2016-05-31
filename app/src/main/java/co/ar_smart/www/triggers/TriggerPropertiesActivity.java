@@ -10,17 +10,20 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import org.florescu.android.rangeseekbar.RangeSeekBar;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 import co.ar_smart.www.helpers.Constants;
 import co.ar_smart.www.living.R;
@@ -45,6 +48,7 @@ public class TriggerPropertiesActivity extends AppCompatActivity
     ArrayList<Mode> modes;
     private Trigger trigger;
     private boolean binary_sensor;
+    RangeSeekBar rsb_range;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -55,7 +59,7 @@ public class TriggerPropertiesActivity extends AppCompatActivity
         API_TOKEN = getIntent().getStringExtra(EXTRA_MESSAGE);
         trigger = getIntent().getParcelableExtra(EXTRA_OBJECT);
         binary_sensor = getIntent().getBooleanExtra("binary_sensor", false);
-        RangeSeekBar rsb_range = (RangeSeekBar) findViewById(R.id.rsb_range);
+        rsb_range = (RangeSeekBar) findViewById(R.id.rsb_range);
         if (rsb_range != null)
         {
             if (binary_sensor)
@@ -64,8 +68,7 @@ public class TriggerPropertiesActivity extends AppCompatActivity
             }
             else
             {
-                //TODO find range maximum and minimun
-                //rsb_range.setRangeValues(trigger.getEndpoint().getMaxValue(), trigger.getEndpoint().getMinValue());
+                rsb_range.setRangeValues(-50, 100);
             }
         }
         ArrayAdapter adapter = new ArrayAdapter<>(this, R.layout.activity_listview, modesToArray());
@@ -73,6 +76,14 @@ public class TriggerPropertiesActivity extends AppCompatActivity
         if (listView != null)
         {
             listView.setAdapter(adapter);
+            listView.setOnItemClickListener(new AdapterView.OnItemClickListener()
+            {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+                {
+                    trigger.setPayload(modes.get(position).getPayload());
+                }
+            });
         }
         selected = Constants.boolSelectedDaysArray;
         horaInicial = Calendar.getInstance();
@@ -235,7 +246,53 @@ public class TriggerPropertiesActivity extends AppCompatActivity
         switch (item.getItemId())
         {
             case R.id.save:
-                saveTrigger();
+                if(!binary_sensor)
+                {
+                    trigger.setPrimary_value(rsb_range.getSelectedMinValue().intValue());
+                    trigger.setSecundary_value(rsb_range.getSelectedMaxValue().intValue());
+                }
+                if(lyo_hour.getVisibility() == LinearLayout.VISIBLE)
+                {
+                    trigger.setMinute_of_day(new int[]{(horaInicial.get(Calendar.HOUR_OF_DAY)*60)+horaInicial.get(Calendar.MINUTE),(horaFinal.get(Calendar.HOUR_OF_DAY)*60)+horaFinal.get(Calendar.MINUTE)});
+                }
+                if(lyo_day.getVisibility() == LinearLayout.VISIBLE)
+                {
+                    int amountDays = 0;
+                    for (int i = 0; i < selected.length ; i++)
+                    {
+                        if(selected[i])
+                        {
+                            amountDays++;
+                        }
+                    }
+                    int[] days = new int[amountDays];
+                    int iterador = 0;
+                    for (int i = 0; i < selected.length; i++)
+                    {
+                        if(selected[i])
+                        {
+                            days[iterador] = i;
+                            iterador++;
+                        }
+                    }
+                    trigger.setDays_of_the_week(days);
+                }
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setMessage("Do you want to receive notifications for this trigger ?")
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                trigger.setNotify(true);
+                                saveTrigger();
+                            }
+                        })
+                        .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                trigger.setNotify(false);
+                                saveTrigger();
+                            }
+                        });
+                // Create the AlertDialog object and return it
+                builder.create().show();
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -243,7 +300,32 @@ public class TriggerPropertiesActivity extends AppCompatActivity
 
     private void saveTrigger()
     {
-        //TODO make sure there is no missing for saving the trigger
+        TriggerManager.addMode(trigger.getHubId(), trigger.getEndpoint().getId(), trigger, API_TOKEN, new TriggerManager.TriggerCallbackInterface()
+        {
+            @Override
+            public void onFailureCallback()
+            {
+
+            }
+
+            @Override
+            public void onSuccessCallback(List<Mode> modes)
+            {
+
+            }
+
+            @Override
+            public void onSuccessCallback() {
+                Toast.makeText(getApplicationContext(), "Trigger creado exitosamente", Toast.LENGTH_SHORT).show();
+                finish();
+
+            }
+
+            @Override
+            public void onUnsuccessfulCallback() {
+                Toast.makeText(getApplicationContext(), "There was a problem doing the request please try again", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private String[] modesToArray()

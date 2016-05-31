@@ -3,25 +3,28 @@ package co.ar_smart.www.pojos;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.List;
 import java.util.Map;
 
 import co.ar_smart.www.helpers.Constants;
 
 /**
+ * POJO of Trigger
  * Created by caev03 on 25/05/2016.
  */
 public class Trigger implements Parcelable
 {
     private int idTrigger;
-    private Mode mode;
+    private List<Command> payload;
     private Constants.Operand operand;
     private int primary_value;
-    private int secundary_value;
+    private int secondary_value;
     private boolean notify;
     private int[] minute_of_day;
     private int[] days_of_the_week;
     private Endpoint endpoint;
     private int hubId;
+    private Mode mode;
     private Constants.Trigger_type trigger_type;
 
 
@@ -35,17 +38,17 @@ public class Trigger implements Parcelable
     /**
      * Returns mode field
      **/
-    public Mode getMode()
+    public List<Command> getPayload()
     {
-        return mode;
+        return payload;
     }
 
     /**
      * Set value for mode field
      */
-    public void setMode(Mode mode)
+    public void setPayload(List<Command> payload)
     {
-        this.mode = mode;
+        this.payload = payload;
     }
 
     /**
@@ -85,7 +88,7 @@ public class Trigger implements Parcelable
      **/
     public int getSecundary_value()
     {
-        return secundary_value;
+        return secondary_value;
     }
 
     /**
@@ -93,7 +96,7 @@ public class Trigger implements Parcelable
      */
     public void setSecundary_value(int secundary_value)
     {
-        this.secundary_value = secundary_value;
+        this.secondary_value = secundary_value;
     }
 
     /**
@@ -176,13 +179,29 @@ public class Trigger implements Parcelable
         this.idTrigger = idTrigger;
     }
 
+    /**
+     * Returns mode field
+     **/
+    public Mode getMode()
+    {
+        return mode;
+    }
+
+    /**
+     * Set value for mode field
+     */
+    public void setMode(Mode mode)
+    {
+        this.mode = mode;
+    }
+
     public String getDaysAsString()
     {
         Map<Integer,String> days = Constants.getHashMapDaysFromInteger();
         String result = "";
-        for (int i = 0; i < days_of_the_week.length; i++)
+        for (int aDays_of_the_week : days_of_the_week)
         {
-            result += days.get(days_of_the_week[i])+" ";
+            result += days.get(aDays_of_the_week) + " ";
         }
         return result;
     }

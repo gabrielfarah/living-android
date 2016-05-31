@@ -155,4 +155,9 @@
     <string name="dialog_remove_trigger">Remove existing one</string>
     <string name="dialog_remove_trigger_message">Select the trigger to remove</string>
     <string name="save">Save</string>
+    
+    <string name="btn_trigger_on_positive_binary">When it is turned on</string>
+    <string name="btn_trigger_on_negative_binary">When it is turned off</string>
+    <string name="btn_trigger_on_positive_range">When it is inside range</string>
+    <string name="btn_trigger_on_negative_range">When it is outside range</string>
 </resources>

@@ -10,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +20,7 @@ import co.ar_smart.www.helpers.Constants;
 import co.ar_smart.www.helpers.JWTManager;
 import co.ar_smart.www.helpers.RetrofitServiceGenerator;
 import co.ar_smart.www.living.R;
+import co.ar_smart.www.pojos.Command;
 import co.ar_smart.www.pojos.Endpoint;
 import co.ar_smart.www.pojos.Mode;
 import co.ar_smart.www.pojos.Trigger;
@@ -101,10 +103,12 @@ public class TriggerMainController extends AppCompatActivity
         if (btn_on_positive != null)
         {
             btn_on_positive.setEnabled(false);
+            btn_on_positive.setText((binary_sensor)?R.string.btn_trigger_on_positive_binary:R.string.btn_trigger_on_positive_range);
         }
         if (btn_on_negative != null)
         {
             btn_on_negative.setEnabled(false);
+            btn_on_negative.setText((binary_sensor)?R.string.btn_trigger_on_negative_binary:R.string.btn_trigger_on_negative_range);
         }
         getApiToken();
     }
@@ -147,6 +151,10 @@ public class TriggerMainController extends AppCompatActivity
                 }
             });
         }
+        else
+        {
+            getApiToken();
+        }
     }
 
     /**
@@ -185,6 +193,7 @@ public class TriggerMainController extends AppCompatActivity
                         {
                             if (!triggers.contains(trigger))
                             {
+                                trigger.setMode(getModefromTrigger(trigger.getPayload()));
                                 triggers.add(trigger);
                                 Log.d("DEVICE:", trigger.getMode() + "_" + trigger.getMinute_of_day() + "_" + trigger.getDays_of_the_week());
                             }
@@ -233,7 +242,34 @@ public class TriggerMainController extends AppCompatActivity
         });
     }
 
-    public void initializeButton(Button button, boolean action)
+    private Mode getModefromTrigger(List<Command> payload)
+    {
+        Mode response = null;
+        boolean finished = false;
+        for (int i = 0; i < modes.size() && !finished ; i++)
+        {
+            List<Command> currentMode = modes.get(i).getPayload();
+            boolean endRevision = false;
+            if(payload.size()==currentMode.size())
+            {
+                for (int j = 0; j < payload.size() && !endRevision; j++)
+                {
+                    if(!payload.get(i).equals(currentMode.get(i)))
+                    {
+                        endRevision=true;
+                    }
+                }
+                if(!endRevision)
+                {
+                    finished = true;
+                    response = modes.get(i);
+                }
+            }
+        }
+        return response;
+    }
+
+    public void initializeButton(Button button, final boolean action)
     {
         final String[] tempTriggers = getTriggersAsList(action);
         button.setOnClickListener(new View.OnClickListener()
@@ -243,11 +279,11 @@ public class TriggerMainController extends AppCompatActivity
             {
                 if (tempTriggers.length > 0)
                 {
-                    getOptionsDialog(tempTriggers).show();
+                    getOptionsDialog(tempTriggers,action).show();
                 }
                 else
                 {
-                    crearTrigger();
+                    crearTrigger(action);
                 }
             }
         });
@@ -293,7 +329,7 @@ public class TriggerMainController extends AppCompatActivity
         return tempTriggers.toArray(new String[0]);
     }
 
-    private AlertDialog getOptionsDialog(final String[] stateTriggers)
+    private AlertDialog getOptionsDialog(final String[] stateTriggers, final boolean action)
     {
         AlertDialog alertD = new AlertDialog.Builder(mContext)
                 .setMessage(R.string.dialog_already_have_triggers)
@@ -302,7 +338,7 @@ public class TriggerMainController extends AppCompatActivity
                 {
                     public void onClick(DialogInterface dialog, int id)
                     {
-                        crearTrigger();
+                        crearTrigger(action);
                     }
                 })
                 .setNegativeButton(R.string.dialog_remove_trigger, new DialogInterface.OnClickListener()
@@ -328,10 +364,15 @@ public class TriggerMainController extends AppCompatActivity
 
     }
 
-    private void crearTrigger()
+    private void crearTrigger(boolean action)
     {
         Trigger trigger = new Trigger(endpoint, PREFERRED_HUB_ID);
         trigger.setTrigger_type((binary_sensor) ? Constants.Trigger_type.BINARY : Constants.Trigger_type.RANGE);
+        trigger.setOperand((binary_sensor)?Operand.equals:(action)?Operand.between:Operand.not_between);
+        if(binary_sensor)
+        {
+            trigger.setPrimary_value((action)?1:0);
+        }
         Intent i = new Intent(mContext, TriggerPropertiesActivity.class);
         i.putParcelableArrayListExtra("modes",modes);
         i.putExtra(EXTRA_MESSAGE, API_TOKEN);
@@ -343,13 +384,18 @@ public class TriggerMainController extends AppCompatActivity
     private void removeTrigger(Trigger trigger)
     {
         TriggerMainControllerClient livingHomeClient = RetrofitServiceGenerator.createService(TriggerMainControllerClient.class, API_TOKEN);
-        Call<List<Trigger>> call = livingHomeClient.deleteTriggers("" + PREFERRED_HUB_ID, "" + endpoint.getId(), "" + trigger.getIdTrigger());
-        call.enqueue(new Callback<List<Trigger>>()
+        Call call = livingHomeClient.deleteTriggers("" + PREFERRED_HUB_ID, "" + endpoint.getId(), "" + trigger.getIdTrigger());
+        call.enqueue(new Callback()
         {
             @Override
-            public void onResponse(Call<List<Trigger>> call, Response<List<Trigger>> response)
+            public void onResponse(Call call, Response response)
             {
-                //TODO Check for retrofit delete proccess
+                if (response.isSuccessful()) {
+                    Toast.makeText(mContext,"Trigger removed", Toast.LENGTH_SHORT).show();
+                } else {
+                    Log.d("DEBUGGG", response.message() + " - " + response.code());
+                    Constants.showNoInternetMessage(mContext);
+                }
             }
 
             /**
@@ -360,7 +406,7 @@ public class TriggerMainController extends AppCompatActivity
              * @param t
              */
             @Override
-            public void onFailure(Call<List<Trigger>> call, Throwable t)
+            public void onFailure(Call call, Throwable t)
             {
                 // something went completely south (like no internet connection)
                 Constants.showNoInternetMessage(getApplicationContext());
