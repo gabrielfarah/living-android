@@ -54,11 +54,12 @@ public class TriggerPropertiesActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_trigger_properties);
         modes = getIntent().getParcelableArrayListExtra("modes");
         API_TOKEN = getIntent().getStringExtra(EXTRA_MESSAGE);
         trigger = getIntent().getParcelableExtra(EXTRA_OBJECT);
         binary_sensor = getIntent().getBooleanExtra("binary_sensor", false);
+        Log.d("TriggersPropertiesSP1", "" + modes.toString());
         rsb_range = (RangeSeekBar) findViewById(R.id.rsb_range);
         if (rsb_range != null)
         {
@@ -71,6 +72,7 @@ public class TriggerPropertiesActivity extends AppCompatActivity
                 rsb_range.setRangeValues(-50, 100);
             }
         }
+        Log.d("TriggersPropertiesSP1", "SP1");
         ArrayAdapter adapter = new ArrayAdapter<>(this, R.layout.activity_listview, modesToArray());
         ListView listView = (ListView) findViewById(R.id.lsv_modes);
         if (listView != null)
@@ -85,22 +87,24 @@ public class TriggerPropertiesActivity extends AppCompatActivity
                 }
             });
         }
+        Log.d("TriggersPropertiesSP", "SP2");
         selected = Constants.boolSelectedDaysArray;
         horaInicial = Calendar.getInstance();
         horaFinal = Calendar.getInstance();
         lyo_hour = (LinearLayout) findViewById(R.id.lyo_hour);
         lyo_day = (LinearLayout) findViewById(R.id.lyo_day);
         int hours;
+        Log.d("TriggersPropertiesSP", "SP3");
+        Log.d("TriggersPropertiesSP", "SP3"+(savedInstanceState!=null));
         if (savedInstanceState != null)
         {
             restoreSavedInstance(savedInstanceState);
-            hours = horaFinal.get(Calendar.HOUR_OF_DAY);
         }
         else
         {
             horaFinal.add(Calendar.HOUR_OF_DAY, 1);
-            hours = horaFinal.get(Calendar.HOUR_OF_DAY);
         }
+        hours = horaFinal.get(Calendar.HOUR_OF_DAY);
         String respuesta = "";
         for (int i = 0; i < selected.length; i++)
         {
@@ -109,6 +113,7 @@ public class TriggerPropertiesActivity extends AppCompatActivity
                 respuesta += Constants.getHashMapDaysFromString().get(Constants.daysArray[i]) + ", ";
             }
         }
+        Log.d("TriggersPropertiesSP", "SP4");
         respuesta = respuesta.substring(0, respuesta.length() - 2);
         int hour = horaInicial.get(Calendar.HOUR_OF_DAY);
         int minute = horaInicial.get(Calendar.MINUTE);
@@ -117,6 +122,7 @@ public class TriggerPropertiesActivity extends AppCompatActivity
         txv_begin_time = (TextView) findViewById(R.id.txv_begin_time);
         txv_end_time = (TextView) findViewById(R.id.txv_end_time);
         txv_days = (TextView) findViewById(R.id.txv_days);
+        Log.d("TriggersPropertiesSP", "SP5");
         if (btn_day != null && lyo_day != null)
         {
             btn_day.setOnClickListener(new View.OnClickListener()
@@ -153,6 +159,7 @@ public class TriggerPropertiesActivity extends AppCompatActivity
                 }
             });
         }
+        Log.d("TriggersPropertiesSP", "SP6");
         if (txv_begin_time != null)
         {
             txv_begin_time.setText(hour + ":" + minute);
@@ -178,6 +185,7 @@ public class TriggerPropertiesActivity extends AppCompatActivity
                 }
             });
         }
+        Log.d("TriggersPropertiesSP", "SP7");
         if (txv_days != null)
         {
             txv_days.setText(respuesta);
@@ -231,36 +239,40 @@ public class TriggerPropertiesActivity extends AppCompatActivity
                 }
             });
         }
+        Log.d("TriggersPropertiesSP", "SP8");
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.create_trigger_menu, menu);
+        Log.d("TriggersPropertiesSP", "SP9");
         return true;
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
         // Handle item selection
         switch (item.getItemId())
         {
             case R.id.save:
-                if(!binary_sensor)
+                if (!binary_sensor)
                 {
                     trigger.setPrimary_value(rsb_range.getSelectedMinValue().intValue());
-                    trigger.setSecundary_value(rsb_range.getSelectedMaxValue().intValue());
+                    trigger.setSecondary_value(rsb_range.getSelectedMaxValue().intValue());
                 }
-                if(lyo_hour.getVisibility() == LinearLayout.VISIBLE)
+                if (lyo_hour.getVisibility() == LinearLayout.VISIBLE)
                 {
-                    trigger.setMinute_of_day(new int[]{(horaInicial.get(Calendar.HOUR_OF_DAY)*60)+horaInicial.get(Calendar.MINUTE),(horaFinal.get(Calendar.HOUR_OF_DAY)*60)+horaFinal.get(Calendar.MINUTE)});
+                    trigger.setMinute_of_day(new int[]{(horaInicial.get(Calendar.HOUR_OF_DAY) * 60) + horaInicial.get(Calendar.MINUTE), (horaFinal.get(Calendar.HOUR_OF_DAY) * 60) + horaFinal.get(Calendar.MINUTE)});
                 }
-                if(lyo_day.getVisibility() == LinearLayout.VISIBLE)
+                if (lyo_day.getVisibility() == LinearLayout.VISIBLE)
                 {
                     int amountDays = 0;
-                    for (int i = 0; i < selected.length ; i++)
+                    for (int i = 0; i < selected.length; i++)
                     {
-                        if(selected[i])
+                        if (selected[i])
                         {
                             amountDays++;
                         }
@@ -269,7 +281,7 @@ public class TriggerPropertiesActivity extends AppCompatActivity
                     int iterador = 0;
                     for (int i = 0; i < selected.length; i++)
                     {
-                        if(selected[i])
+                        if (selected[i])
                         {
                             days[iterador] = i;
                             iterador++;
@@ -279,14 +291,18 @@ public class TriggerPropertiesActivity extends AppCompatActivity
                 }
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setMessage("Do you want to receive notifications for this trigger ?")
-                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener()
+                        {
+                            public void onClick(DialogInterface dialog, int id)
+                            {
                                 trigger.setNotify(true);
                                 saveTrigger();
                             }
                         })
-                        .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
+                        .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener()
+                        {
+                            public void onClick(DialogInterface dialog, int id)
+                            {
                                 trigger.setNotify(false);
                                 saveTrigger();
                             }
@@ -305,24 +321,26 @@ public class TriggerPropertiesActivity extends AppCompatActivity
             @Override
             public void onFailureCallback()
             {
-
+                Log.d("UPS","Something went wrong");
             }
 
             @Override
             public void onSuccessCallback(List<Mode> modes)
             {
-
+                Log.d("UPS","Unexpected answer");
             }
 
             @Override
-            public void onSuccessCallback() {
+            public void onSuccessCallback()
+            {
                 Toast.makeText(getApplicationContext(), "Trigger creado exitosamente", Toast.LENGTH_SHORT).show();
                 finish();
 
             }
 
             @Override
-            public void onUnsuccessfulCallback() {
+            public void onUnsuccessfulCallback()
+            {
                 Toast.makeText(getApplicationContext(), "There was a problem doing the request please try again", Toast.LENGTH_SHORT).show();
             }
         });

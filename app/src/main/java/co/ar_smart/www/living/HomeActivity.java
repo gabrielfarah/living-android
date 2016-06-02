@@ -42,6 +42,7 @@ import co.ar_smart.www.actions.ActionActivity;
 import co.ar_smart.www.adapters.HomeGridDevicesAdapter;
 import co.ar_smart.www.analytics.AnalyticsApplication;
 import co.ar_smart.www.controllers.SonosControllerActivity;
+import co.ar_smart.www.controllers.TriggerMainController;
 import co.ar_smart.www.controllers.ZwaveLockControllerActivity;
 import co.ar_smart.www.controllers.hue.HueControllerActivity;
 import co.ar_smart.www.endpoints.EditRoomActivity;
@@ -73,6 +74,7 @@ import static co.ar_smart.www.helpers.Constants.DEFAULT_EMAIL;
 import static co.ar_smart.www.helpers.Constants.DEFAULT_HUB;
 import static co.ar_smart.www.helpers.Constants.DEFAULT_PASSWORD;
 import static co.ar_smart.www.helpers.Constants.EXTRA_ADDITIONAL_OBJECT;
+import static co.ar_smart.www.helpers.Constants.EXTRA_BOOLEAN;
 import static co.ar_smart.www.helpers.Constants.EXTRA_MESSAGE;
 import static co.ar_smart.www.helpers.Constants.EXTRA_MESSAGE_PREF_HUB;
 import static co.ar_smart.www.helpers.Constants.EXTRA_OBJECT;
@@ -748,9 +750,10 @@ public class HomeActivity extends AppCompatActivity {
                 // something went completely south (like no internet connection)
                 Constants.showNoInternetMessage(getApplicationContext());
                 try {
-                    Log.d("Error", call.request().body().toString());
+                    Log.d("Error", call.request().toString());
+                    Log.d("Error", call.request().body().contentLength()+"");
                 } catch (Exception e) {
-                    e.printStackTrace();
+//                    e.printStackTrace();
                 }
                 t.printStackTrace();
                 AnalyticsApplication.getInstance().trackException(new Exception(t));
@@ -878,6 +881,15 @@ public class HomeActivity extends AppCompatActivity {
         switch (endpoint.getUi_class_command()) {
             case "ui-sonos":
                 openSONOSController(endpoint);
+                break;
+            case "ui-temperature-s":
+                Intent i = new Intent(this, TriggerMainController.class);
+                i.putExtra(EXTRA_MESSAGE, API_TOKEN);
+                i.putExtra(EXTRA_MESSAGE_PREF_HUB, PREFERRED_HUB_ID);
+                i.putExtra(EXTRA_OBJECT, endpoint);
+                i.putExtra(EXTRA_ADDITIONAL_OBJECT, modes);
+                i.putExtra(EXTRA_BOOLEAN, false);
+                startActivity(i);
                 break;
             case "ui-lock":
                 if (endpoint.getEndpoint_type().equalsIgnoreCase("zwave")) {

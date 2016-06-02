@@ -98,7 +98,7 @@ public class CommandManager {
                 String jsonData = response.body().string();
                 response.body().close();
                 if (!response.isSuccessful()) {
-                    Log.d("getresponse unsuccess", response.body().string());
+                    Log.d("getresponse unsuccess", jsonData);
                     callback.onUnsuccessfulCallback();
                 } else {
                     try {

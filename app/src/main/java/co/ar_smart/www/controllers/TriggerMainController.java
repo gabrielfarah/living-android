@@ -89,13 +89,13 @@ public class TriggerMainController extends AppCompatActivity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_trigger_main_controller);
-        setTitle(endpoint.getName());
 
         mContext = this;
         final Intent intent = getIntent();
         API_TOKEN = intent.getStringExtra(EXTRA_MESSAGE);
         PREFERRED_HUB_ID = intent.getIntExtra(EXTRA_MESSAGE_PREF_HUB, -1);
         endpoint = intent.getParcelableExtra(EXTRA_OBJECT);
+        setTitle(endpoint.getName());
         modes = intent.getParcelableArrayListExtra(EXTRA_ADDITIONAL_OBJECT);
         binary_sensor = intent.getBooleanExtra(EXTRA_BOOLEAN, true);
         btn_on_positive = (Button) findViewById(R.id.btn_on_positive);
@@ -153,7 +153,7 @@ public class TriggerMainController extends AppCompatActivity
         }
         else
         {
-            getApiToken();
+            getTriggers();
         }
     }
 
@@ -184,7 +184,7 @@ public class TriggerMainController extends AppCompatActivity
             {
                 if (response.isSuccessful())
                 {
-                    Log.d("DEBUG", response.body().toString());
+                    Log.d("TRIGGERS", response.body().toString());
                     triggers = new ArrayList<>();
                     //If user got no endpoints redirect to management activity. set grid layout otherwise.
                     if (!response.body().isEmpty())
@@ -367,8 +367,8 @@ public class TriggerMainController extends AppCompatActivity
     private void crearTrigger(boolean action)
     {
         Trigger trigger = new Trigger(endpoint, PREFERRED_HUB_ID);
-        trigger.setTrigger_type((binary_sensor) ? Constants.Trigger_type.BINARY : Constants.Trigger_type.RANGE);
-        trigger.setOperand((binary_sensor)?Operand.equals:(action)?Operand.between:Operand.not_between);
+        trigger.setTrigger_type((binary_sensor) ? Constants.Trigger_type.BINARY.name() : Constants.Trigger_type.RANGE.name());
+        trigger.setOperand((binary_sensor)?Operand.equals.name():(action)?Operand.between.name():Operand.not_between.name());
         if(binary_sensor)
         {
             trigger.setPrimary_value((action)?1:0);
@@ -376,7 +376,7 @@ public class TriggerMainController extends AppCompatActivity
         Intent i = new Intent(mContext, TriggerPropertiesActivity.class);
         i.putParcelableArrayListExtra("modes",modes);
         i.putExtra(EXTRA_MESSAGE, API_TOKEN);
-        i.putExtra("trigger", trigger);
+        i.putExtra(EXTRA_OBJECT, trigger);
         i.putExtra("binary_sensor", binary_sensor);
         mContext.startActivity(i);
     }
@@ -393,7 +393,7 @@ public class TriggerMainController extends AppCompatActivity
                 if (response.isSuccessful()) {
                     Toast.makeText(mContext,"Trigger removed", Toast.LENGTH_SHORT).show();
                 } else {
-                    Log.d("DEBUGGG", response.message() + " - " + response.code());
+                    Log.d("REMOVE TRIGGER", response.message() + " - " + response.code());
                     Constants.showNoInternetMessage(mContext);
                 }
             }
