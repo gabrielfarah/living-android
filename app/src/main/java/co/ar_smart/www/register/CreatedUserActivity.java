@@ -45,8 +45,14 @@ public class CreatedUserActivity extends AppCompatActivity implements GoogleApiC
      */
     Location mLastLocation;
 
+    /**
+     * Constant used when the application verifies the permissions given by the user
+     */
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 0;
-    private int permissionCheck = -1;
+    /**
+     * Boolean that represent if the user give the required permissions
+     */
+    private boolean permissionCheck = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -60,9 +66,15 @@ public class CreatedUserActivity extends AppCompatActivity implements GoogleApiC
         initializeAll();
     }
 
+    /**
+     * Method that initialize the atributes that get the static map for the next activity
+     */
     private void initializeAll() {
-        permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
-        if (permissionCheck!=-1) {
+        //verifies if the user have given the required permissions
+        permissionCheck = (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)!=-1)
+                            && (ContextCompat.checkSelfPermission(this,Manifest.permission.ACCESS_COARSE_LOCATION)!=-1);
+        // in the positive case creates and initialize the atributes for getting the static map image
+        if (permissionCheck) {
             if (mGoogleApiClient == null) {
                 mGoogleApiClient = new GoogleApiClient.Builder(this)
                         .addConnectionCallbacks(this)
@@ -76,11 +88,15 @@ public class CreatedUserActivity extends AppCompatActivity implements GoogleApiC
             mLastLocation.setLongitude(Constants.DEFAULT_LONGITUDE);
         }
         else {
+            // in the negative case shows again the permission ask so the user can accept them.
             askAndroidPermissions();
             initializeAll();
         }
     }
 
+    /**
+     * This method ask the user the required permissions for the application to work well
+     */
     private void askAndroidPermissions() {
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION)
@@ -162,15 +178,11 @@ public class CreatedUserActivity extends AppCompatActivity implements GoogleApiC
     //-------------------------------------
 
     protected void onStart() {
-        mGoogleApiClient.connect();
         super.onStart();
     }
 
     protected void onStop() {
-        permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
-        if (permissionCheck!=-1) {
-            mGoogleApiClient.disconnect();
-        }
+        mGoogleApiClient.disconnect();
         super.onStop();
     }
 

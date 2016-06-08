@@ -78,18 +78,13 @@ public class TriggerMainController extends AppCompatActivity
      */
     private Context mContext;
 
-    /**
-     * Tri
-     * @param savedInstanceState
-     */
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_trigger_main_controller);
 
+        //Initialize the atributes of the class
         mContext = this;
         final Intent intent = getIntent();
         API_TOKEN = intent.getStringExtra(EXTRA_MESSAGE);
@@ -100,6 +95,7 @@ public class TriggerMainController extends AppCompatActivity
         binary_sensor = intent.getBooleanExtra(EXTRA_BOOLEAN, true);
         btn_on_positive = (Button) findViewById(R.id.btn_on_positive);
         btn_on_negative = (Button) findViewById(R.id.btn_on_negative);
+        //Set the correct message based in the type of the sensor.
         if (btn_on_positive != null)
         {
             btn_on_positive.setEnabled(false);
@@ -110,18 +106,25 @@ public class TriggerMainController extends AppCompatActivity
             btn_on_negative.setEnabled(false);
             btn_on_negative.setText((binary_sensor)?R.string.btn_trigger_on_negative_binary:R.string.btn_trigger_on_negative_range);
         }
+        //Get the API token to make the requests to the server
         getApiToken();
     }
 
+    /**
+     * Method that validates if the current API TOken is valid to get the triggers for the given sensor of the hub.
+     * If the API TOKEN has expired make the request to get the new one and get the triggers.
+     */
     private void getApiToken()
     {
         if (!JWTManager.validateJWT(API_TOKEN))
         {
+            //Get the information of the user from the SharedPreferences
             SharedPreferences settings = getSharedPreferences(PREFS_NAME,
                     Context.MODE_PRIVATE);
             // Get values using keys
             String EMAIL = settings.getString(PREF_EMAIL, DEFAULT_EMAIL);
             String PASSWORD = settings.getString(PREF_PASSWORD, DEFAULT_PASSWORD);
+            //ASk for the new API TOKEN
             JWTManager.getApiToken(EMAIL, PASSWORD, new JWTManager.JWTCallbackInterface()
             {
                 @Override
@@ -170,7 +173,7 @@ public class TriggerMainController extends AppCompatActivity
     }
 
     /**
-     * Method that returns the days of the week in words
+     * Method that gets the triggers for the current endpoint of the hub
      */
 
     private void getTriggers()
@@ -242,6 +245,11 @@ public class TriggerMainController extends AppCompatActivity
         });
     }
 
+    /**
+     * Methos that returns the mode associated to the trigger based on the payload
+     * @param payload - Payload of the trigger
+     * @return Mode that has the same payload
+     */
     private Mode getModefromTrigger(List<Command> payload)
     {
         Mode response = null;
@@ -269,6 +277,11 @@ public class TriggerMainController extends AppCompatActivity
         return response;
     }
 
+    /**
+     * Method that initialize the button that enters by param based in the action.
+     * @param button Button to initialize
+     * @param action Action given by the user (Positive or negative Action)
+     */
     public void initializeButton(Button button, final boolean action)
     {
         final String[] tempTriggers = getTriggersAsList(action);
@@ -329,6 +342,12 @@ public class TriggerMainController extends AppCompatActivity
         return tempTriggers.toArray(new String[0]);
     }
 
+    /**
+     * Method that creates a AlertDialog based on the triggers that the endpoint already have
+     * @param stateTriggers - List of the names of the trigger, List showed in the Dialog
+     * @param action - Action given by the user
+     * @return AlertDialog that shows the triggers for the endpoint
+     */
     private AlertDialog getOptionsDialog(final String[] stateTriggers, final boolean action)
     {
         AlertDialog alertD = new AlertDialog.Builder(mContext)
@@ -364,6 +383,10 @@ public class TriggerMainController extends AppCompatActivity
 
     }
 
+    /**
+     * Method that assign the basic properties for the new trigger that is going to be created.
+     * @param action - Action given by the user
+     */
     private void crearTrigger(boolean action)
     {
         Trigger trigger = new Trigger(endpoint, PREFERRED_HUB_ID);
@@ -381,6 +404,10 @@ public class TriggerMainController extends AppCompatActivity
         mContext.startActivity(i);
     }
 
+    /**
+     * MEthod that remove a specific trigger given by parameter
+     * @param trigger - Trigger to remove
+     */
     private void removeTrigger(Trigger trigger)
     {
         TriggerMainControllerClient livingHomeClient = RetrofitServiceGenerator.createService(TriggerMainControllerClient.class, API_TOKEN);

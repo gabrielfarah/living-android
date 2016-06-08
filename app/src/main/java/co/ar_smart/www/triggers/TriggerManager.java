@@ -24,6 +24,7 @@ import retrofit2.http.Path;
 public class TriggerManager
 {
     /**
+     * Method that add the mode to the server
      * @param hub_id
      * @param endpoint_id
      * @param trigger

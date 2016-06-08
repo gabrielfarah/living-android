@@ -36,18 +36,57 @@ import static co.ar_smart.www.helpers.Constants.EXTRA_OBJECT;
 public class TriggerPropertiesActivity extends AppCompatActivity
 {
 
+    /**
+     * Array of booleans that represents the days selected for the trigger
+     */
     boolean[] selected;
+    /**
+     * Text view for the start time for the trigger
+     */
     TextView txv_begin_time;
+    /**
+     * Text view for the end time for the trigger
+     */
     TextView txv_end_time;
+    /**
+     * TextView that shows the selected days for the trigger
+     */
     TextView txv_days;
+    /**
+     * Calendar that represents the start time for the trigger
+     */
     Calendar horaInicial;
+    /**
+     * Calendar that represents the end time for the trigger
+     */
     Calendar horaFinal;
+    /**
+     * Linear Layout that shows the UI to give the trigger an specific start and end hour
+     */
     LinearLayout lyo_hour;
+    /**
+     * Linear layout that shows the UI to give the trigger an array of days to execute
+     */
     LinearLayout lyo_day;
+    /**
+     * Current API TOKEN for the user
+     */
     private String API_TOKEN;
+    /**
+     * List of modes of the user
+     */
     ArrayList<Mode> modes;
+    /**
+     * Trigger that have the lastest value
+     */
     private Trigger trigger;
+    /**
+     * Boolean that represent if the sensor of the trigger is binary or not
+     */
     private boolean binary_sensor;
+    /**
+     * RangeSeekBar that gives the range for the trigger in case the sensor is not binary
+     */
     RangeSeekBar rsb_range;
 
     @Override
@@ -55,12 +94,13 @@ public class TriggerPropertiesActivity extends AppCompatActivity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_trigger_properties);
+        //Get the initial values for the atributes form the last activity from Intent
         modes = getIntent().getParcelableArrayListExtra("modes");
         API_TOKEN = getIntent().getStringExtra(EXTRA_MESSAGE);
         trigger = getIntent().getParcelableExtra(EXTRA_OBJECT);
         binary_sensor = getIntent().getBooleanExtra("binary_sensor", false);
-        Log.d("TriggersPropertiesSP1", "" + modes.toString());
         rsb_range = (RangeSeekBar) findViewById(R.id.rsb_range);
+        //makes the rangeSeekBar invincible if the sensor is binary
         if (rsb_range != null)
         {
             if (binary_sensor)
@@ -72,7 +112,7 @@ public class TriggerPropertiesActivity extends AppCompatActivity
                 rsb_range.setRangeValues(-50, 100);
             }
         }
-        Log.d("TriggersPropertiesSP1", "SP1");
+        //Adapter to show the available modes
         ArrayAdapter adapter = new ArrayAdapter<>(this, R.layout.activity_listview, modesToArray());
         ListView listView = (ListView) findViewById(R.id.lsv_modes);
         if (listView != null)
@@ -87,15 +127,13 @@ public class TriggerPropertiesActivity extends AppCompatActivity
                 }
             });
         }
-        Log.d("TriggersPropertiesSP", "SP2");
         selected = Constants.boolSelectedDaysArray;
         horaInicial = Calendar.getInstance();
         horaFinal = Calendar.getInstance();
         lyo_hour = (LinearLayout) findViewById(R.id.lyo_hour);
         lyo_day = (LinearLayout) findViewById(R.id.lyo_day);
         int hours;
-        Log.d("TriggersPropertiesSP", "SP3");
-        Log.d("TriggersPropertiesSP", "SP3"+(savedInstanceState!=null));
+        // Verifies if there is a savedInstance, used when the user turn the device to portrait o landscape
         if (savedInstanceState != null)
         {
             restoreSavedInstance(savedInstanceState);
@@ -104,6 +142,7 @@ public class TriggerPropertiesActivity extends AppCompatActivity
         {
             horaFinal.add(Calendar.HOUR_OF_DAY, 1);
         }
+
         hours = horaFinal.get(Calendar.HOUR_OF_DAY);
         String respuesta = "";
         for (int i = 0; i < selected.length; i++)
@@ -113,16 +152,16 @@ public class TriggerPropertiesActivity extends AppCompatActivity
                 respuesta += Constants.getHashMapDaysFromString().get(Constants.daysArray[i]) + ", ";
             }
         }
-        Log.d("TriggersPropertiesSP", "SP4");
         respuesta = respuesta.substring(0, respuesta.length() - 2);
         int hour = horaInicial.get(Calendar.HOUR_OF_DAY);
         int minute = horaInicial.get(Calendar.MINUTE);
+        // Initialize the atributes with their corresponding UI part
         Button btn_day = (Button) findViewById(R.id.btn_day);
         Button btn_hour = (Button) findViewById(R.id.btn_hour);
         txv_begin_time = (TextView) findViewById(R.id.txv_begin_time);
         txv_end_time = (TextView) findViewById(R.id.txv_end_time);
         txv_days = (TextView) findViewById(R.id.txv_days);
-        Log.d("TriggersPropertiesSP", "SP5");
+        // Set the listeners for the different parts of the UI
         if (btn_day != null && lyo_day != null)
         {
             btn_day.setOnClickListener(new View.OnClickListener()
@@ -159,7 +198,6 @@ public class TriggerPropertiesActivity extends AppCompatActivity
                 }
             });
         }
-        Log.d("TriggersPropertiesSP", "SP6");
         if (txv_begin_time != null)
         {
             txv_begin_time.setText(hour + ":" + minute);
@@ -185,7 +223,6 @@ public class TriggerPropertiesActivity extends AppCompatActivity
                 }
             });
         }
-        Log.d("TriggersPropertiesSP", "SP7");
         if (txv_days != null)
         {
             txv_days.setText(respuesta);
@@ -220,7 +257,6 @@ public class TriggerPropertiesActivity extends AppCompatActivity
                             }
                             if (respuesta.length() != 0)
                             {
-                                Log.d("DEBUG", respuesta);
                                 txv_days.setText(respuesta.substring(0, respuesta.length() - 2));
                             }
 
@@ -239,18 +275,26 @@ public class TriggerPropertiesActivity extends AppCompatActivity
                 }
             });
         }
-        Log.d("TriggersPropertiesSP", "SP8");
     }
 
+    /**
+     * Method called when the UI has a menu in the toolbar
+     * @param menu - Menu to add
+     * @return
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.create_trigger_menu, menu);
-        Log.d("TriggersPropertiesSP", "SP9");
         return true;
     }
 
+    /**
+     * Method called when the user click in the menu
+     * @param item
+     * @return
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
@@ -314,6 +358,9 @@ public class TriggerPropertiesActivity extends AppCompatActivity
         }
     }
 
+    /**
+     * Method that make the requesto to save the trigger in the server
+     */
     private void saveTrigger()
     {
         TriggerManager.addMode(trigger.getHubId(), trigger.getEndpoint().getId(), trigger, API_TOKEN, new TriggerManager.TriggerCallbackInterface()
@@ -346,6 +393,10 @@ public class TriggerPropertiesActivity extends AppCompatActivity
         });
     }
 
+    /**
+     * MEthod that returns the array of modes as a array of Strings
+     * @return
+     */
     private String[] modesToArray()
     {
         String[] result = new String[modes.size()];
@@ -356,6 +407,12 @@ public class TriggerPropertiesActivity extends AppCompatActivity
         return result;
     }
 
+    /**
+     * Method that change the text of the given TextView for the time selected in the TimePicker
+     * @param pTextView
+     * @param title
+     * @param customHour
+     */
     public void setTime(final TextView pTextView, String title, Calendar customHour)
     {
         TimePickerDialog abc = new TimePickerDialog(this, new TimePickerDialog.OnTimeSetListener()
@@ -380,6 +437,10 @@ public class TriggerPropertiesActivity extends AppCompatActivity
         abc.show();
     }
 
+    /**
+     * Method that save the Instance when the user rotate the device
+     * @param outState
+     */
     @Override
     protected void onSaveInstanceState(Bundle outState)
     {
@@ -390,6 +451,11 @@ public class TriggerPropertiesActivity extends AppCompatActivity
         outState.putInt("specificHour", lyo_hour.getVisibility());
         outState.putInt("specificDay", lyo_day.getVisibility());
     }
+
+    /**
+     * Method that restore the values when the user rotate the device
+     * @param savedInstanceState
+     */
 
     public void restoreSavedInstance(Bundle savedInstanceState)
     {
