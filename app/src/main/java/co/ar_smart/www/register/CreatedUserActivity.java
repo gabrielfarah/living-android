@@ -1,6 +1,9 @@
 package co.ar_smart.www.register;
 
 import android.Manifest;
+import android.app.Application;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -9,6 +12,8 @@ import android.location.Location;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -40,23 +45,55 @@ public class CreatedUserActivity extends AppCompatActivity implements GoogleApiC
      */
     Location mLastLocation;
 
+    private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 0;
+    private int permissionCheck = -1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_created_user);
+        final Context mContext = this;
+
         //Initialize atribute in charge of getting the static map image
-        if (mGoogleApiClient == null)
-        {
-            mGoogleApiClient = new GoogleApiClient.Builder(this)
-                    .addConnectionCallbacks(this)
-                    .addOnConnectionFailedListener(this)
-                    .addApi(LocationServices.API)
-                    .build();
+        askAndroidPermissions();
+        initializeAll();
+    }
+
+    private void initializeAll() {
+        permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
+        if (permissionCheck!=-1) {
+            if (mGoogleApiClient == null) {
+                mGoogleApiClient = new GoogleApiClient.Builder(this)
+                        .addConnectionCallbacks(this)
+                        .addOnConnectionFailedListener(this)
+                        .addApi(LocationServices.API)
+                        .build();
+            }
+            mGoogleApiClient.connect();
+            mLastLocation = new Location("Last registered location");
+            mLastLocation.setLatitude(Constants.DEFAULT_LATITUDE);
+            mLastLocation.setLongitude(Constants.DEFAULT_LONGITUDE);
         }
-        mLastLocation = new Location("Last registered location");
-        mLastLocation.setLatitude(Constants.DEFAULT_LATITUDE);
-        mLastLocation.setLongitude(Constants.DEFAULT_LONGITUDE);
+        else {
+            askAndroidPermissions();
+            initializeAll();
+        }
+    }
+
+    private void askAndroidPermissions() {
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
+                    PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+
+            // PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION is an
+            // app-defined int constant. The callback method gets the
+            // result of the request.
+        }
     }
 
     /**
@@ -69,8 +106,13 @@ public class CreatedUserActivity extends AppCompatActivity implements GoogleApiC
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
         {
             //Assign last registered location
-            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
-                    mGoogleApiClient);
+            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+            if(mLastLocation==null)
+            {
+                mLastLocation = new Location("Last registered location");
+                mLastLocation.setLatitude(Constants.DEFAULT_LATITUDE);
+                mLastLocation.setLongitude(Constants.DEFAULT_LONGITUDE);
+            }
             //URL of last registered location static map
             String url = "http://maps.google.com/maps/api/staticmap?center=" +
                     String.valueOf(mLastLocation.getLatitude()) + "," +
@@ -125,7 +167,10 @@ public class CreatedUserActivity extends AppCompatActivity implements GoogleApiC
     }
 
     protected void onStop() {
-        mGoogleApiClient.disconnect();
+        permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
+        if (permissionCheck!=-1) {
+            mGoogleApiClient.disconnect();
+        }
         super.onStop();
     }
 
