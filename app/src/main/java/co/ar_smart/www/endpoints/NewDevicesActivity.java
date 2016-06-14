@@ -121,7 +121,7 @@ public class NewDevicesActivity extends AppCompatActivity {
         OkHttpClient client = new OkHttpClient();
         RequestBody body = RequestBody.create(JSON, json);
         Request request = new Request.Builder()
-                .url(BASE_URL+"hubs/1/command/add/wifi/")
+                .url(BASE_URL+"hubs/"+getPreferredHub()+"/command/add/wifi/")
                 .header("Authorization", "JWT "+API_TOKEN)
                 .header("Content-Type", "application/json")
                 .header("Accept", "application/json")
@@ -162,7 +162,7 @@ public class NewDevicesActivity extends AppCompatActivity {
         OkHttpClient client = new OkHttpClient();
         RequestBody body = RequestBody.create(JSON, json);
         Request request = new Request.Builder()
-                .url(BASE_URL+"hubs/1/command/add/zwave/")
+                .url(BASE_URL+"hubs/"+getPreferredHub()+"/command/add/zwave/")
                 .header("Authorization", "JWT "+API_TOKEN)
                 .header("Content-Type", "application/json")
                 .header("Accept", "application/json")
@@ -199,7 +199,7 @@ public class NewDevicesActivity extends AppCompatActivity {
     public void getDevices(final String taskid)
     {
         NewDeviceClient client = RetrofitServiceGenerator.createService(NewDeviceClient.class, API_TOKEN);
-        Call<ResponseEndPoints> call2 = client.getEndPoint(""+1, task);
+        Call<ResponseEndPoints> call2 = client.getEndPoint(""+getPreferredHub(), task);
         devices.clear();
 
         call2.enqueue(new Callback<ResponseEndPoints>()
