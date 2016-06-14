@@ -22,7 +22,13 @@ import co.ar_smart.www.living.R;
 
 public class EditIconActivity extends AppCompatActivity {
 
+    /**
+     * Grid view where the icons will be shown
+     */
     private GridView grid;
+    /**
+     * Icon list
+     */
     private  List<Icons> ic;
 
     @Override
@@ -76,6 +82,9 @@ public class EditIconActivity extends AppCompatActivity {
         }
     }
 
+    /***
+     * This inteface represents a drawable object
+     */
     private class Icons implements IDrawable{
 
         private String image;
