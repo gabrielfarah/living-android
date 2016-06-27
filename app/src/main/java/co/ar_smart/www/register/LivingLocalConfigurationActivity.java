@@ -226,6 +226,8 @@ public class LivingLocalConfigurationActivity extends AppCompatActivity {
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
+                Log.d("OkHTTP", e.getMessage());
+                e.printStackTrace();
                 AnalyticsApplication.getInstance().trackException(e);
             }
 
