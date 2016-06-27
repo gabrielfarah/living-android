@@ -100,11 +100,12 @@ public final class Constants {
     /**
      * SSID for connecting to the Living hotspot network while the installation.
      */
-    public static final String LIVING_HOTSPOT_SSID = "FARAH";
+    public static final String LIVING_HOTSPOT_SSID = "Domu-AP";
     /**
      * Password for connecting to the Living hotspot network while the installation.
      */
-    public static final String LIVING_HOTSPOT_PASSWORD = "03FARAH07";
+    public static final String LIVING_HOTSPOT_PASSWORD = "DomuAP2016";
+    public static final String LIVING_URL = "domu.local:8080";
     /**
      * Default latitude for map-like activities
      */

@@ -935,7 +935,7 @@ public class HomeActivity extends AppCompatActivity {
         seek.setProgress(endpoint.getState());
 
         popDialog.setIcon(R.drawable.light_icon);
-        popDialog.setTitle("Please Select Into Your Desired Brightness ");
+        popDialog.setTitle("Please select your desired brightness ");
         popDialog.setView(seek);
         seek.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override

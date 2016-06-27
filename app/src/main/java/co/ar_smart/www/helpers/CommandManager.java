@@ -24,6 +24,8 @@ import static co.ar_smart.www.helpers.Constants.JSON;
  */
 public class CommandManager {
 
+    private static OkHttpClient client = new OkHttpClient();
+
     /**
      * This method will send a command to the server to be executed. The commands sent thu this method needs a response eg. ask the value of a sensor or the volume of a music player.
      *
@@ -33,7 +35,6 @@ public class CommandManager {
      * @param callback  the callback interface for implementing UI responses to events
      */
     public static void sendCommandWithResult(String API_TOKEN, int hub_id, String json, final CommandWithResultsCallbackInterface callback) {
-        OkHttpClient client = new OkHttpClient();
         RequestBody body = RequestBody.create(JSON, json);
         Request request = new Request.Builder()
                 .url(BASE_URL + "hubs/" + hub_id + "/command/get/")

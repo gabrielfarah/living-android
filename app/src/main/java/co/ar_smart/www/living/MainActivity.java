@@ -3,8 +3,8 @@ package co.ar_smart.www.living;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -23,7 +23,16 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-import static co.ar_smart.www.helpers.Constants.*;
+import static co.ar_smart.www.helpers.Constants.DEFAULT_EMAIL;
+import static co.ar_smart.www.helpers.Constants.DEFAULT_JWT;
+import static co.ar_smart.www.helpers.Constants.DEFAULT_PASSWORD;
+import static co.ar_smart.www.helpers.Constants.EXTRA_MESSAGE;
+import static co.ar_smart.www.helpers.Constants.JSON;
+import static co.ar_smart.www.helpers.Constants.LOGIN_URL;
+import static co.ar_smart.www.helpers.Constants.PREFS_NAME;
+import static co.ar_smart.www.helpers.Constants.PREF_EMAIL;
+import static co.ar_smart.www.helpers.Constants.PREF_JWT;
+import static co.ar_smart.www.helpers.Constants.PREF_PASSWORD;
 
 /**
  * This activity is responsible for loading the saved token/auth parameters and try to enter directly into the home activity.
@@ -130,17 +139,20 @@ public class MainActivity extends AppCompatActivity {
      * This method opens the home activity and sends to it the valid api token obtained from the shred preferences
      */
     public void openHomeActivity() {
-        super.onResume();
-        Intent intent = new Intent(this, HomeActivity.class);
-        intent.putExtra(EXTRA_MESSAGE, API_TOKEN);
-        startActivity(intent);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Intent intent = new Intent(MainActivity.this, HomeActivity.class);
+                intent.putExtra(EXTRA_MESSAGE, API_TOKEN);
+                startActivity(intent);
+            }
+        });
     }
 
     /**
      * This method opens the login activity for the user to input an email and password fields
      */
     public void openLoginActivity() {
-        super.onResume();
         Intent intent = new Intent(this, LoginActivity.class);
         startActivity(intent);
     }
@@ -149,7 +161,6 @@ public class MainActivity extends AppCompatActivity {
      * This method opens the login/register activity for the user login or create a new account
      */
     public void openLoginRegisterActivity() {
-        super.onResume();
         Intent intent = new Intent(this, LoginRegisterActivity.class);
         startActivity(intent);
     }

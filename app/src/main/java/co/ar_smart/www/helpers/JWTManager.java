@@ -26,6 +26,8 @@ import static co.ar_smart.www.helpers.Constants.LOGIN_URL;
  */
 public class JWTManager {
 
+    private static OkHttpClient client = new OkHttpClient();
+
     /**
      * This method validate if a date passed as parameter if after in time than the actual date of the device.
      * @param jDate string timestamp of a unix epoch
@@ -71,7 +73,6 @@ public class JWTManager {
      */
     public static void getApiToken(String email, String password, final JWTCallbackInterface callback) {
         String json = "{\"email\":\"" + email + "\",\"password\":\"" + password + "\"}";
-        OkHttpClient client = new OkHttpClient();
         RequestBody body = RequestBody.create(JSON, json);
         Request request = new Request.Builder()
                 .url(LOGIN_URL)
