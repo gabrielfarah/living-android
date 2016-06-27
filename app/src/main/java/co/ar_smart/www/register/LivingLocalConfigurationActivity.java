@@ -63,16 +63,15 @@ public class LivingLocalConfigurationActivity extends AppCompatActivity {
 
 
     private void doTest() {
-        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
-
-        NetworkRequest request = null;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+
+            NetworkRequest request = null;
+
             request = new NetworkRequest.Builder()
                     .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
                     .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET).build();
-        }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             connectivityManager.requestNetwork(request, new ConnectivityManager.NetworkCallback() {
                 /**
                  * Called when the framework connects and has declared a new network ready for use.
@@ -88,40 +87,20 @@ public class LivingLocalConfigurationActivity extends AppCompatActivity {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         Log.d("Got available network:", network.toString());
                     }
-
                     if (okHttpClient == null) {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                             okHttpClient = new OkHttpClient.Builder().socketFactory(network.getSocketFactory()).build();
                         }
                     }
-
                     Request request = new Request.Builder()
                             .url(LIVING_URL)
                             .build();
-                    client.newCall(request).enqueue(new Callback() {
-                        @Override
-                        public void onFailure(Call call, IOException e) {
-                            AnalyticsApplication.getInstance().trackException(e);
-                            e.printStackTrace();
-                        }
-
-                        @Override
-                        public void onResponse(Call call, Response response) throws IOException {
-                            String jsonData = response.body().string();
-                            response.body().close();
-                            if (!response.isSuccessful()) {
-                                Log.d("fallo!!!", jsonData);
-                            } else {
-                                try {
-                                    JSONObject jObject = new JSONObject(jsonData);
-                                    Log.d("respuesta", jObject.toString());
-                                } catch (JSONException e) {
-                                    AnalyticsApplication.getInstance().trackException(e);
-                                    e.printStackTrace();
-                                }
-                            }
-                        }
-                    });
+                    try {
+                        Response response = okHttpClient.newCall(request).execute();
+                        Log.d("FUNCIONO", response.body().string().toString());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
             });
         }
@@ -168,7 +147,7 @@ public class LivingLocalConfigurationActivity extends AppCompatActivity {
         mContext = this;
         askAndroidPermissions();
         permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
-        if (permissionCheck!=-1){
+        if (permissionCheck != -1) {
             WifiManager wifiManager = (WifiManager) this.getSystemService(WIFI_SERVICE);
             //WifiInfo info = wifiManager.getConnectionInfo();
             /*if(!info.getSSID().isEmpty()){
@@ -180,7 +159,7 @@ public class LivingLocalConfigurationActivity extends AppCompatActivity {
             }*/
             wifiManager.setWifiEnabled(true);
             List<ScanResult> results = wifiManager.getScanResults();
-            for (int i=0;i<results.size();i++){
+            for (int i = 0; i < results.size(); i++) {
                 if (!SSIDList.contains(results.get(i).SSID))
                     SSIDList.add(results.get(i).SSID);
             }
@@ -189,7 +168,7 @@ public class LivingLocalConfigurationActivity extends AppCompatActivity {
         ArrayAdapter<String> ssidAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line, SSIDList);
         final AutoCompleteTextView ssidAutoCompleteView = (AutoCompleteTextView) findViewById(R.id.available_wifi_networks);
         ssidAutoCompleteView.setAdapter(ssidAdapter);
-        if (SSIDList.size()>0)ssidAutoCompleteView.setText(SSIDList.get(0));
+        if (SSIDList.size() > 0) ssidAutoCompleteView.setText(SSIDList.get(0));
 
         // Get all the available Time Zones present in the Device
         String[] timeZones = getAvailableTimeZones();
@@ -216,7 +195,7 @@ public class LivingLocalConfigurationActivity extends AppCompatActivity {
                     String userWifiSSID = ssidAutoCompleteView.getText().toString();
                     String userWifiPassword = passwordText.getText().toString();
                     boolean valid = validateUserInput(userWifiSSID, userWifiPassword, userHomeTimeZone);
-                    if (valid){
+                    if (valid) {
                         //TODO add real behavior
                         //sendDataToHub(userWifiSSID, userWifiPassword, userHomeTimeZone);
                         getFromHub();
@@ -279,8 +258,8 @@ public class LivingLocalConfigurationActivity extends AppCompatActivity {
         wifiManager.disconnect();
     }
 
-    private boolean validateUserInput(String ssid, String password, String timeZone){
-        if (ssid.isEmpty() || password.isEmpty() || timeZone.isEmpty()){
+    private boolean validateUserInput(String ssid, String password, String timeZone) {
+        if (ssid.isEmpty() || password.isEmpty() || timeZone.isEmpty()) {
             Toast.makeText(this, getResources().getString(R.string.toast_missing_fields), Toast.LENGTH_LONG).show();
             return false;
         }
@@ -317,7 +296,7 @@ public class LivingLocalConfigurationActivity extends AppCompatActivity {
         }
     }
 
-    private String[] getAvailableTimeZones(){
+    private String[] getAvailableTimeZones() {
         return TimeZone.getAvailableIDs();
     }
 
