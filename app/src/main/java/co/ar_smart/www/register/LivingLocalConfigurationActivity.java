@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
@@ -23,6 +24,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TimeZone;
@@ -157,12 +161,43 @@ public class LivingLocalConfigurationActivity extends AppCompatActivity {
             wifiManager.disconnect();
             wifiManager.enableNetwork(netId, true);
             wifiManager.reconnect();
+
+            try {
+                setMobileDataEnabled(mContext, false);
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            } catch (NoSuchFieldException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            } catch (NoSuchMethodException e) {
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            }
+
+
         }
     }
 
     private void disconnectFromLivingWifi() {
         WifiManager wifiManager = (WifiManager) this.getSystemService(WIFI_SERVICE);
         wifiManager.disconnect();
+
+        try {
+            setMobileDataEnabled(mContext, true);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        }
+
     }
 
     private boolean validateUserInput(String ssid, String password, String timeZone){
@@ -213,6 +248,19 @@ public class LivingLocalConfigurationActivity extends AppCompatActivity {
         unregisterReceiver(broadcastReceiver);
     }
 
+    private void setMobileDataEnabled(Context context, boolean enabled) throws ClassNotFoundException, NoSuchFieldException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+        final ConnectivityManager conman = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        final Class conmanClass = Class.forName(conman.getClass().getName());
+        final Field connectivityManagerField = conmanClass.getDeclaredField("mService");
+        connectivityManagerField.setAccessible(true);
+        final Object connectivityManager = connectivityManagerField.get(conman);
+        final Class connectivityManagerClass = Class.forName(connectivityManager.getClass().getName());
+        final Method setMobileDataEnabledMethod = connectivityManagerClass.getDeclaredMethod("setMobileDataEnabled", Boolean.TYPE);
+        setMobileDataEnabledMethod.setAccessible(true);
+
+        setMobileDataEnabledMethod.invoke(connectivityManager, enabled);
+    }
+
     public void sendDataToHub(String userWifiSSID, String userWifiPassword, String userHomeTimeZone) {
         String json = "{\"ssid\":\"" + userWifiSSID + "\",\"password\":\"" + userWifiPassword + "\",\"timezone\":\"" + userHomeTimeZone + "\"}";
         RequestBody body = RequestBody.create(JSON, json);
@@ -226,7 +274,6 @@ public class LivingLocalConfigurationActivity extends AppCompatActivity {
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                Log.d("OkHTTP", e.getMessage());
                 e.printStackTrace();
                 AnalyticsApplication.getInstance().trackException(e);
             }
