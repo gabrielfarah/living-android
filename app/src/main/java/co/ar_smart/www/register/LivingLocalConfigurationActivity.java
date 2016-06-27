@@ -62,7 +62,8 @@ public class LivingLocalConfigurationActivity extends AppCompatActivity {
     private OkHttpClient okHttpClient;
 
 
-    private void doTest() {
+    private void sendWifiDataToHub(final String userWifiSSID, final String userWifiPassword, final String userHomeTimeZone) {
+        final String json = "{\"ssid\":\"" + userWifiSSID + "\",\"password\":\"" + userWifiPassword + "\",\"timezone\":\"" + userHomeTimeZone + "\"}";
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
 
@@ -84,20 +85,19 @@ public class LivingLocalConfigurationActivity extends AppCompatActivity {
                  */
                 @Override
                 public void onAvailable(final Network network) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        Log.d("Got available network:", network.toString());
-                    }
                     if (okHttpClient == null) {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                             okHttpClient = new OkHttpClient.Builder().socketFactory(network.getSocketFactory()).build();
                         }
                     }
+                    RequestBody body = RequestBody.create(JSON, json);
                     Request request = new Request.Builder()
                             .url(LIVING_URL)
+                            .post(body)
                             .build();
                     try {
-                        Response response = okHttpClient.newCall(request).execute();
-                        Log.d("FUNCIONO", response.body().string().toString());
+                        okHttpClient.newCall(request).execute();
+                        //Log.d("FUNCIONO", response.body().string());
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -135,9 +135,6 @@ public class LivingLocalConfigurationActivity extends AppCompatActivity {
                 }
             }
         });
-        //Remove your preference
-        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        cm.setNetworkPreference(ConnectivityManager.DEFAULT_NETWORK_PREFERENCE);
     }
 
     @Override
@@ -197,9 +194,7 @@ public class LivingLocalConfigurationActivity extends AppCompatActivity {
                     boolean valid = validateUserInput(userWifiSSID, userWifiPassword, userHomeTimeZone);
                     if (valid) {
                         //TODO add real behavior
-                        //sendDataToHub(userWifiSSID, userWifiPassword, userHomeTimeZone);
-                        getFromHub();
-                        doTest();
+                        sendWifiDataToHub(userWifiSSID, userWifiPassword, userHomeTimeZone);
                     }
                 }
             });
@@ -222,10 +217,6 @@ public class LivingLocalConfigurationActivity extends AppCompatActivity {
             }
         };
         registerReceiver(broadcastReceiver, new IntentFilter(WifiManager.NETWORK_STATE_CHANGED_ACTION));
-
-        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        //Prefer mobile over wifi
-        cm.setNetworkPreference(ConnectivityManager.TYPE_WIFI);
     }
 
     private void connectToLivingHotSpot(WifiManager wifiManager) {
