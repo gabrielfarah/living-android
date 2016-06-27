@@ -105,7 +105,7 @@ public final class Constants {
      * Password for connecting to the Living hotspot network while the installation.
      */
     public static final String LIVING_HOTSPOT_PASSWORD = "DomuAP2016";
-    public static final String LIVING_URL = "192.168.42.1:8080";
+    public static final String LIVING_URL = "http://192.168.42.1:8080/";
     /**
      * Default latitude for map-like activities
      */

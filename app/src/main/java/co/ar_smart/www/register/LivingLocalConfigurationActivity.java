@@ -221,6 +221,8 @@ public class LivingLocalConfigurationActivity extends AppCompatActivity {
                 .post(body)
                 .build();
         Log.d("OkHTTP:", request.toString());
+        Log.d("OkHTTP:", request.body().toString());
+        Log.d("OkHTTP:", json);
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
