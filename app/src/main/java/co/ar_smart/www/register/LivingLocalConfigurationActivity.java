@@ -7,9 +7,13 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkCapabilities;
+import android.net.NetworkRequest;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -55,11 +59,75 @@ public class LivingLocalConfigurationActivity extends AppCompatActivity {
     private IntentFilter intentFilter = new IntentFilter();
     private boolean wasNetworkStarted = false;
     private Context mContext;
+    private OkHttpClient okHttpClient;
+
+
+    private void doTest() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+
+        NetworkRequest request = null;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            request = new NetworkRequest.Builder()
+                    .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
+                    .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET).build();
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            connectivityManager.requestNetwork(request, new ConnectivityManager.NetworkCallback() {
+                /**
+                 * Called when the framework connects and has declared a new network ready for use.
+                 * This callback may be called more than once if the {@link Network} that is
+                 * satisfying the request changes.
+                 *
+                 * This method will be called on non-UI thread, so beware not to use any UI updates directly.
+                 *
+                 * @param network The {@link Network} of the satisfying network.
+                 */
+                @Override
+                public void onAvailable(final Network network) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        Log.d("Got available network:", network.toString());
+                    }
+
+                    if (okHttpClient == null) {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                            okHttpClient = new OkHttpClient.Builder().socketFactory(network.getSocketFactory()).build();
+                        }
+                    }
+
+                    Request request = new Request.Builder()
+                            .url(LIVING_URL)
+                            .build();
+                    client.newCall(request).enqueue(new Callback() {
+                        @Override
+                        public void onFailure(Call call, IOException e) {
+                            AnalyticsApplication.getInstance().trackException(e);
+                            e.printStackTrace();
+                        }
+
+                        @Override
+                        public void onResponse(Call call, Response response) throws IOException {
+                            String jsonData = response.body().string();
+                            response.body().close();
+                            if (!response.isSuccessful()) {
+                                Log.d("fallo!!!", jsonData);
+                            } else {
+                                try {
+                                    JSONObject jObject = new JSONObject(jsonData);
+                                    Log.d("respuesta", jObject.toString());
+                                } catch (JSONException e) {
+                                    AnalyticsApplication.getInstance().trackException(e);
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+                    });
+                }
+            });
+        }
+    }
 
     public void getFromHub() {
-        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        //Prefer mobile over wifi
-        cm.setNetworkPreference(ConnectivityManager.TYPE_WIFI);
         Request request = new Request.Builder()
                 .url(LIVING_URL)
                 .get()
@@ -89,6 +157,7 @@ public class LivingLocalConfigurationActivity extends AppCompatActivity {
             }
         });
         //Remove your preference
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         cm.setNetworkPreference(ConnectivityManager.DEFAULT_NETWORK_PREFERENCE);
     }
 
@@ -151,6 +220,7 @@ public class LivingLocalConfigurationActivity extends AppCompatActivity {
                         //TODO add real behavior
                         //sendDataToHub(userWifiSSID, userWifiPassword, userHomeTimeZone);
                         getFromHub();
+                        doTest();
                     }
                 }
             });
@@ -174,6 +244,9 @@ public class LivingLocalConfigurationActivity extends AppCompatActivity {
         };
         registerReceiver(broadcastReceiver, new IntentFilter(WifiManager.NETWORK_STATE_CHANGED_ACTION));
 
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        //Prefer mobile over wifi
+        cm.setNetworkPreference(ConnectivityManager.TYPE_WIFI);
     }
 
     private void connectToLivingHotSpot(WifiManager wifiManager) {
