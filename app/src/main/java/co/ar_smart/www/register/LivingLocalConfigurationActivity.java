@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
@@ -55,7 +56,10 @@ public class LivingLocalConfigurationActivity extends AppCompatActivity {
     private boolean wasNetworkStarted = false;
     private Context mContext;
 
-    public static void getFromHub() {
+    public void getFromHub() {
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        //Prefer mobile over wifi
+        cm.setNetworkPreference(ConnectivityManager.TYPE_WIFI);
         Request request = new Request.Builder()
                 .url(LIVING_URL)
                 .get()
@@ -84,6 +88,8 @@ public class LivingLocalConfigurationActivity extends AppCompatActivity {
                 }
             }
         });
+        //Remove your preference
+        cm.setNetworkPreference(ConnectivityManager.DEFAULT_NETWORK_PREFERENCE);
     }
 
     @Override
