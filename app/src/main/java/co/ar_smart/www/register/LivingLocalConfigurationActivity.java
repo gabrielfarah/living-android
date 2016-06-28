@@ -97,7 +97,11 @@ public class LivingLocalConfigurationActivity extends AppCompatActivity {
                             .build();
                     try {
                         Response response = okHttpClient.newCall(request).execute();
-                        Log.d("FUNCIONO", response.body().string());
+                        String resp = response.body().string();
+                        if (resp.contains("ssid not found")) {
+                            Toast.makeText(mContext, "The SSD: " + userWifiSSID + " does not exist", Toast.LENGTH_LONG).show();
+                        }
+                        Log.d("FUNCIONO", resp);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
