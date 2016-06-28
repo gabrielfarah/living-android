@@ -87,7 +87,7 @@ public class EditRoomActivity extends AppCompatActivity {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setHomeButtonEnabled(true);
-            getSupportActionBar().setTitle(getString(R.string.label_room_activity_title));
+            getSupportActionBar().setTitle(getString(R.string.editroom_btntext));
         }
         API_TOKEN = getIntent().getStringExtra(EXTRA_MESSAGE);
 

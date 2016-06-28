@@ -159,12 +159,6 @@ public class RegisterHubActivity extends AppCompatActivity
             json.put("latitude", hubLatitude);
             json.put("longitude", hubLongitude);
             json.put("radius", hubRadius);
-            Log.d("DEBUG","paso3"+ token);
-            Log.d("DEBUG","paso3"+ hubName);
-            Log.d("DEBUG","paso3"+ hubSerial);
-            Log.d("DEBUG","paso3"+ hubLatitude);
-            Log.d("DEBUG","paso3"+ hubLongitude);
-            Log.d("DEBUG","paso3"+ hubRadius);
             OkHttpClient client = new OkHttpClient();
             RequestBody body = RequestBody.create(JSON, json.toString());
             Request request = new Request.Builder()
@@ -190,7 +184,7 @@ public class RegisterHubActivity extends AppCompatActivity
                     if (!response.isSuccessful())
                     {
                         Log.d("DEBUG","response body"+body);
-                        displayMessage(getResources().getString(R.string.toast_login_bad_credentials));
+                        displayMessage(body.substring(body.lastIndexOf("\":")+3,body.length()-2));
                     }
                     else
                     {

@@ -38,7 +38,7 @@ public class EditIconActivity extends AppCompatActivity {
 
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setTitle(getString(R.string.label_icon_activity_title));
+            getSupportActionBar().setTitle(getString(R.string.editicon_btntext));
         }
 
         grid=(GridView) findViewById(R.id.gridIcons);

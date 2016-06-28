@@ -17,6 +17,8 @@ import android.widget.Toast;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import co.ar_smart.www.analytics.AnalyticsApplication;
 import co.ar_smart.www.helpers.JWTManager;
@@ -138,6 +140,9 @@ public class NewAdminActivity extends AppCompatActivity
                 && (!edtConfEmail.getText().toString().trim().equals(""))
                 && (!edtPassword.getText().toString().trim().equals(""));
         boolean emailsEqual = edtEmail.getText().toString().trim().equals(edtConfEmail.getText().toString().trim());
+        String passRegex = "(?=.*\\d)(?=.*[a-z])(?=.*[A-Z]).{4,8}$";
+        Pattern pattern = Pattern.compile(passRegex);
+        Matcher matcher = pattern.matcher(edtPassword.getText().toString().trim());
         if (!filledFields)
         {
             displayMessage(getResources().getString(R.string.toast_incomplete_form));
@@ -150,6 +155,10 @@ public class NewAdminActivity extends AppCompatActivity
                 || !android.util.Patterns.EMAIL_ADDRESS.matcher(edtConfEmail.getText().toString()).matches())
         {
             displayMessage(getResources().getString(R.string.toast_email_format_error));
+        }
+        else if(!matcher.matches())
+        {
+            displayMessage(getResources().getString(R.string.not_regex_password));
         }
         else
         {
@@ -187,7 +196,8 @@ public class NewAdminActivity extends AppCompatActivity
                         response.body().close();
                         if (!response.isSuccessful())
                         {
-                            displayMessage(getResources().getString(R.string.toast_register_bad_credentials));
+                            String error = body.substring(body.lastIndexOf("[")+2,body.lastIndexOf("]")-1);
+                            displayMessage(error);
                         }
                         else
                         {

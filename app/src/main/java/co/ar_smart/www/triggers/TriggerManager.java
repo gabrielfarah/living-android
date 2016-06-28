@@ -73,7 +73,7 @@ public class TriggerManager
     }
 
     /**
-     * the interface describing the API urls and their response types
+     * The interface describing the API urls and their response types
      */
     public interface TriggerService
     {
