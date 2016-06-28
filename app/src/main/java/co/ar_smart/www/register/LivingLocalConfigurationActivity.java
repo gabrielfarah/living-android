@@ -96,8 +96,8 @@ public class LivingLocalConfigurationActivity extends AppCompatActivity {
                             .post(body)
                             .build();
                     try {
-                        okHttpClient.newCall(request).execute();
-                        //Log.d("FUNCIONO", response.body().string());
+                        Response response = okHttpClient.newCall(request).execute();
+                        Log.d("FUNCIONO", response.body().string());
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
