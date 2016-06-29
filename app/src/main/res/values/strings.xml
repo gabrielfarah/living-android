@@ -149,4 +149,6 @@
     <string name="btn_trigger_on_negative_range">When it is outside range</string>
     <string name="not_regex_password">The password must contain at least one capital letter,
         and a number and its length must be 8.</string>
+    <string name="toast_error_connecting_to_local_webserver">Please make sure your phone WIFI is active and connected to the \"Domu-AP\" network. Also make sure to momentarily deactivate the mobile data in your phone</string>
+    <string name="welcome_messages">The WIFI network: %1$s does not exist.</string>
 </resources>

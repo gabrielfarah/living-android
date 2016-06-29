@@ -27,18 +27,12 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TimeZone;
 
-import co.ar_smart.www.analytics.AnalyticsApplication;
 import co.ar_smart.www.living.R;
-import okhttp3.Call;
-import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -49,30 +43,60 @@ import static co.ar_smart.www.helpers.Constants.LIVING_HOTSPOT_PASSWORD;
 import static co.ar_smart.www.helpers.Constants.LIVING_HOTSPOT_SSID;
 import static co.ar_smart.www.helpers.Constants.LIVING_URL;
 
+/**
+ * This activity will add the information of the user home into the hub using the hub local LAN
+ */
 public class LivingLocalConfigurationActivity extends AppCompatActivity {
 
+    /**
+     * Constant for asking the permission
+     */
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 0;
+    /**
+     * http client for doing the requests
+     */
     private static OkHttpClient client = new OkHttpClient();
-    private int permissionCheck = -1;
+    /**
+     * List of all the names of networks the phone can see
+     */
     private List<String> SSIDList = new ArrayList<String>();
+    /**
+     * Broadcast receiver for the permissions
+     */
     private BroadcastReceiver broadcastReceiver;
-    private IntentFilter intentFilter = new IntentFilter();
+    /**
+     * True if the network adapter was started
+     */
     private boolean wasNetworkStarted = false;
+    /**
+     * The application context
+     */
     private Context mContext;
-    private OkHttpClient okHttpClient;
+    /**
+     * The check of the webserver worked
+     */
+    private boolean getWorked = false;
+    /**
+     * Number of tries at sending the data to the local webserver
+     */
+    private int counter = 0;
 
 
+    /**
+     * This method will send the user input into the hub local webserver. It will try to force the use of wifi but only in devices > api 21
+     *
+     * @param userWifiSSID     The wifi network name
+     * @param userWifiPassword The Wifi password
+     * @param userHomeTimeZone The user home timezone
+     */
     private void sendWifiDataToHub(final String userWifiSSID, final String userWifiPassword, final String userHomeTimeZone) {
         final String json = "{\"ssid\":\"" + userWifiSSID + "\",\"password\":\"" + userWifiPassword + "\",\"timezone\":\"" + userHomeTimeZone + "\"}";
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
-
-            NetworkRequest request = null;
-
+            NetworkRequest request;
             request = new NetworkRequest.Builder()
                     .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
                     .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET).build();
-
             connectivityManager.requestNetwork(request, new ConnectivityManager.NetworkCallback() {
                 /**
                  * Called when the framework connects and has declared a new network ready for use.
@@ -85,60 +109,78 @@ public class LivingLocalConfigurationActivity extends AppCompatActivity {
                  */
                 @Override
                 public void onAvailable(final Network network) {
-                    if (okHttpClient == null) {
+                    if (client == null) {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                            okHttpClient = new OkHttpClient.Builder().socketFactory(network.getSocketFactory()).build();
+                            client = new OkHttpClient.Builder().socketFactory(network.getSocketFactory()).build();
                         }
                     }
-                    RequestBody body = RequestBody.create(JSON, json);
-                    Request request = new Request.Builder()
-                            .url(LIVING_URL)
-                            .post(body)
-                            .build();
-                    try {
-                        Response response = okHttpClient.newCall(request).execute();
-                        String resp = response.body().string();
-                        if (resp.contains("ssid not found")) {
-                            Toast.makeText(mContext, "The SSD: " + userWifiSSID + " does not exist", Toast.LENGTH_LONG).show();
-                        }
-                        Log.d("FUNCIONO", resp);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                    getFromHub();
+                    sendPost(json, userWifiSSID);
                 }
             });
+        } else {
+            client = new OkHttpClient();
+            getFromHub();
+            sendPost(json, userWifiSSID);
         }
     }
 
+    /**
+     * This method sends a POST request to the hub local webserver will all the connection parameters
+     *
+     * @param json         the string formatted json object with the information
+     * @param userWifiSSID the name of the user home WIFI network
+     */
+    private void sendPost(String json, String userWifiSSID) {
+        boolean finished = true;
+        RequestBody body = RequestBody.create(JSON, json);
+        Request request = new Request.Builder()
+                .url(LIVING_URL)
+                .post(body)
+                .build();
+        if (getWorked) {
+            try {
+                Response response = client.newCall(request).execute();
+                String resp = response.body().string();
+                if (resp.contains("ssid not found")) {
+                    Toast.makeText(mContext, String.format(getResources().getString(R.string.welcome_messages), userWifiSSID), Toast.LENGTH_LONG).show();
+                    finished = false;
+                }
+                if (finished) {
+                    disconnectFromLivingWifi();
+                    Intent i = new Intent(mContext, RegisteredHubActivity.class);
+                    startActivity(i);
+                }
+                Log.d("FUNCIONO", resp);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            if (counter > 1) {
+                Toast.makeText(mContext, getResources().getString(R.string.toast_error_connecting_to_local_webserver), Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    /**
+     * This method validates if the webserver running in the hub is accesible to the phone doing a GET request
+     */
     public void getFromHub() {
         Request request = new Request.Builder()
                 .url(LIVING_URL)
                 .get()
                 .build();
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                AnalyticsApplication.getInstance().trackException(e);
-                e.printStackTrace();
+        try {
+            Response response = client.newCall(request).execute();
+            String resp = response.body().string();
+            if (resp.contains("connected")) {
+                getWorked = true;
+            } else {
+                counter += 1;
             }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                String jsonData = response.body().string();
-                response.body().close();
-                if (!response.isSuccessful()) {
-                    Log.d("fallo!!!", jsonData);
-                } else {
-                    try {
-                        JSONObject jObject = new JSONObject(jsonData);
-                        Log.d("respuesta", jObject.toString());
-                    } catch (JSONException e) {
-                        AnalyticsApplication.getInstance().trackException(e);
-                        e.printStackTrace();
-                    }
-                }
-            }
-        });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -147,7 +189,7 @@ public class LivingLocalConfigurationActivity extends AppCompatActivity {
         setContentView(R.layout.activity_living_local_configuration);
         mContext = this;
         askAndroidPermissions();
-        permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
+        int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
         if (permissionCheck != -1) {
             WifiManager wifiManager = (WifiManager) this.getSystemService(WIFI_SERVICE);
             //WifiInfo info = wifiManager.getConnectionInfo();
@@ -197,7 +239,6 @@ public class LivingLocalConfigurationActivity extends AppCompatActivity {
                     String userWifiPassword = passwordText.getText().toString();
                     boolean valid = validateUserInput(userWifiSSID, userWifiPassword, userHomeTimeZone);
                     if (valid) {
-                        //TODO add real behavior
                         sendWifiDataToHub(userWifiSSID, userWifiPassword, userHomeTimeZone);
                     }
                 }
@@ -223,9 +264,13 @@ public class LivingLocalConfigurationActivity extends AppCompatActivity {
         registerReceiver(broadcastReceiver, new IntentFilter(WifiManager.NETWORK_STATE_CHANGED_ACTION));
     }
 
+    /**
+     * This method will connect the user phone to the hub access point automatically
+     *
+     * @param wifiManager the phone wifi manager class
+     */
     private void connectToLivingHotSpot(WifiManager wifiManager) {
         WifiConfiguration wifiConfig = new WifiConfiguration();
-        //  This is for WPA2!! TODO check if edison is the same
         wifiConfig.allowedProtocols.set(WifiConfiguration.Protocol.RSN);
         wifiConfig.allowedProtocols.set(WifiConfiguration.Protocol.WPA);
         wifiConfig.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.WPA_PSK);
@@ -248,11 +293,22 @@ public class LivingLocalConfigurationActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * This method will close the conection to the access point wifi
+     */
     private void disconnectFromLivingWifi() {
         WifiManager wifiManager = (WifiManager) this.getSystemService(WIFI_SERVICE);
         wifiManager.disconnect();
     }
 
+    /**
+     * This method validates that the wifi name, the password and the timezone are all not empty
+     *
+     * @param ssid     the wifi name
+     * @param password the wifi password
+     * @param timeZone the user timezone
+     * @return true if all of the variables are not empty
+     */
     private boolean validateUserInput(String ssid, String password, String timeZone) {
         if (ssid.isEmpty() || password.isEmpty() || timeZone.isEmpty()) {
             Toast.makeText(this, getResources().getString(R.string.toast_missing_fields), Toast.LENGTH_LONG).show();
@@ -261,6 +317,9 @@ public class LivingLocalConfigurationActivity extends AppCompatActivity {
         return true;
     }
 
+    /**
+     * This method will ask the user for its permission to access the action location and will call the method onRequestPermissionsResult as a callback
+     */
     private void askAndroidPermissions() {
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION)
@@ -291,6 +350,11 @@ public class LivingLocalConfigurationActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * This method will obtain all the available time zones stored in the device
+     *
+     * @return String Array containing all the names of the time zones present in the phone
+     */
     private String[] getAvailableTimeZones() {
         return TimeZone.getAvailableIDs();
     }
@@ -300,37 +364,4 @@ public class LivingLocalConfigurationActivity extends AppCompatActivity {
         super.onDestroy();
         unregisterReceiver(broadcastReceiver);
     }
-
-    public void sendDataToHub(String userWifiSSID, String userWifiPassword, String userHomeTimeZone) {
-        String json = "{\"ssid\":\"" + userWifiSSID + "\",\"password\":\"" + userWifiPassword + "\",\"timezone\":\"" + userHomeTimeZone + "\"}";
-        RequestBody body = RequestBody.create(JSON, json);
-        Request request = new Request.Builder()
-                .url(LIVING_URL)
-                .post(body)
-                .build();
-        Log.d("OkHTTP:", request.toString());
-        Log.d("OkHTTP:", request.body().toString());
-        Log.d("OkHTTP:", json);
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                e.printStackTrace();
-                AnalyticsApplication.getInstance().trackException(e);
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                response.body().close();
-                if (!response.isSuccessful()) {
-                    //callback.onUnsuccessfulCallback();
-                    Toast.makeText(mContext, "Try again", Toast.LENGTH_SHORT).show();
-                } else {
-                    disconnectFromLivingWifi();
-                    Intent i = new Intent(mContext, RegisteredHubActivity.class);
-                    startActivity(i);
-                }
-            }
-        });
-    }
-
 }
