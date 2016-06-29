@@ -62,6 +62,7 @@ import co.ar_smart.www.pojos.User;
 import co.ar_smart.www.pojos.zwave_binary.ZwaveBinaryEndpoint;
 import co.ar_smart.www.pojos.zwave_level.ZwaveLevelEndpoint;
 import co.ar_smart.www.register.CreatedUserActivity;
+import co.ar_smart.www.register.TurnAPOnInstructionActivity;
 import co.ar_smart.www.user.GuestManagementActivity;
 import co.ar_smart.www.user.ManagementUserActivity;
 import retrofit2.Call;
@@ -270,7 +271,12 @@ public class HomeActivity extends AppCompatActivity {
      * This method creates the left navigation menu and set the actions for each element
      */
     private void addNavMenuItems() {
-        final String[] options = {"Devices", "Scenes", "Rooms", "Guests", "My Account"};
+        final String[] options = {getResources().getString(R.string.nav_label_devices),
+                getResources().getString(R.string.nav_label_scenes),
+                getResources().getString(R.string.nav_label_rooms),
+                getResources().getString(R.string.nav_label_guests),
+                getResources().getString(R.string.nav_label_account),
+                getResources().getString(R.string.nav_label_settings)};
         navAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, options);
         navList.setAdapter(navAdapter);
 
@@ -298,9 +304,18 @@ public class HomeActivity extends AppCompatActivity {
                         Toast.makeText(HomeActivity.this, options[position], Toast.LENGTH_SHORT).show();
                         openAccountActivity();
                         break;
+                    case 5:
+                        Toast.makeText(HomeActivity.this, options[position], Toast.LENGTH_SHORT).show();
+                        openSettingsActivity();
+                        break;
                 }
             }
         });
+    }
+
+    private void openSettingsActivity() {
+        Intent intent = new Intent(this, TurnAPOnInstructionActivity.class);
+        startActivity(intent);
     }
 
     private void stopPolling() {

@@ -19,6 +19,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -52,6 +53,14 @@ public class LivingLocalConfigurationActivity extends AppCompatActivity {
      * Constant for asking the permission
      */
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 0;
+    /**
+     * Constant for asking the second permission
+     */
+    private static final int PERMISSIONS_REQUEST_CHANGE_NETWORK_STATE = 1;
+    /**
+     * Constant for asking the third permission
+     */
+    private static final int PERMISSIONS_REQUEST_WRITE_SETTINGS = 2;
     /**
      * http client for doing the requests
      */
@@ -148,7 +157,7 @@ public class LivingLocalConfigurationActivity extends AppCompatActivity {
                 }
                 if (finished) {
                     disconnectFromLivingWifi();
-                    Intent i = new Intent(mContext, RegisteredHubActivity.class);
+                    Intent i = new Intent(mContext, VerifyConfigurationCompleteActivity.class);
                     startActivity(i);
                 }
                 Log.d("FUNCIONO", resp);
@@ -159,6 +168,18 @@ public class LivingLocalConfigurationActivity extends AppCompatActivity {
             if (counter > 1) {
                 Toast.makeText(mContext, getResources().getString(R.string.toast_error_connecting_to_local_webserver), Toast.LENGTH_LONG).show();
             }
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                // app icon in action bar clicked; go home
+                this.finish();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 
@@ -187,6 +208,10 @@ public class LivingLocalConfigurationActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_living_local_configuration);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setTitle(getString(R.string.label_configuration1_title));
+        }
         mContext = this;
         askAndroidPermissions();
         int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
@@ -333,12 +358,54 @@ public class LivingLocalConfigurationActivity extends AppCompatActivity {
             // app-defined int constant. The callback method gets the
             // result of the request.
         }
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.CHANGE_NETWORK_STATE)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.CHANGE_NETWORK_STATE},
+                    PERMISSIONS_REQUEST_CHANGE_NETWORK_STATE);
+
+            // PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION is an
+            // app-defined int constant. The callback method gets the
+            // result of the request.
+        }
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.WRITE_SETTINGS)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.WRITE_SETTINGS},
+                    PERMISSIONS_REQUEST_WRITE_SETTINGS);
+
+            // PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION is an
+            // app-defined int constant. The callback method gets the
+            // result of the request.
+        }
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
         switch (requestCode) {
             case PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // permission was granted, yay! Do the task you need to do.
+                } else {
+                    // permission denied, boo! Disable the functionality that depends on this permission.
+                }
+            }
+            case PERMISSIONS_REQUEST_CHANGE_NETWORK_STATE: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // permission was granted, yay! Do the task you need to do.
+                } else {
+                    // permission denied, boo! Disable the functionality that depends on this permission.
+                }
+            }
+            case PERMISSIONS_REQUEST_WRITE_SETTINGS: {
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {

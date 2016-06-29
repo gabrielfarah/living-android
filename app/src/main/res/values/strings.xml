@@ -142,7 +142,7 @@
     <string name="dialog_remove_trigger">Remove existing one</string>
     <string name="dialog_remove_trigger_message">Select the trigger to remove</string>
     <string name="save">Save</string>
-    
+
     <string name="btn_trigger_on_positive_binary">When it is turned on</string>
     <string name="btn_trigger_on_negative_binary">When it is turned off</string>
     <string name="btn_trigger_on_positive_range">When it is inside range</string>
@@ -151,4 +151,14 @@
         and a number and its length must be 8.</string>
     <string name="toast_error_connecting_to_local_webserver">Please make sure your phone WIFI is active and connected to the \"Domu-AP\" network. Also make sure to momentarily deactivate the mobile data in your phone</string>
     <string name="welcome_messages">The WIFI network: %1$s does not exist.</string>
+    <string name="nav_label_devices">Devices</string>
+    <string name="nav_label_scenes">Scenes</string>
+    <string name="nav_label_rooms">Rooms</string>
+    <string name="nav_label_guests">Guests</string>
+    <string name="nav_label_account">My Account</string>
+    <string name="nav_label_settings">Settings</string>
+    <string name="label_settings_title">Settings</string>
+    <string name="label_configuration1_title">Configuring the hub</string>
+    <string name="text_connect_hub_and_start_ap">Power on the hub using the power cable included in the box. Later, press the button with the text "AP". Finally, press the "Continue" button on the app.</string>
+    <string name="text_validate_internet_configuration">Wait a minute until the internet icon on the front of the device turns green. Once the led turn green, press the "Continue" button on the app.</string>
 </resources>

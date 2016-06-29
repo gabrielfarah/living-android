@@ -90,7 +90,7 @@ public class CommandManager {
             @Override
             public void onFailure(Call call, IOException e) {
                 AnalyticsApplication.getInstance().trackException(e);
-                e.printStackTrace();
+                //e.printStackTrace();
                 callback.onFailureCallback();
             }
 
