@@ -1,14 +1,19 @@
 package co.ar_smart.www.register;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -17,6 +22,9 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
+
 import java.io.IOException;
 import org.florescu.android.rangeseekbar.RangeSeekBar;
 import co.ar_smart.www.helpers.Constants;
@@ -24,6 +32,12 @@ import co.ar_smart.www.living.R;
 
 public class PropertiesRegisterHubActivity extends AppCompatActivity
 {
+
+    /**
+     * Constant used when the application verifies the permissions given by the user
+     */
+    private static final int PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 0;
+    /**
 
     /**
      * Constant for capture image event
@@ -77,6 +91,10 @@ public class PropertiesRegisterHubActivity extends AppCompatActivity
      * ImageView that shows static map
      */
     private ImageView staticMap;
+    /**
+     * Boolean that represent if the user give the required permissions
+     */
+    private boolean permissionCheck = false;
 
 
     @Override
@@ -130,8 +148,25 @@ public class PropertiesRegisterHubActivity extends AppCompatActivity
         {
             continueMap.setOnClickListener(listenerProperties);
         }
+        askAndroidPermissions();
+    }
 
+    /**
+     * This method ask the user the required permissions for the application to work well
+     */
+    private void askAndroidPermissions() {
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
 
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                    PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
+
+            // PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION is an
+            // app-defined int constant. The callback method gets the
+            // result of the request.
+        }
     }
 
     /**
@@ -141,19 +176,30 @@ public class PropertiesRegisterHubActivity extends AppCompatActivity
      */
     public String getOriginalImagePath()
     {
-        String[] projection = {MediaStore.Images.Media.DATA};
-        Cursor cursor = getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection, null, null, null);
-        int column_index_data;
-        String path = "";
-        if (cursor != null)
-        {
-            column_index_data = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-            cursor.moveToLast();
-            path = cursor.getString(column_index_data);
-            cursor.close();
+        //verifies if the user have given the required permissions
+        permissionCheck = (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)!=-1);
+        // in the positive case creates and initialize the atributes for getting the static map image
+        if (permissionCheck) {
+            String[] projection = {MediaStore.Images.Media.DATA};
+            Cursor cursor = getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection, null, null, null);
+            int column_index_data;
+            String path = "";
+            if (cursor != null)
+            {
+                column_index_data = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+                cursor.moveToLast();
+                path = cursor.getString(column_index_data);
+                cursor.close();
+            }
+
+            return path;
+        }
+        else {
+            // in the negative case shows again the permission ask so the user can accept them.
+            askAndroidPermissions();
+            return getOriginalImagePath();
         }
 
-        return path;
     }
 
     /**

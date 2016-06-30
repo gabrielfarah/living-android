@@ -100,9 +100,9 @@
     <string name="label_prop_reg_hub_map">Locate your home in the map, so some actions can be executed when you arrive or leave of the area</string>
     <string name="label_continue">Continue</string>
     <string name="title_activity_map_register_hub">Select Location</string>
-    <string name="label_map_register_hub_hint">Drag the green marker to determine the \nsize of the reception area of your home</string>
+    <string name="label_map_register_back">If you want to relocate your hub, press \nthe desire place for a few seconds</string>
+    <string name="label_map_register_forward">Drag the green marker to determine the \nsize of the reception area of your home</string>
     <string name="map_selected_location">Done</string>
-    <string name="btn_map_register_hub_location_selected">Done</string>
     <string name="capture">Capture</string>
     <string name="select">Select</string>
     <string name="btn_connect_outlet">Continue</string>

@@ -28,13 +28,14 @@
         </activity>
         <activity
             android:name=".LoginActivity"
-            android:label="@string/login_title" />
-        <activity android:name=".HomeActivity" />
-        <activity android:name=".LoginRegisterActivity" />
-        <activity android:name="co.ar_smart.www.register.LivingLocalConfigurationActivity" />
-        <activity android:name="co.ar_smart.www.controllers.SonosControllerActivity" />
-        <activity android:name="co.ar_smart.www.controllers.ZwaveLockControllerActivity" />
-        <activity android:name="co.ar_smart.www.user.ManagementUserActivity" />
+            android:label="@string/login_title"/>
+        <activity android:name=".HomeActivity"/>
+        <activity android:name=".LoginRegisterActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
+        <activity android:name="co.ar_smart.www.register.LivingLocalConfigurationActivity"/>
+        <activity android:name="co.ar_smart.www.controllers.SonosControllerActivity"/>
+        <activity android:name="co.ar_smart.www.controllers.ZwaveLockControllerActivity"/>
+        <activity android:name="co.ar_smart.www.user.ManagementUserActivity"/>
         <activity
             android:name="co.ar_smart.www.register.NewAdminActivity"
             android:theme="@style/NewAdmin" />

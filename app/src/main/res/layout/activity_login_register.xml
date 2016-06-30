@@ -11,24 +11,48 @@
     tools:context="co.ar_smart.www.living.LoginRegisterActivity"
     android:background="@color/principal">
 
-    <Button
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/login_text"
-        android:id="@+id/toLoginButton"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true"
-        android:background="@color/colorPrimary"
-        android:textColor="#ffffff" />
+        android:layout_height="match_parent"
+        android:weightSum="1"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:gravity="center">
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/logo"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:orientation="vertical"
+            android:gravity="center">
+            <Button
+                android:layout_width="200dp"
+                android:layout_height="60dp"
+                android:text="@string/login_text"
+                android:layout_margin="10dp"
+                android:id="@+id/toLoginButton"
+                android:background="@drawable/filled_button"
+                android:textColor="@color/secundario" />
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/register_text"
-        android:id="@+id/toRegisterButton"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true"
-        android:background="@color/colorPrimary"
-        android:textColor="#ffffff" />
+            <Button
+                android:layout_width="200dp"
+                android:layout_height="60dp"
+                android:text="@string/register_text"
+                android:layout_margin="10dp"
+                android:id="@+id/toRegisterButton"
+                android:background="@drawable/register_button"
+                android:textColor="@color/secundario" />
+        </LinearLayout>
+    </LinearLayout>
+
+
 
 </LinearLayout>

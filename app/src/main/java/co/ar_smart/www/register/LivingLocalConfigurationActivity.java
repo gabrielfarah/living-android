@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.AnimationDrawable;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
@@ -24,6 +25,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -232,11 +234,22 @@ public class LivingLocalConfigurationActivity extends AppCompatActivity {
                     SSIDList.add(results.get(i).SSID);
             }
         }
+        ImageView img = (ImageView)findViewById(R.id.connecting);
+        img.setBackgroundResource(R.drawable.connecting_anim);
 
+        // Get the background, which has been compiled to an AnimationDrawable object.
+        AnimationDrawable frameAnimation = (AnimationDrawable) img.getBackground();
+
+        // Start the animation (looped playback by default).
+        frameAnimation.start();
         ArrayAdapter<String> ssidAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line, SSIDList);
         final AutoCompleteTextView ssidAutoCompleteView = (AutoCompleteTextView) findViewById(R.id.available_wifi_networks);
         ssidAutoCompleteView.setAdapter(ssidAdapter);
         if (SSIDList.size() > 0) ssidAutoCompleteView.setText(SSIDList.get(0));
+        /**for (int i = 0; i < SSIDList.size(); i++)
+        {
+            Log.d("DEBUG",SSIDList.get(i));
+        }**/
 
         // Get all the available Time Zones present in the Device
         String[] timeZones = getAvailableTimeZones();

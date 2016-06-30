@@ -38,25 +38,30 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="0.9"
-        android:background="@color/principal"
+        android:background="@color/colorPrimary"
         android:gravity="center"
         android:orientation="horizontal">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="&lt;"
+            android:id="@+id/goBackText"
+            android:textSize="30dp"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginEnd="5dp"
             android:layout_marginStart="5dp"
             android:gravity="center_horizontal"
-            android:text="@string/label_map_register_hub_hint"/>
-
-        <Button
-            android:id="@+id/btnReady"
+            android:id="@+id/map_message"
+            android:text="@string/label_map_register_back"/>
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@color/activar"
-            android:text="@string/btn_map_register_hub_location_selected"/>
-
+            android:text="&gt;"
+            android:id="@+id/goForwardText"
+            android:textSize="30dp"/>
     </LinearLayout>
 
 </LinearLayout>

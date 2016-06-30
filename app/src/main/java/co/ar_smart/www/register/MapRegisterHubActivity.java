@@ -8,6 +8,8 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -15,8 +17,16 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.MotionEventCompat;
+import android.support.v7.app.AppCompatActivity;
+import android.text.TextWatcher;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -32,6 +42,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import org.w3c.dom.Text;
+
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -43,7 +55,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-public class MapRegisterHubActivity extends FragmentActivity implements GoogleApiClient.ConnectionCallbacks,
+public class MapRegisterHubActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         GoogleMap.OnMarkerDragListener,
         GoogleMap.OnMapLongClickListener,
@@ -83,6 +95,11 @@ public class MapRegisterHubActivity extends FragmentActivity implements GoogleAp
      */
     private Context mContext;
 
+    /**
+     * Textview message
+     */
+    private TextView map_message;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -106,11 +123,26 @@ public class MapRegisterHubActivity extends FragmentActivity implements GoogleAp
                     .addApi(LocationServices.API)
                     .build();
         }
-        Button btnReady = (Button) findViewById(R.id.btnReady);
-        if (btnReady != null)
-        {
-            btnReady.setOnClickListener(listenerMap);
-        }
+        map_message = (TextView) findViewById(R.id.map_message);
+        final TextView back = (TextView) findViewById(R.id.goBackText);
+        back.setVisibility(View.GONE);
+        final TextView forward = (TextView) findViewById(R.id.goForwardText);
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                map_message.setText(R.string.label_map_register_back);
+                forward.setVisibility(View.VISIBLE);
+                back.setVisibility(View.GONE);
+            }
+        });
+        forward.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                map_message.setText(R.string.label_map_register_forward);
+                forward.setVisibility(View.GONE);
+                back.setVisibility(View.VISIBLE);
+            }
+        });
     }
 
     /**
@@ -172,6 +204,56 @@ public class MapRegisterHubActivity extends FragmentActivity implements GoogleAp
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        // Get the feed icon and add the click action + change its color to white
+        getMenuInflater().inflate(R.menu.map_register_hub_menu, menu);
+        return true;
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.Continue:
+                try
+                {
+                    if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+                    {
+                        String url = "http://maps.google.com/maps/api/staticmap?center=" + latitude + "," + longitude + "&zoom=14&size=400x130&sensor=false";
+                        OkHttpClient client = new OkHttpClient();
+                        Request request = new Request.Builder().url(url)
+                                .build();
+
+                        client.newCall(request).enqueue(new Callback()
+                        {
+                            @Override
+                            public void onFailure(Call call, IOException e)
+                            {
+                                e.printStackTrace();
+                            }
+
+                            @Override
+                            public void onResponse(Call call, Response response) throws IOException
+                            {
+                                InputStream in = response.body().byteStream();
+                                Bitmap myBitmap = BitmapFactory.decodeStream(in);
+                                endActivity(myBitmap);
+                            }
+                        });
+                    }
+
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
     public void onMarkerDragStart(Marker marker)
     {
         onMarkerMoved(marker);
@@ -202,46 +284,6 @@ public class MapRegisterHubActivity extends FragmentActivity implements GoogleAp
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult){}
-
-    View.OnClickListener listenerMap = new View.OnClickListener()
-    {
-        @Override
-        public void onClick(View v)
-        {
-            try
-            {
-                if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
-                {
-                    String url = "http://maps.google.com/maps/api/staticmap?center=" + latitude + "," + longitude + "&zoom=14&size=400x130&sensor=false";
-                    OkHttpClient client = new OkHttpClient();
-                    Request request = new Request.Builder().url(url)
-                            .build();
-
-                    client.newCall(request).enqueue(new Callback()
-                    {
-                        @Override
-                        public void onFailure(Call call, IOException e)
-                        {
-                            e.printStackTrace();
-                        }
-
-                        @Override
-                        public void onResponse(Call call, Response response) throws IOException
-                        {
-                            InputStream in = response.body().byteStream();
-                            Bitmap myBitmap = BitmapFactory.decodeStream(in);
-                            endActivity(myBitmap);
-                        }
-                    });
-                }
-
-            }
-            catch (Exception e)
-            {
-                e.printStackTrace();
-            }
-        }
-    };
 
     /**
      * Generate LatLng of radius marker
@@ -308,8 +350,6 @@ public class MapRegisterHubActivity extends FragmentActivity implements GoogleAp
             }
             return false;
         }
-
     }
-
 
 }
