@@ -87,6 +87,7 @@ public class NewDevicesActivity extends AppCompatActivity {
      * Represent the current instance
      */
     private Activity myact;
+    private int prefered_hub;
 
 
     @Override
@@ -107,7 +108,7 @@ public class NewDevicesActivity extends AppCompatActivity {
         Intent intent = getIntent();
 
         API_TOKEN = intent.getStringExtra(EXTRA_MESSAGE);
-
+        prefered_hub = getPreferredHub();
         updateDevices(null);
 
     }
@@ -121,7 +122,7 @@ public class NewDevicesActivity extends AppCompatActivity {
         OkHttpClient client = new OkHttpClient();
         RequestBody body = RequestBody.create(JSON, json);
         Request request = new Request.Builder()
-                .url(BASE_URL+"hubs/"+getPreferredHub()+"/command/add/wifi/")
+                .url(BASE_URL + "hubs/" + prefered_hub + "/command/add/wifi/")
                 .header("Authorization", "JWT "+API_TOKEN)
                 .header("Content-Type", "application/json")
                 .header("Accept", "application/json")
@@ -143,7 +144,7 @@ public class NewDevicesActivity extends AppCompatActivity {
                         JSONObject jObject = new JSONObject(jsonData);
                         String ur[]=jObject.getString("url").split("/");
                         task=ur[6];
-                        getDevices(task);
+                        getDevices();
                     } catch (JSONException e) {
 
                     }
@@ -158,11 +159,11 @@ public class NewDevicesActivity extends AppCompatActivity {
      */
     public void  addZWaveService()
     {
-        String json = "";
+        String json = "{}";
         OkHttpClient client = new OkHttpClient();
         RequestBody body = RequestBody.create(JSON, json);
         Request request = new Request.Builder()
-                .url(BASE_URL+"hubs/"+getPreferredHub()+"/command/add/zwave/")
+                .url(BASE_URL + "hubs/" + prefered_hub + "/command/add/zwave/")
                 .header("Authorization", "JWT "+API_TOKEN)
                 .header("Content-Type", "application/json")
                 .header("Accept", "application/json")
@@ -184,7 +185,8 @@ public class NewDevicesActivity extends AppCompatActivity {
                         JSONObject jObject = new JSONObject(jsonData);
                         String ur[]=jObject.getString("url").split("/");
                         task=ur[6];
-                        getDevices(task);
+                        Log.d("TASKID", "" + task);
+                        getDevices();
                     } catch (JSONException e) {
 
                     }
@@ -196,10 +198,10 @@ public class NewDevicesActivity extends AppCompatActivity {
     /**
      * this method get all new devices detected by the hub
      */
-    public void getDevices(final String taskid)
+    public void getDevices()
     {
         NewDeviceClient client = RetrofitServiceGenerator.createService(NewDeviceClient.class, API_TOKEN);
-        Call<ResponseEndPoints> call2 = client.getEndPoint(""+getPreferredHub(), task);
+        Call<ResponseEndPoints> call2 = client.getEndPoint("" + prefered_hub, task);
         devices.clear();
 
         call2.enqueue(new Callback<ResponseEndPoints>()
@@ -209,11 +211,13 @@ public class NewDevicesActivity extends AppCompatActivity {
             {
                 if (response.isSuccessful()) {
                     ResponseEndPoints li=response.body();
+                    Log.d("STATUS", li.getStatus());
                     //devices.add(response.body());
                     String sta=li.getStatus();
                     if(sta.equals("done"))
                     {
                         List<Endpoint> en=li.getResponse();
+                        Log.d("RESP", en.toString());
                         for(Endpoint endp: en)
                         {
                             devices.add(endp);
@@ -272,16 +276,17 @@ public class NewDevicesActivity extends AppCompatActivity {
                             new Handler().postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
-                                    getDevices(taskid);
+                                    getDevices();
                                 }
                             }, 5000);
                         }
                         else
                         {
                             Toast.makeText(NewDevicesActivity.this, "Ningun disposivo Encontrado",
-                                    Toast.LENGTH_SHORT).show();
+                                    Toast.LENGTH_LONG).show();
                             progress.setVisibility(View.GONE);
                             list.setVisibility(View.VISIBLE);
+                            finish();
                         }
                     }
                 }
