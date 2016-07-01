@@ -97,7 +97,7 @@ public class DeleteModesActivity extends AppCompatActivity {
             }
         };
 
-        getModes(1);
+        getModes(getPreferredHub());
 
 
 
@@ -159,7 +159,7 @@ public class DeleteModesActivity extends AppCompatActivity {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                         Mode e=modes.get(position);
-                        showDialog(e.getName(),1,modes.get(position).getId(),position);
+                        showDialog(e.getName(),getPreferredHub(),modes.get(position).getId(),position);
                     }
                 });
 

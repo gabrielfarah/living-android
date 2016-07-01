@@ -203,11 +203,11 @@ public class ListCommandsActivity extends AppCompatActivity {
     /**
      * this method get preferred hub
      */
-    private int getPreferredHub(){
+    private String getPreferredHub(){
         SharedPreferences settings = getSharedPreferences(PREFS_NAME,
                 Context.MODE_PRIVATE);
         // Get values using keys
-        return Integer.parseInt(settings.getString(PREF_HUB, DEFAULT_HUB));
+        return settings.getString(PREF_HUB, DEFAULT_HUB);
     }
 
     /**
@@ -221,7 +221,7 @@ public class ListCommandsActivity extends AppCompatActivity {
         ctemp.remove(position);
         mode.setPayload(ctemp);
         ListCommandClient client = RetrofitServiceGenerator.createService(ListCommandClient.class, API_TOKEN);
-        Call<Mode> call2 = client.delCommand(""+1,""+mode.getId(),mode);
+        Call<Mode> call2 = client.delCommand(getPreferredHub(),""+mode.getId(),mode);
 
 
         call2.enqueue(new Callback<Mode>()

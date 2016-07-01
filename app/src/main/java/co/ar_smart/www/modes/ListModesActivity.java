@@ -107,7 +107,7 @@ public class ListModesActivity extends AppCompatActivity {
             }
         };
 
-        getModes(1);
+        getModes(getPreferredHub());
 
 
 

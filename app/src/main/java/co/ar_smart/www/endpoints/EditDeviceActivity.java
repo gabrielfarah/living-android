@@ -2,7 +2,9 @@ package co.ar_smart.www.endpoints;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -32,10 +34,13 @@ import retrofit2.http.Path;
 
 import static co.ar_smart.www.helpers.Constants.ACTION_ADD;
 import static co.ar_smart.www.helpers.Constants.ACTION_EDIT;
+import static co.ar_smart.www.helpers.Constants.DEFAULT_HUB;
 import static co.ar_smart.www.helpers.Constants.EXTRA_ACTION;
 import static co.ar_smart.www.helpers.Constants.EXTRA_MESSAGE;
 import static co.ar_smart.www.helpers.Constants.EXTRA_ROOM;
 import static co.ar_smart.www.helpers.Constants.EXTRA_UID;
+import static co.ar_smart.www.helpers.Constants.PREFS_NAME;
+import static co.ar_smart.www.helpers.Constants.PREF_HUB;
 
 public class EditDeviceActivity extends AppCompatActivity {
 
@@ -114,6 +119,7 @@ public class EditDeviceActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent i=new Intent(EditDeviceActivity.this,EditRoomActivity.class);
                 i.putExtra(EXTRA_MESSAGE,API_TOKEN);
+                i.putExtra(EXTRA_ROOM,dev.getRoom());
                 startActivityForResult(i,2);
             }
         });
@@ -199,7 +205,7 @@ public class EditDeviceActivity extends AppCompatActivity {
     {
         dev.setAtributes(txtName.getText().toString(),icon,room);
         RegDeviceClient client = RetrofitServiceGenerator.createService(RegDeviceClient.class, API_TOKEN);
-        Call<Endpoint> call = client.regDevice(""+1, dev);
+        Call<Endpoint> call = client.regDevice(getPreferredHub(), dev);
         call.enqueue(new Callback<Endpoint>()
         {
             @Override
@@ -238,7 +244,7 @@ public class EditDeviceActivity extends AppCompatActivity {
         String uid=getIntent().getStringExtra(EXTRA_UID);
 
         RegDeviceClient client = RetrofitServiceGenerator.createService(RegDeviceClient.class, API_TOKEN);
-        Call<Endpoint> call = client.editDev(""+1, uid,dev);
+        Call<Endpoint> call = client.editDev(getPreferredHub(), uid,dev);
         call.enqueue(new Callback<Endpoint>()
         {
             @Override
@@ -296,5 +302,12 @@ public class EditDeviceActivity extends AppCompatActivity {
 
         @PATCH("hubs/{hub_id}/endpoints/{endp_id}/")
         Call<Endpoint> editDev(@Path("hub_id") String hub_id,@Path("endp_id") String endp_id,@Body Endpoint en);
+    }
+
+    private String getPreferredHub(){
+        SharedPreferences settings = getSharedPreferences(PREFS_NAME,
+                Context.MODE_PRIVATE);
+        // Get values using keys
+        return settings.getString(PREF_HUB, DEFAULT_HUB);
     }
 }

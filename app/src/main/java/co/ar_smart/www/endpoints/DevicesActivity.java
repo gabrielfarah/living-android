@@ -98,7 +98,7 @@ public class DevicesActivity extends AppCompatActivity {
     {
         DevicesHubClient client = RetrofitServiceGenerator.createService(DevicesHubClient.class, API_TOKEN);
         Log.d("TOKEN >>>>>>>>>>>>>>>>", "" + API_TOKEN);
-        Call<List<Endpoint>> call2 = client.getendpoints(""+1);
+        Call<List<Endpoint>> call2 = client.getendpoints(getPreferredHub());
 
         call2.enqueue(new Callback<List<Endpoint>>()
         {
@@ -190,10 +190,10 @@ public class DevicesActivity extends AppCompatActivity {
     /**
      * This method get preferred hub from the prefereces
      */
-    private int getPreferredHub() {
+    private String getPreferredHub() {
         SharedPreferences settings = getSharedPreferences(PREFS_NAME,
                 Context.MODE_PRIVATE);
-        return Integer.parseInt(settings.getString(PREF_HUB, DEFAULT_HUB));
+        return settings.getString(PREF_HUB, DEFAULT_HUB);
     }
 
     @Override

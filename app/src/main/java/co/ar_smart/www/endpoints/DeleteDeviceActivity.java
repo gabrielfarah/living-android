@@ -120,7 +120,7 @@ public class DeleteDeviceActivity extends AppCompatActivity {
     public void getDevices()
     {
         final DevicesHubClient client = RetrofitServiceGenerator.createService(DevicesHubClient.class, API_TOKEN);
-        Call<List<Endpoint>> call2 = client.getendpoints(""+1);
+        Call<List<Endpoint>> call2 = client.getendpoints(getPreferredHub());
         devices.clear();
 
         call2.enqueue(new Callback<List<Endpoint>>()
@@ -142,7 +142,7 @@ public class DeleteDeviceActivity extends AppCompatActivity {
                             @Override
                             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                                 Endpoint e=devices.get(position);
-                                showDialog(e.getName(),""+1,""+devices.get(position).getId());
+                                showDialog(e.getName(),getPreferredHub(),""+devices.get(position).getId());
                             }
                         });
 
@@ -190,7 +190,7 @@ public class DeleteDeviceActivity extends AppCompatActivity {
         final Dialog dialog = new Dialog(DeleteDeviceActivity.this);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.dialog_warning_delete);
-        TextView txtname=(TextView) dialog.findViewById(R.id.btnCancelDel);
+        TextView txtname=(TextView) dialog.findViewById(R.id.lbl_warning_del_device);
         txtname.setText(getResources().getString(R.string.label_warning_delete_device)+" "+devi+"?");
         Button dialogButton = (Button) dialog.findViewById(R.id.btnDel);
         dialogButton.setOnClickListener(new View.OnClickListener() {
@@ -201,7 +201,7 @@ public class DeleteDeviceActivity extends AppCompatActivity {
             }
         });
 
-        dialogButton = (Button) dialog.findViewById(R.id.btnCancelNewRoom);
+        dialogButton = (Button) dialog.findViewById(R.id.btnCancelDel);
         dialogButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -248,11 +248,11 @@ public class DeleteDeviceActivity extends AppCompatActivity {
     /**
      * This method will load the preferred hub the user selected the last time (if any).
      */
-    private int getPreferredHub(){
+    private String getPreferredHub(){
         SharedPreferences settings = getSharedPreferences(PREFS_NAME,
                 Context.MODE_PRIVATE);
         // Get values using keys
-        return Integer.parseInt(settings.getString(PREF_HUB, DEFAULT_HUB));
+        return settings.getString(PREF_HUB, DEFAULT_HUB);
     }
 
     @Override

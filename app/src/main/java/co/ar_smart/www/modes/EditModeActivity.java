@@ -120,7 +120,7 @@ public class EditModeActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         API_TOKEN = intent.getStringExtra(EXTRA_MESSAGE);
-        loadEndPoints(1);
+        loadEndPoints(getPreferredHub());
 
         adapter=new ArrayAdapter<CustomBinder>(EditModeActivity.this, android.R.layout.simple_list_item_1, binders){
             @Override

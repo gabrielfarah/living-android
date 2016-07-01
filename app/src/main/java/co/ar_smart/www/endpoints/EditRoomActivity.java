@@ -38,8 +38,11 @@ import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 
+import static co.ar_smart.www.helpers.Constants.DEFAULT_HUB;
 import static co.ar_smart.www.helpers.Constants.EXTRA_MESSAGE;
 import static co.ar_smart.www.helpers.Constants.EXTRA_ROOM;
+import static co.ar_smart.www.helpers.Constants.PREFS_NAME;
+import static co.ar_smart.www.helpers.Constants.PREF_HUB;
 
 public class EditRoomActivity extends AppCompatActivity {
 
@@ -117,10 +120,14 @@ public class EditRoomActivity extends AppCompatActivity {
                 TextView lb=(TextView)view.findViewById(R.id.labelRoom);
                 lb.setText(rooms.get(position));
                 CheckBox ch=(CheckBox)view.findViewById(R.id.chkRoom);
-                //if(room.equals(rooms.get(position)))
-                //{
-                  //  ch.setChecked(true);
-                //}
+                if(room!=null)
+                {
+                    if(room.equals(rooms.get(position)))
+                    {
+                        ch.setChecked(true);
+                    }
+                }
+
 
                 checks.put(position,ch);
                 return view;
@@ -159,7 +166,7 @@ public class EditRoomActivity extends AppCompatActivity {
 
 
         RoomClient client = RetrofitServiceGenerator.createService(RoomClient.class, API_TOKEN);
-        Call<List<Room>> call2 = client.getrooms(""+1);
+        Call<List<Room>> call2 = client.getrooms(getPreferredHub());
 
         call2.enqueue(new Callback<List<Room>>() {
             @Override
@@ -301,5 +308,15 @@ public class EditRoomActivity extends AppCompatActivity {
 
         @POST("hubs/{hub_id}/rooms/")
         Call<Room> addroom(@Path("hub_id") String hub_id, @Body Room r);
+    }
+
+    /**
+     * This method will load the preferred hub the user selected the last time (if any).
+     */
+    private String getPreferredHub(){
+        SharedPreferences settings = getSharedPreferences(PREFS_NAME,
+                Context.MODE_PRIVATE);
+        // Get values using keys
+        return settings.getString(PREF_HUB, DEFAULT_HUB);
     }
 }
