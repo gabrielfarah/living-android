@@ -147,5 +147,9 @@
     <string name="btn_trigger_on_negative_binary">When it is turned off</string>
     <string name="btn_trigger_on_positive_range">When it is inside range</string>
     <string name="btn_trigger_on_negative_range">When it is outside range</string>
-    <string name="text_connect_hub_and_start_ap">Conecte el hub utilizando el cable de poder incluido en el empaque. Luego, presione el boton con el texto "AP". Una vez realizado el proceso presione continuar.</string>
+    <string name="text_connect_hub_and_start_ap">Conecte el hub utilizando el cable de poder incluido en el empaque. Luego, presione el boton con el texto \"AP\". Una vez realizado el proceso presione continuar.</string>
+    <string name="no_actions_recorded_explanation_text">Una vez suceda algo en el hogar, estos eventos iran apareciendo en esta pantalla. Por favor regresar mas tarde.</string>
+    <string name="no_actions_to_show_at_the_moment">No hay sucesos para mostrar en este momento</string>
+    <string name="label_actions_title">Sucesos ocurridos en el hogar</string>
+    <string name="hub_selected_toast_text">La aplicacion controlara %1$s desde ahora. Disfruta!</string>
 </resources>

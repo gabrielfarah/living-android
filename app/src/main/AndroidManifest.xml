@@ -88,7 +88,8 @@
         <activity android:name="co.ar_smart.www.modes.ModeEndpointActivityPicker" />
         <activity android:name="co.ar_smart.www.triggers.TriggerPropertiesActivity" />
         <activity android:name="co.ar_smart.www.controllers.TriggerMainController" />
-        <activity android:name="co.ar_smart.www.register.TurnAPOnInstructionActivity"></activity>
+        <activity android:name="co.ar_smart.www.register.TurnAPOnInstructionActivity" />
+        <activity android:name="co.ar_smart.www.settings.SettingsActivity" />
     </application>
 
 </manifest>

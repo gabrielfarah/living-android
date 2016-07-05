@@ -53,6 +53,7 @@ import co.ar_smart.www.helpers.JWTManager;
 import co.ar_smart.www.helpers.ModeManager;
 import co.ar_smart.www.helpers.RetrofitServiceGenerator;
 import co.ar_smart.www.helpers.UserManager;
+import co.ar_smart.www.interfaces.IHomeClient;
 import co.ar_smart.www.modes.ModeManagementActivity;
 import co.ar_smart.www.pojos.Endpoint;
 import co.ar_smart.www.pojos.EndpointState;
@@ -62,14 +63,12 @@ import co.ar_smart.www.pojos.User;
 import co.ar_smart.www.pojos.zwave_binary.ZwaveBinaryEndpoint;
 import co.ar_smart.www.pojos.zwave_level.ZwaveLevelEndpoint;
 import co.ar_smart.www.register.CreatedUserActivity;
-import co.ar_smart.www.register.TurnAPOnInstructionActivity;
+import co.ar_smart.www.settings.SettingsActivity;
 import co.ar_smart.www.user.GuestManagementActivity;
 import co.ar_smart.www.user.ManagementUserActivity;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.http.GET;
-import retrofit2.http.Path;
 
 import static co.ar_smart.www.helpers.Constants.DEFAULT_EMAIL;
 import static co.ar_smart.www.helpers.Constants.DEFAULT_HUB;
@@ -84,52 +83,6 @@ import static co.ar_smart.www.helpers.Constants.PREF_EMAIL;
 import static co.ar_smart.www.helpers.Constants.PREF_HUB;
 import static co.ar_smart.www.helpers.Constants.PREF_JWT;
 import static co.ar_smart.www.helpers.Constants.PREF_PASSWORD;
-
-/**
- * This interface implements a Retrofit interface for the Home Activity
- */
-interface HomeClient {
-    /**
-     * This function get all the endpoints inside a hub given a hub id.
-     *
-     * @param hub_id The ID of the hub from which to get the endpoints
-     * @return A list containing all the endpoints
-     */
-    @GET("hubs/{hub_id}/endpoints/")
-    Call<List<Endpoint>> endpoints(
-            @Path("hub_id") String hub_id
-    );
-
-    /**
-     * This function obtains all the hubs for the current user
-     *
-     * @return A list of all the hubs the user is available to query
-     */
-    @GET("hubs/")
-    Call<List<Hub>> hubs();
-
-    /**
-     * This function obtains a particular hub given a valid hub ID
-     *
-     * @param hub_id The ID of the hub to get
-     * @return The hub matching the hub ID
-     */
-    @GET("hubs/{hub_id}/")
-    Call<Hub> hub(
-            @Path("hub_id") String hub_id
-    );
-
-    /**
-     * This function get all the modes inside a hub given a hub id.
-     *
-     * @param hub_id The ID of the hub from which to get the endpoints
-     * @return A list containing all the endpoints
-     */
-    @GET("hubs/{hub_id}/modes/")
-    Call<List<Mode>> modes(
-            @Path("hub_id") String hub_id
-    );
-}
 
 /**
  * This activity implements the main screen of the Living application.
@@ -314,7 +267,10 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void openSettingsActivity() {
-        Intent intent = new Intent(this, TurnAPOnInstructionActivity.class);
+        Intent intent = new Intent(this, SettingsActivity.class);
+        intent.putParcelableArrayListExtra(EXTRA_OBJECT, hubs);
+        intent.putExtra(EXTRA_MESSAGE, API_TOKEN);
+        intent.putExtra(EXTRA_MESSAGE_PREF_HUB, PREFERRED_HUB_ID);
         startActivity(intent);
     }
 
@@ -478,7 +434,6 @@ public class HomeActivity extends AppCompatActivity {
         } else {
             getEndpoints();
         }
-
     }
 
     /**
@@ -641,11 +596,14 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();  // Always call the superclass method first
+        SharedPreferences settings = getSharedPreferences(PREFS_NAME,
+                Context.MODE_PRIVATE);
+        if (PREFERRED_HUB_ID == -1) {
+            PREFERRED_HUB_ID = Integer.parseInt(settings.getString(PREF_HUB, DEFAULT_HUB));
+        }
         // If user paused this activity and the token expired while idled, then we must automatically
         // get a new one when this activity resumes.
         if (!JWTManager.validateJWT(API_TOKEN)) {
-            SharedPreferences settings = getSharedPreferences(PREFS_NAME,
-                    Context.MODE_PRIVATE);
             // Get values using keys
             String EMAIL = settings.getString(PREF_EMAIL, DEFAULT_EMAIL);
             String PASSWORD = settings.getString(PREF_PASSWORD, DEFAULT_PASSWORD);
@@ -689,8 +647,8 @@ public class HomeActivity extends AppCompatActivity {
      * This method will try to obtain all the devices (endpoints) for a given hub of the user.
      */
     private void getEndpoints() {
-        HomeClient livingHomeClient = RetrofitServiceGenerator.createService(HomeClient.class, API_TOKEN);
-        Call<List<Endpoint>> call = livingHomeClient.endpoints("" + PREFERRED_HUB_ID);
+        IHomeClient livingIHomeClient = RetrofitServiceGenerator.createService(IHomeClient.class, API_TOKEN);
+        Call<List<Endpoint>> call = livingIHomeClient.endpoints("" + PREFERRED_HUB_ID);
         //Log.d("OkHttp", String.format("Sending request %s ",call.request().toString()));
         call.enqueue(new Callback<List<Endpoint>>() {
             @Override
@@ -738,8 +696,8 @@ public class HomeActivity extends AppCompatActivity {
      * This method will try to obtain all the devices (endpoints) for a given hub of the user.
      */
     private void getModes() {
-        HomeClient livingHomeClient = RetrofitServiceGenerator.createService(HomeClient.class, API_TOKEN);
-        Call<List<Mode>> call = livingHomeClient.modes("" + PREFERRED_HUB_ID);
+        IHomeClient livingIHomeClient = RetrofitServiceGenerator.createService(IHomeClient.class, API_TOKEN);
+        Call<List<Mode>> call = livingIHomeClient.modes("" + PREFERRED_HUB_ID);
         //Log.d("OkHttp", String.format("Sending request %s ",call.request().toString()));
         call.enqueue(new Callback<List<Mode>>() {
             @Override
@@ -789,9 +747,9 @@ public class HomeActivity extends AppCompatActivity {
      * This method will try to obtain all the Living hubs the user owns/is invited.
      */
     private void getHubs() {
-        HomeClient livingHomeClient = RetrofitServiceGenerator.createService(HomeClient.class, API_TOKEN);
+        IHomeClient livingIHomeClient = RetrofitServiceGenerator.createService(IHomeClient.class, API_TOKEN);
         // Create a call instance for looking up Retrofit contributors.
-        Call<List<Hub>> call = livingHomeClient.hubs();
+        Call<List<Hub>> call = livingIHomeClient.hubs();
         //Log.d("OkHttp", String.format("Sending request %s ",call.request().toString()));
         call.enqueue(new Callback<List<Hub>>() {
             @Override

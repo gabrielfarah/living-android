@@ -4,7 +4,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.List;
@@ -37,6 +39,10 @@ public class ActionActivity extends AppCompatActivity {
      */
     private int PREFERRED_HUB_ID = -1;
 
+    private ListView listView;
+    private TextView bigMessage;
+    private TextView explanationMessage;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,8 +52,11 @@ public class ActionActivity extends AppCompatActivity {
         PREFERRED_HUB_ID = intent.getIntExtra(EXTRA_MESSAGE_PREF_HUB, -1);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setTitle(getString(R.string.label_user_management_title));
+            getSupportActionBar().setTitle(getString(R.string.label_actions_title));
         }
+        listView = (ListView) findViewById(R.id.actions_list_view);
+        bigMessage = (TextView) findViewById(R.id.no_actions_text_view);
+        explanationMessage = (TextView) findViewById(R.id.no_actions_explanation_text_view);
         getFeedActions();
     }
 
@@ -79,7 +88,9 @@ public class ActionActivity extends AppCompatActivity {
                     if (!response.body().isEmpty()) {
                         createUI(response.body());
                     } else {
-                        //openRegisterFeedActionActivity();
+                        listView.setVisibility(View.GONE);
+                        bigMessage.setVisibility(View.VISIBLE);
+                        explanationMessage.setVisibility(View.VISIBLE);
                     }
                 } else {
                     AnalyticsApplication.getInstance().trackEvent("Weird Event", "NoAccessToFeedActions", "The user do not have access to the Feed? token:" + API_TOKEN);
@@ -96,7 +107,9 @@ public class ActionActivity extends AppCompatActivity {
     }
 
     private void createUI(List<FeedAction> actions) {
-        ListView listView = (ListView) findViewById(R.id.actions_list_view);
+        listView.setVisibility(View.VISIBLE);
+        bigMessage.setVisibility(View.GONE);
+        explanationMessage.setVisibility(View.GONE);
         FeedActionAdapter customAdapter = new FeedActionAdapter(getApplicationContext(), actions);
         listView.setAdapter(customAdapter);
     }

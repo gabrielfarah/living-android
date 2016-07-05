@@ -61,7 +61,11 @@ public class Hub implements Parcelable{
 
     @Override
     public String toString(){
-        return "("+custom_name+" "+id+")";
+        if (custom_name.isEmpty()) {
+            return "( Unnamed Hub )";
+        } else {
+            return "(" + custom_name + " " + id + ")";
+        }
     }
 
     @Override

@@ -5,37 +5,52 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.Spinner;
+import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import co.ar_smart.www.analytics.AnalyticsApplication;
-import co.ar_smart.www.living.LoginRegisterActivity;
+import co.ar_smart.www.helpers.Constants;
+import co.ar_smart.www.helpers.RetrofitServiceGenerator;
+import co.ar_smart.www.interfaces.IHomeClient;
 import co.ar_smart.www.living.R;
-import co.ar_smart.www.pojos.User;
-import co.ar_smart.www.user.ChangePasswordActivity;
-import co.ar_smart.www.user.EditAccountActivity;
+import co.ar_smart.www.pojos.Hub;
+import co.ar_smart.www.register.TurnAPOnInstructionActivity;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 import static co.ar_smart.www.helpers.Constants.EXTRA_MESSAGE;
+import static co.ar_smart.www.helpers.Constants.EXTRA_MESSAGE_PREF_HUB;
 import static co.ar_smart.www.helpers.Constants.EXTRA_OBJECT;
 import static co.ar_smart.www.helpers.Constants.PREFS_NAME;
-import static co.ar_smart.www.helpers.Constants.PREF_EMAIL;
 import static co.ar_smart.www.helpers.Constants.PREF_HUB;
-import static co.ar_smart.www.helpers.Constants.PREF_JWT;
-import static co.ar_smart.www.helpers.Constants.PREF_PASSWORD;
 
 public class SettingsActivity extends AppCompatActivity {
 
     private String API_TOKEN;
-    private User USER;
+    private int PREFERRED_HUB_ID = -1;
+    private ArrayList<Hub> hubs;
+    private Spinner hub_picker;
+    private ArrayAdapter<Hub> dataAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_management_user);
+        setContentView(R.layout.activity_settings);
         final Intent intent = getIntent();
         API_TOKEN = intent.getStringExtra(EXTRA_MESSAGE);
-        USER = intent.getParcelableExtra(EXTRA_OBJECT);
+        PREFERRED_HUB_ID = intent.getIntExtra(EXTRA_MESSAGE_PREF_HUB, -1);
+        hubs = intent.getParcelableArrayListExtra(EXTRA_OBJECT);
+        getHubs();
         //leer lista de hubs para cambiarlos
         //Dar opcion de cambiar datos del hub
         if (getSupportActionBar() != null) {
@@ -43,50 +58,69 @@ public class SettingsActivity extends AppCompatActivity {
             getSupportActionBar().setTitle(getString(R.string.label_settings_title));
         }
 
-        Button logoutButton = (Button) findViewById(R.id.logoutButton);
-        if (logoutButton != null) {
-            logoutButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    AnalyticsApplication.getInstance().trackEvent("User Action", "Logout", "The user logged out");
-                    successfulLogout();
-                }
-            });
-        }
+        hub_picker = (Spinner) findViewById(R.id.hub_list_picker_spinner);
+        Button openUpdateWifiButton = (Button) findViewById(R.id.open_update_wifi_button);
 
-        Button profileButton = (Button) findViewById(R.id.edit_profile_button);
-        if (profileButton != null) {
-            profileButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    openEditProfileActivity();
-                }
-            });
-        }
+        openUpdateWifiButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                openTurnAPOnInstructionActivity();
+            }
+        });
 
-        Button changePasswordButton = (Button) findViewById(R.id.change_password_button);
-        if (changePasswordButton != null) {
-            changePasswordButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    openChangePasswordActivity();
+        dataAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, hubs);
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        hub_picker.setAdapter(dataAdapter);
+        hub_picker.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                int selected = hubs.get(position).getId();
+                if (selected != PREFERRED_HUB_ID) {
+                    updatePreferredHub(selected);
+                    Log.d("ITEM", hubs.get(position).toString());
+                    PREFERRED_HUB_ID = selected;
+                    Toast.makeText(SettingsActivity.this, String.format(getResources().getString(R.string.hub_selected_toast_text), hub_picker.getItemAtPosition(position).toString()), Toast.LENGTH_SHORT).show();
                 }
-            });
-        }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView) {
+                // your code here
+            }
+        });
     }
 
-    private void openChangePasswordActivity() {
-        Intent intent = new Intent(this, ChangePasswordActivity.class);
-        intent.putExtra(EXTRA_MESSAGE, API_TOKEN);
-        intent.putExtra(EXTRA_OBJECT, USER);
-        startActivity(intent);
-    }
+    /**
+     * This method will try to obtain all the Living hubs the user owns/is invited.
+     */
+    private void getHubs() {
+        IHomeClient livingIHomeClient = RetrofitServiceGenerator.createService(IHomeClient.class, API_TOKEN);
+        // Create a call instance for looking up Retrofit contributors.
+        Call<List<Hub>> call = livingIHomeClient.hubs();
+        //Log.d("OkHttp", String.format("Sending request %s ",call.request().toString()));
+        call.enqueue(new Callback<List<Hub>>() {
+            @Override
+            public void onResponse(Call<List<Hub>> call, Response<List<Hub>> response) {
+                if (response.isSuccessful()) {
+                    // If the user got hubs he can select one to use. If he do not then send it to register one activity.
+                    if (!response.body().isEmpty()) {
+                        hubs.clear();
+                        hubs.addAll(response.body());
+                        dataAdapter.notifyDataSetChanged();
+                    }
+                } else {
+                    AnalyticsApplication.getInstance().trackEvent("Weird Event", "NoAccessToHubs", "The user do not have access to the hubs? token:" + API_TOKEN);
+                }
+            }
 
-    private void openEditProfileActivity() {
-        Intent intent = new Intent(this, EditAccountActivity.class);
-        intent.putExtra(EXTRA_MESSAGE, API_TOKEN);
-        intent.putExtra(EXTRA_OBJECT, USER);
-        startActivityForResult(intent, RESULT_CANCELED);
+            @Override
+            public void onFailure(Call<List<Hub>> call, Throwable t) {
+                // something went completely south (like no internet connection)
+                Constants.showNoInternetMessage(getApplicationContext());
+                Log.d("Error", t.getMessage());
+                AnalyticsApplication.getInstance().trackException(new Exception(t));
+            }
+        });
     }
 
     @Override
@@ -101,35 +135,19 @@ public class SettingsActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * This method will clear the saved credentials of the user in the shared preferences.
-     * It will also redirect the user to the login activity.
-     */
-    private void successfulLogout() {
-        SharedPreferences settings = getSharedPreferences(PREFS_NAME,
-                Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = settings.edit();
-        editor.remove(PREF_EMAIL);
-        editor.remove(PREF_PASSWORD);
-        editor.remove(PREF_JWT);
-        editor.remove(PREF_HUB);
-        editor.apply();
-        openLoginActivity();
-    }
-
-    /**
-     * This method will open the login activity.
-     */
-    public void openLoginActivity() {
-        Intent intent = new Intent(this, LoginRegisterActivity.class);
+    private void openTurnAPOnInstructionActivity() {
+        Intent intent = new Intent(this, TurnAPOnInstructionActivity.class);
+        intent.putExtra(EXTRA_MESSAGE, API_TOKEN);
         startActivity(intent);
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == RESULT_CANCELED) { //TODO why the fuck is -1 (RESULT_CANCELED)?
-            USER = data.getExtras().getParcelable(EXTRA_OBJECT);
-        }
-        super.onActivityResult(requestCode, resultCode, data);
+    /**
+     * This method will load the preferred hub the user selected the last time (if any).
+     */
+    private void updatePreferredHub(int hub_id) {
+        SharedPreferences settings = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putString(PREF_HUB, String.valueOf(hub_id));
+        editor.apply();
     }
 }

@@ -161,4 +161,8 @@
     <string name="label_configuration1_title">Configuring the hub</string>
     <string name="text_connect_hub_and_start_ap">Power on the hub using the power cable included in the box. Later, press the button with the text "AP". Finally, press the "Continue" button on the app.</string>
     <string name="text_validate_internet_configuration">Wait a minute until the internet icon on the front of the device turns green. Once the led turn green, press the "Continue" button on the app.</string>
+    <string name="no_actions_recorded_explanation_text">Once events are performed at home, these will be appearing on this screen. Please come back later.</string>
+    <string name="no_actions_to_show_at_the_moment">No events to show at the moment</string>
+    <string name="label_actions_title">Events at home</string>
+    <string name="hub_selected_toast_text">The app will control %1$s now. Enjoy!</string>
 </resources>
