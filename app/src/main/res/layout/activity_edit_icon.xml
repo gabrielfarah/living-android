@@ -11,7 +11,7 @@
     tools:context="co.ar_smart.www.endpoints.EditIconActivity">
     <TextView
         android:id="@+id/labelIconCategory"
-        android:text="Iconos: "
+        android:text="@string/icons"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/gradient_border_btn"

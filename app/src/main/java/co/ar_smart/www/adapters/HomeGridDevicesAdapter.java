@@ -8,12 +8,15 @@ import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.BaseAdapter;
+import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import java.util.List;
 
@@ -71,42 +74,51 @@ public class HomeGridDevicesAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        ImageView imageView;
+        View gridView;
+        LayoutInflater inflater = (LayoutInflater) context
+                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         if (convertView == null) {
-            // if it's not recycled, initialize some attributes
-            imageView = new ImageView(context);
+            // get layout from mobile.xml
+            gridView = inflater.inflate(R.layout.home_grid_view_item, null);
             //params.setLayoutDirection(1);
             DisplayMetrics metrics = context.getResources().getDisplayMetrics();
             int screenHeight = metrics.heightPixels;
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                     AbsListView.LayoutParams.MATCH_PARENT,
                     screenHeight / 4, 1.0f);
-            imageView.setLayoutParams(params);
+            gridView.setLayoutParams(params);
             //imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
 
-            //imageView.setPadding(4, 4, 4, 4);
-            imageView.setBackgroundColor(ContextCompat.getColor(context, R.color.subBarras));//R.color.subBarras);
-        } else {
-            imageView = (ImageView) convertView;
-        }
-        if (endpoints.get(position) != null) {
-            int temp = getDrawableFromString(endpoints.get(position).getImage());
-            if (!endpoints.get(position).isActive()) {
-                imageView.setImageResource(temp);
-                imageView.setAlpha((float) 0.4);
-                Log.d("color", "GRIS");
-            } else {
-                imageView.setAlpha((float) 1.0);
-                if (endpoints.get(position).getState() > 0) {
-                    imageView.setImageDrawable(setTint(temp, Color.GREEN));
-                    //imageView.setImageResource(temp);
-                    Log.d("color", "ORIGINAL");
+            gridView.setPadding(4, 4, 4, 4);
+            gridView.setBackgroundColor(ContextCompat.getColor(context, R.color.subBarras));//R.color.subBarras);
+            if (endpoints.get(position) != null) {
+                int temp = getDrawableFromString(endpoints.get(position).getImage());
+                ImageView imageView = (ImageView)gridView.findViewById(R.id.endpointImage);
+                TextView textView = (TextView) gridView.findViewById(R.id.endpointTitle);
+                textView.setText(endpoints.get(position).getName());
+                TextView textView2 = (TextView)gridView.findViewById(R.id.endpointRoom);
+                textView2.setText(endpoints.get(position).getRoom());
+                if (!endpoints.get(position).isActive()) {
+                    imageView = (ImageView)gridView.findViewById(R.id.endpointImage);
+                    imageView.setImageResource(temp);
+                    imageView.setAlpha((float) 0.4);
+                    Log.d("color", "GRIS");
                 } else {
-                    //imageView.setImageResource(temp);
-                    imageView.setImageDrawable(setTint(temp, Color.GRAY));
+                    imageView.setAlpha((float) 1.0);
+
+                    if (endpoints.get(position).getState() > 0) {
+                        imageView.setImageDrawable(setTint(temp, Color.GREEN));
+                        //imageView.setImageResource(temp);
+                        Log.d("color", "ORIGINAL");
+                    } else {
+                        //imageView.setImageResource(temp);
+                        imageView.setImageDrawable(setTint(temp, Color.GRAY));
+                    }
                 }
             }
+            return gridView;
+        } else {
+            return convertView;
         }
-        return imageView;
     }
 }

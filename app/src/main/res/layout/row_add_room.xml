@@ -3,19 +3,20 @@
     android:orientation="horizontal" android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:focusable="false"
-    android:background="@drawable/gradient_btn_dark"
     android:paddingTop="13dp">
     <TextView
         android:id="@+id/labelRoom"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="9"
+        android:gravity="center_vertical"
         android:focusable="false"/>
     <CheckBox
         android:shadowColor="#fff"
         android:id="@+id/chkRoom"
         android:layout_width="0dp"
         android:layout_height="match_parent"
+        android:gravity="center_vertical"
         android:layout_weight="1"
         android:focusable="false"
         android:clickable="false"/>

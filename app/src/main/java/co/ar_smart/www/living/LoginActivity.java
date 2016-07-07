@@ -3,15 +3,21 @@ package co.ar_smart.www.living;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Typeface;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.text.SpannableString;
+import android.text.style.UnderlineSpan;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import co.ar_smart.www.helpers.JWTManager;
+import co.ar_smart.www.register.NewAdminActivity;
 
 import static co.ar_smart.www.helpers.Constants.EXTRA_MESSAGE;
 import static co.ar_smart.www.helpers.Constants.PREFS_NAME;
@@ -46,8 +52,12 @@ public class LoginActivity extends AppCompatActivity {
         // Hide the progressbar
         toggleProgress();
         Button loginButton = (Button) findViewById(R.id.loginButton);
-        final TextView emailText = (TextView) findViewById(R.id.emailText);
-        final TextView passwordText = (TextView) findViewById(R.id.passwordText);
+        final EditText emailText = (EditText) findViewById(R.id.emailText);
+        final EditText passwordText = (EditText) findViewById(R.id.passwordText);
+        emailText.setTypeface(Typeface.SERIF);
+        //emailText.setHintTextColor(ContextCompat.getColor(getApplicationContext(), R.color.blanco));
+        passwordText.setTypeface(Typeface.SERIF);
+        //passwordText.setHintTextColor(ContextCompat.getColor(getApplicationContext(), R.color.blanco));
         if (loginButton != null) {
             loginButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -84,6 +94,19 @@ public class LoginActivity extends AppCompatActivity {
                     });
                 }
             });
+        }
+        // Add underling to the existing account textView
+        TextView txvExistingAccount = (TextView) findViewById(R.id.txvCreateAccount);
+        String udata = null;
+        if (txvExistingAccount != null)
+        {
+            udata = (String) txvExistingAccount.getText();
+        }
+        SpannableString content = new SpannableString(udata);
+        content.setSpan(new UnderlineSpan(), 0, udata != null ? udata.length() : 0, 0);
+        if (txvExistingAccount != null)
+        {
+            txvExistingAccount.setText(content);
         }
     }
 
@@ -144,5 +167,17 @@ public class LoginActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    public void signUp(View view) {
+        Intent i = new Intent(this, NewAdminActivity.class);
+        startActivity(i);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Intent i = new Intent(this, LoginRegisterActivity.class);
+        startActivity(i);
     }
 }

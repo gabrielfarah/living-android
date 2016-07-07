@@ -19,7 +19,8 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <activity android:name=".MainActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -28,34 +29,54 @@
         </activity>
         <activity
             android:name=".LoginActivity"
-            android:label="@string/login_title"/>
-        <activity android:name=".HomeActivity"/>
+            android:label="@string/login_title"
+            android:theme="@style/NewAdmin"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".HomeActivity"
+            android:screenOrientation="portrait"/>
         <activity android:name=".LoginRegisterActivity"
-            android:theme="@style/AppTheme.NoActionBar"/>
-        <activity android:name="co.ar_smart.www.register.LivingLocalConfigurationActivity"/>
-        <activity android:name="co.ar_smart.www.controllers.SonosControllerActivity"/>
-        <activity android:name="co.ar_smart.www.controllers.ZwaveLockControllerActivity"/>
-        <activity android:name="co.ar_smart.www.user.ManagementUserActivity"/>
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait"/>
+        <activity android:name="co.ar_smart.www.register.LivingLocalConfigurationActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name="co.ar_smart.www.controllers.SonosControllerActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name="co.ar_smart.www.controllers.ZwaveLockControllerActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name="co.ar_smart.www.user.ManagementUserActivity"
+            android:screenOrientation="portrait"/>
         <activity
             android:name="co.ar_smart.www.register.NewAdminActivity"
-            android:theme="@style/NewAdmin" />
+            android:theme="@style/NewAdmin"
+            android:screenOrientation="portrait"/>
         <activity
             android:name="co.ar_smart.www.register.CreatedUserActivity"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name="co.ar_smart.www.endpoints.ManagementEndpointsActivity"/>
-        <activity android:name="co.ar_smart.www.actions.ActionActivity" />
-        <activity android:name="co.ar_smart.www.user.GuestManagementActivity" />
-        <activity android:name="co.ar_smart.www.user.ChangePasswordActivity" />
-        <activity android:name="co.ar_smart.www.user.EditAccountActivity" />
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait"/>
+        <activity android:name="co.ar_smart.www.endpoints.ManagementEndpointsActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name="co.ar_smart.www.actions.ActionActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name="co.ar_smart.www.user.GuestManagementActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name="co.ar_smart.www.user.ChangePasswordActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name="co.ar_smart.www.user.EditAccountActivity"
+            android:screenOrientation="portrait"/>
         <activity
             android:name="co.ar_smart.www.controllers.hue.HueColorControllerActivity"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait"/>
         <activity
             android:name="co.ar_smart.www.controllers.hue.HueControllerActivity"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name="co.ar_smart.www.controllers.ZwavePresenceBinarySensorControllerActivity" />
-        <activity android:name="co.ar_smart.www.register.PropertiesRegisterHubActivity" />
-        <activity android:name="co.ar_smart.www.register.MapRegisterHubActivity" />
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait"/>
+        <activity android:name="co.ar_smart.www.controllers.ZwavePresenceBinarySensorControllerActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name="co.ar_smart.www.register.PropertiesRegisterHubActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name="co.ar_smart.www.register.MapRegisterHubActivity"
+            android:screenOrientation="portrait"/>
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -68,28 +89,48 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
-        <activity android:name="co.ar_smart.www.register.ConnectOutletActivity" />
-        <activity android:name="co.ar_smart.www.register.RegisterHubActivity" />
+        <activity android:name="co.ar_smart.www.register.ConnectOutletActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name="co.ar_smart.www.register.RegisterHubActivity"
+            android:screenOrientation="portrait"/>
         <activity
             android:name="co.ar_smart.www.register.RegisteredHubActivity"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name="co.ar_smart.www.endpoints.NewDevicesActivity" />
-        <activity android:name="co.ar_smart.www.endpoints.EditDeviceActivity" />
-        <activity android:name="co.ar_smart.www.endpoints.EditIconActivity" />
-        <activity android:name="co.ar_smart.www.endpoints.EditRoomActivity" />
-        <activity android:name="co.ar_smart.www.endpoints.DevicesActivity" />
-        <activity android:name="co.ar_smart.www.endpoints.DeleteDeviceActivity" />
-        <activity android:name="co.ar_smart.www.modes.ModeManagementActivity" />
-        <activity android:name="co.ar_smart.www.modes.ListModesActivity" />
-        <activity android:name="co.ar_smart.www.modes.DeleteModesActivity" />
-        <activity android:name="co.ar_smart.www.modes.EditModeActivity" />
-        <activity android:name="co.ar_smart.www.modes.ListCommandsActivity" />
-        <activity android:name="co.ar_smart.www.modes.NewModeActivity" />
-        <activity android:name="co.ar_smart.www.modes.ModeEndpointActivityPicker" />
-        <activity android:name="co.ar_smart.www.triggers.TriggerPropertiesActivity" />
-        <activity android:name="co.ar_smart.www.controllers.TriggerMainController" />
-        <activity android:name="co.ar_smart.www.register.TurnAPOnInstructionActivity" />
-        <activity android:name="co.ar_smart.www.settings.SettingsActivity" />
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait"/>
+        <activity android:name="co.ar_smart.www.endpoints.NewDevicesActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name="co.ar_smart.www.endpoints.EditDeviceActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name="co.ar_smart.www.endpoints.EditIconActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name="co.ar_smart.www.endpoints.EditRoomActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name="co.ar_smart.www.endpoints.DevicesActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name="co.ar_smart.www.endpoints.DeleteDeviceActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name="co.ar_smart.www.modes.ModeManagementActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name="co.ar_smart.www.modes.ListModesActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name="co.ar_smart.www.modes.DeleteModesActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name="co.ar_smart.www.modes.EditModeActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name="co.ar_smart.www.modes.ListCommandsActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name="co.ar_smart.www.modes.NewModeActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name="co.ar_smart.www.modes.ModeEndpointActivityPicker"
+            android:screenOrientation="portrait"/>
+        <activity android:name="co.ar_smart.www.triggers.TriggerPropertiesActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name="co.ar_smart.www.controllers.TriggerMainController"
+            android:screenOrientation="portrait"/>
+        <activity android:name="co.ar_smart.www.register.TurnAPOnInstructionActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name="co.ar_smart.www.settings.SettingsActivity"
+            android:screenOrientation="portrait"/>
     </application>
 
 </manifest>

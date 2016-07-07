@@ -16,7 +16,7 @@
         android:layout_height="wrap_content"
         android:gravity="bottom"
         android:text="@string/lblnamedev"
-        android:textSize="25dp"
+        android:textSize="25sp"
         android:textColor="#848484"/>
     <EditText
         android:id="@+id/txtNameDev"
@@ -30,8 +30,8 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:text="@string/editicon_btntext"
-        android:drawableRight="@drawable/right_arrow_icon"
-        android:drawableLeft="@drawable/light_icon"
+        android:drawableEnd="@drawable/right_arrow_icon"
+        android:drawableStart="@drawable/light_icon"
         android:background="@drawable/gradient_border_btn"/>
     <Button
         android:id="@+id/btnEditRoom"
@@ -40,8 +40,8 @@
         android:layout_weight="1"
         android:text="@string/editroom_btntext"
         android:background="@drawable/gradient_border_btn"
-        android:drawableRight="@drawable/right_arrow_icon"
-        android:drawableLeft="@drawable/light_icon"/>
+        android:drawableEnd="@drawable/right_arrow_icon"
+        android:drawableStart="@drawable/light_icon"/>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -56,7 +56,6 @@
             android:layout_weight="9"/>
         <CheckBox
             android:layout_width="0dp"
-            android:text="@string/addfavorites_chktext"
             android:layout_height="match_parent"
             android:layout_weight="1"/>
     </LinearLayout>

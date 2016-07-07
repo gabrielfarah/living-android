@@ -37,6 +37,11 @@ public class LoginRegisterActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        return;
+    }
+
     /**
      * This method opens the login activity for the user to input an email and password fields
      */

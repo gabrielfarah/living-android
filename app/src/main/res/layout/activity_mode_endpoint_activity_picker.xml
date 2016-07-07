@@ -22,7 +22,7 @@
         android:layout_width="match_parent"
         android:layout_height="0px"
         android:layout_weight="1"
-        android:choiceMode="multipleChoice"></ListView>
+        android:choiceMode="multipleChoice"/>
 
     <Button
         android:id="@+id/mode_endpoint_activity_picker_button"

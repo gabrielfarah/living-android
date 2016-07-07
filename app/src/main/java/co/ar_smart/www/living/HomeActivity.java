@@ -69,6 +69,8 @@ import co.ar_smart.www.user.ManagementUserActivity;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import retrofit2.http.GET;
+import retrofit2.http.Path;
 
 import static co.ar_smart.www.helpers.Constants.DEFAULT_EMAIL;
 import static co.ar_smart.www.helpers.Constants.DEFAULT_HUB;
@@ -83,6 +85,52 @@ import static co.ar_smart.www.helpers.Constants.PREF_EMAIL;
 import static co.ar_smart.www.helpers.Constants.PREF_HUB;
 import static co.ar_smart.www.helpers.Constants.PREF_JWT;
 import static co.ar_smart.www.helpers.Constants.PREF_PASSWORD;
+
+/**
+ * This interface implements a Retrofit interface for the Home Activity
+ */
+interface HomeClient {
+    /**
+     * This function get all the endpoints inside a hub given a hub id.
+     *
+     * @param hub_id The ID of the hub from which to get the endpoints
+     * @return A list containing all the endpoints
+     */
+    @GET("hubs/{hub_id}/endpoints/")
+    Call<List<Endpoint>> endpoints(
+            @Path("hub_id") String hub_id
+    );
+
+    /**
+     * This function obtains all the hubs for the current user
+     *
+     * @return A list of all the hubs the user is available to query
+     */
+    @GET("hubs/")
+    Call<List<Hub>> hubs();
+
+    /**
+     * This function obtains a particular hub given a valid hub ID
+     *
+     * @param hub_id The ID of the hub to get
+     * @return The hub matching the hub ID
+     */
+    @GET("hubs/{hub_id}/")
+    Call<Hub> hub(
+            @Path("hub_id") String hub_id
+    );
+
+    /**
+     * This function get all the modes inside a hub given a hub id.
+     *
+     * @param hub_id The ID of the hub from which to get the endpoints
+     * @return A list containing all the endpoints
+     */
+    @GET("hubs/{hub_id}/modes/")
+    Call<List<Mode>> modes(
+            @Path("hub_id") String hub_id
+    );
+}
 
 /**
  * This activity implements the main screen of the Living application.
@@ -150,6 +198,8 @@ public class HomeActivity extends AppCompatActivity {
     private HomeGridDevicesAdapter gridAdapter = new HomeGridDevicesAdapter(HomeActivity.this, endpoint_devices);
     private Runnable runnableEndpointStatesResponse;
     private Runnable runnableEndpointStates;
+    private Context mContext;
+    private boolean doubleBackToExitPressedOnce = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -157,6 +207,7 @@ public class HomeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_home);
         final Intent intent = getIntent();
         API_TOKEN = intent.getStringExtra(EXTRA_MESSAGE);
+        mContext = this;
 
         navList = (ListView) findViewById(R.id.homeNavigationList);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.activity_home);
@@ -238,27 +289,21 @@ public class HomeActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 switch (position) {
                     case 0:
-                        Toast.makeText(HomeActivity.this, options[position], Toast.LENGTH_SHORT).show();
                         openDevicesActivity();
                         break;
                     case 1:
-                        Toast.makeText(HomeActivity.this, options[position], Toast.LENGTH_SHORT).show();
                         openScenesActivity();
                         break;
                     case 2:
-                        Toast.makeText(HomeActivity.this, options[position], Toast.LENGTH_SHORT).show();
                         openRoomsActivity();
                         break;
                     case 3:
-                        Toast.makeText(HomeActivity.this, options[position], Toast.LENGTH_SHORT).show();
                         openGuestsActivity();
                         break;
                     case 4:
-                        Toast.makeText(HomeActivity.this, options[position], Toast.LENGTH_SHORT).show();
                         openAccountActivity();
                         break;
                     case 5:
-                        Toast.makeText(HomeActivity.this, options[position], Toast.LENGTH_SHORT).show();
                         openSettingsActivity();
                         break;
                 }
@@ -842,6 +887,26 @@ public class HomeActivity extends AppCompatActivity {
                     processEndpointClick(listaEndpoints.get(position));
                 }
             });
+            homeMainGridView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+                @Override
+                public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+                    builder.setMessage("What do you want to do?")
+                            .setPositiveButton("Edit device", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    Toast.makeText(HomeActivity.this, "Edited", Toast.LENGTH_SHORT).show();
+                                }
+                            })
+                            .setNegativeButton("Remove device", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    Toast.makeText(HomeActivity.this, "Removed", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                    // Create the AlertDialog object and return it
+                    builder.create().show();
+                    return true;
+                }
+            });
         }
     }
 
@@ -1023,5 +1088,24 @@ public class HomeActivity extends AppCompatActivity {
         public boolean isActive() {
             return false;
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+
+        if (doubleBackToExitPressedOnce) {
+            return;
+        }
+
+        this.doubleBackToExitPressedOnce = true;
+        Toast.makeText(this, "Please click BACK again to Log out", Toast.LENGTH_SHORT).show();
+
+        new Handler().postDelayed(new Runnable() {
+
+            @Override
+            public void run() {
+                doubleBackToExitPressedOnce=false;
+            }
+        }, 2000);
     }
 }

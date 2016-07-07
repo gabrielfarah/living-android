@@ -165,4 +165,12 @@
     <string name="no_actions_to_show_at_the_moment">No events to show at the moment</string>
     <string name="label_actions_title">Events at home</string>
     <string name="hub_selected_toast_text">The app will control %1$s now. Enjoy!</string>
+    <string name="current_password">Current password:</string>
+    <string name="new_password">New Password:</string>
+    <string name="icons">Icons</string>
+    <string name="label_existing_guests">Existing guests</string>
+    <string name="enter_your_email">Type your email</string>
+    <string name="enter_your_password">Type your password</string>
+    <string name="change_password">Change Password</string>
+    <string name="no_account_message">Don\'t have a Living account? Sign up</string>
 </resources>

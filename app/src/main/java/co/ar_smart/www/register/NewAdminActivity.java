@@ -23,6 +23,7 @@ import java.util.regex.Pattern;
 import co.ar_smart.www.analytics.AnalyticsApplication;
 import co.ar_smart.www.helpers.JWTManager;
 import co.ar_smart.www.living.LoginActivity;
+import co.ar_smart.www.living.LoginRegisterActivity;
 import co.ar_smart.www.living.R;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -95,22 +96,12 @@ public class NewAdminActivity extends AppCompatActivity
         {
             txvExistingAccount.setText(content);
         }
-
-        //Change hint color text
+        //Initialize the variables
         edtName = (EditText) findViewById(R.id.edtName);
-        edtName.setHintTextColor(ContextCompat.getColor(getApplicationContext(), R.color.blanco));
-
         edtLastname = (EditText) findViewById(R.id.edtLastname);
-        edtLastname.setHintTextColor(ContextCompat.getColor(getApplicationContext(), R.color.blanco));
-
         edtEmail = (EditText) findViewById(R.id.edtEmail);
-        edtEmail.setHintTextColor(ContextCompat.getColor(getApplicationContext(), R.color.blanco));
-
         edtConfEmail = (EditText) findViewById(R.id.edtConfEmail);
-        edtConfEmail.setHintTextColor(ContextCompat.getColor(getApplicationContext(), R.color.blanco));
-
         edtPassword = (EditText) findViewById(R.id.edtPassword);
-        edtPassword.setHintTextColor(ContextCompat.getColor(getApplicationContext(), R.color.blanco));
     }
 
     /**
@@ -282,6 +273,13 @@ public class NewAdminActivity extends AppCompatActivity
                 Toast.makeText(NewAdminActivity.this, message, Toast.LENGTH_LONG).show();
             }
         });
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Intent i = new Intent(this, LoginRegisterActivity.class);
+        startActivity(i);
     }
 }
 

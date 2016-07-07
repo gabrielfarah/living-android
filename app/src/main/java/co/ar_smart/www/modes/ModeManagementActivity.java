@@ -77,7 +77,7 @@ public class ModeManagementActivity extends AppCompatActivity {
                 }
             });
         }
-        adapter = new ModeAdapter(ModeManagementActivity.this, modes);
+        adapter = new ModeAdapter(ModeManagementActivity.this, modes, PREFERRED_HUB_ID, API_TOKEN, this, endpoint_devices);
         // Attach the adapter to a ListView
         ListView listView = (ListView) findViewById(R.id.mode_list_view);
         if (listView != null) {

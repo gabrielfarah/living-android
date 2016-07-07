@@ -8,26 +8,25 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:orientation="vertical"
-    tools:context="co.ar_smart.www.endpoints.EditRoomActivity"
-    android:background="@color/colorPrimaryDark">
+    tools:context="co.ar_smart.www.endpoints.EditRoomActivity">
     <ListView
         android:id="@+id/listRooms"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_marginBottom="10dp"
         android:layout_weight="9">
     </ListView>
     <Button
         android:layout_gravity="center"
         android:id="@+id/btnAddRoom"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
         android:gravity="center"
         android:paddingLeft="15dp"
         android:paddingRight="15dp"
         android:text="@string/newroom_btntext"
-        android:textAllCaps="false"
-        android:drawableLeft="@drawable/new_cross_btn"
+        android:drawableStart="@drawable/new_cross_btn"
         android:drawablePadding="5dp"
-        android:background="@drawable/dark_color_btn"/>
+        android:background="@color/blanco"/>
 </LinearLayout>

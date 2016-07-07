@@ -1,9 +1,11 @@
 package co.ar_smart.www.user;
 
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -44,19 +46,32 @@ public class ChangePasswordActivity extends AppCompatActivity {
         USER = intent.getParcelableExtra(EXTRA_OBJECT);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setTitle(getString(R.string.label_user_management_title));
+            getSupportActionBar().setTitle(getString(R.string.change_password));
         }
         old_pass = (EditText) findViewById(R.id.edit_text_old_password);
+        old_pass.setTypeface(Typeface.SERIF);
         new_pass = (EditText) findViewById(R.id.edit_text_new_password);
+        new_pass.setTypeface(Typeface.SERIF);
         new_pass2 = (EditText) findViewById(R.id.edit_text_new_password_repeat);
-        Button updateButton = (Button) findViewById(R.id.change_password_button);
-        if (updateButton != null) {
-            updateButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    changePassword();
-                }
-            });
+        new_pass2.setTypeface(Typeface.SERIF);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        // Get the feed icon and add the click action + change its color to white
+        getMenuInflater().inflate(R.menu.change_password_menu, menu);
+        return true;
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.change_password:
+                changePassword();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 
@@ -138,18 +153,6 @@ public class ChangePasswordActivity extends AppCompatActivity {
                 }
             }
         });
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                // app icon in action bar clicked; go back
-                this.finish();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
     }
 
     public interface ChangePasswordCallbackInterface {
