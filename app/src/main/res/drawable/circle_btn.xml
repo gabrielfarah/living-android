@@ -9,15 +9,13 @@
     <item android:state_pressed="true">
         <shape android:shape="oval">
             <solid android:color="@color/colorPrimaryDark" />
-            <stroke android:width="3sp" android:color="@color/soporte" />
+            <stroke android:width="3sp" android:color="@color/blanco" />
         </shape>
-        <color android:color="@color/blanco" />
     </item>
     <item android:state_selected="true">
         <shape android:shape="oval">
             <solid android:color="@color/colorPrimaryDark" />
-            <stroke android:width="3sp" android:color="@color/soporte" />
+            <stroke android:width="3sp" android:color="@color/blanco" />
         </shape>
-        <color android:color="@color/blanco" />
     </item>
 </selector>

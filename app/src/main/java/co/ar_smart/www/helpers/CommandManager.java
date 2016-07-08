@@ -80,7 +80,6 @@ public class CommandManager {
      * @param callback   the callback interface for implementing UI responses to events
      */
     public static void getCommandResult(String API_TOKEN, String pollingURL, final ResponseCallbackInterface callback) {
-        OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()
                 .url(BASE_URL + pollingURL)
                 .header("Authorization", "JWT " + API_TOKEN)
@@ -122,7 +121,6 @@ public class CommandManager {
      * @param callback the callback interface for implementing UI responses to events
      */
     public static void sendCommandWithoutResult(String API_TOKEN, int hub_id, String json, final ResponseCallbackInterface callback) {
-        OkHttpClient client = new OkHttpClient();
         RequestBody body = RequestBody.create(JSON, json);
         Request request = new Request.Builder()
                 .url(BASE_URL + "hubs/" + hub_id + "/command/set/")

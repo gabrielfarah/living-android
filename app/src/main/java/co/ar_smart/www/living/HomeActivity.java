@@ -181,6 +181,9 @@ public class HomeActivity extends AppCompatActivity {
                 devicesButton.setSelected(true);
                 scenesButton.setSelected(false);
                 roomsButton.setSelected(false);
+                devicesButton.setTextColor(ContextCompat.getColor(mContext, R.color.blanco));
+                scenesButton.setTextColor(ContextCompat.getColor(mContext, R.color.soporte));
+                roomsButton.setTextColor(ContextCompat.getColor(mContext, R.color.soporte));
             }
         });
         scenesButton.setOnClickListener(new View.OnClickListener() {
@@ -189,6 +192,9 @@ public class HomeActivity extends AppCompatActivity {
                 devicesButton.setSelected(false);
                 scenesButton.setSelected(true);
                 roomsButton.setSelected(false);
+                devicesButton.setTextColor(ContextCompat.getColor(mContext, R.color.soporte));
+                scenesButton.setTextColor(ContextCompat.getColor(mContext, R.color.blanco));
+                roomsButton.setTextColor(ContextCompat.getColor(mContext, R.color.soporte));
             }
         });
         roomsButton.setOnClickListener(new View.OnClickListener() {
@@ -197,6 +203,9 @@ public class HomeActivity extends AppCompatActivity {
                 devicesButton.setSelected(false);
                 scenesButton.setSelected(false);
                 roomsButton.setSelected(true);
+                devicesButton.setTextColor(ContextCompat.getColor(mContext, R.color.soporte));
+                scenesButton.setTextColor(ContextCompat.getColor(mContext, R.color.soporte));
+                roomsButton.setTextColor(ContextCompat.getColor(mContext, R.color.blanco));
             }
         });
 
