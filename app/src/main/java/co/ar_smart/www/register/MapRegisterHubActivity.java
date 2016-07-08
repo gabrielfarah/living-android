@@ -8,24 +8,16 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
 import android.location.Location;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.FragmentActivity;
-import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.view.MotionEventCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.text.TextWatcher;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -41,8 +33,6 @@ import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-
-import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -99,6 +89,22 @@ public class MapRegisterHubActivity extends AppCompatActivity implements GoogleA
      * Textview message
      */
     private TextView map_message;
+
+    /**
+     * Generate LatLng of radius marker
+     */
+    private static LatLng toRadiusLatLng(LatLng center, double radius) {
+        double radiusAngle = Math.toDegrees(radius / RADIUS_OF_EARTH_METERS) /
+                Math.cos(Math.toRadians(center.latitude));
+        return new LatLng(center.latitude, center.longitude + radiusAngle);
+    }
+
+    private static double toRadiusMeters(LatLng center, LatLng radius) {
+        float[] result = new float[1];
+        Location.distanceBetween(center.latitude, center.longitude,
+                radius.latitude, radius.longitude, result);
+        return result[0];
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -210,6 +216,7 @@ public class MapRegisterHubActivity extends AppCompatActivity implements GoogleA
         getMenuInflater().inflate(R.menu.map_register_hub_menu, menu);
         return true;
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
@@ -284,25 +291,6 @@ public class MapRegisterHubActivity extends AppCompatActivity implements GoogleA
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult){}
-
-    /**
-     * Generate LatLng of radius marker
-     */
-    private static LatLng toRadiusLatLng(LatLng center, double radius)
-    {
-        double radiusAngle = Math.toDegrees(radius / RADIUS_OF_EARTH_METERS) /
-                Math.cos(Math.toRadians(center.latitude));
-        return new LatLng(center.latitude, center.longitude + radiusAngle);
-    }
-
-    private static double toRadiusMeters(LatLng center, LatLng radius)
-    {
-        float[] result = new float[1];
-        Location.distanceBetween(center.latitude, center.longitude,
-                radius.latitude, radius.longitude, result);
-        return result[0];
-    }
-
 
     private class DraggableCircle
     {

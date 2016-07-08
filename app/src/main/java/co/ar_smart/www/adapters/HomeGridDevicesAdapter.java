@@ -13,9 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.BaseAdapter;
-import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.List;
@@ -51,10 +49,16 @@ public class HomeGridDevicesAdapter extends BaseAdapter {
                 case "hue":
                     return R.drawable.hue_icon1;
                 case "sonos":
-                    return R.drawable.sonos_icon;
+                    return R.drawable.music_icon;
+                case "power-outlet":
+                    return R.drawable.power_outlet_icon;
+                case "door-lock":
+                    return R.drawable.door_lock_icon;
+                case "shades":
+                    return R.drawable.shades_icon;
             }
         }
-        return R.drawable.light_icon;
+        return R.drawable.default_icon;
     }
 
     @Override
@@ -83,9 +87,9 @@ public class HomeGridDevicesAdapter extends BaseAdapter {
             //params.setLayoutDirection(1);
             DisplayMetrics metrics = context.getResources().getDisplayMetrics();
             int screenHeight = metrics.heightPixels;
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+            AbsListView.LayoutParams params = new AbsListView.LayoutParams(
                     AbsListView.LayoutParams.MATCH_PARENT,
-                    screenHeight / 4, 1.0f);
+                    screenHeight / 4);
             gridView.setLayoutParams(params);
             //imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
 
@@ -107,12 +111,12 @@ public class HomeGridDevicesAdapter extends BaseAdapter {
                     imageView.setAlpha((float) 1.0);
 
                     if (endpoints.get(position).getState() > 0) {
-                        imageView.setImageDrawable(setTint(temp, Color.GREEN));
+                        imageView.setImageDrawable(setTint(temp, Color.rgb(44, 194, 190)));
                         //imageView.setImageResource(temp);
                         Log.d("color", "ORIGINAL");
                     } else {
                         //imageView.setImageResource(temp);
-                        imageView.setImageDrawable(setTint(temp, Color.GRAY));
+                        imageView.setImageDrawable(setTint(temp, Color.rgb(209, 211, 212)));
                     }
                 }
             }

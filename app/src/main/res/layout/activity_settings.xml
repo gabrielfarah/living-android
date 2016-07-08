@@ -9,21 +9,43 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:text="Change the home to control from the list:"
+        android:background="@color/colorPrimary"
+        android:text="@string/text_description_select_hub_switch"
         android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <ProgressBar
+        android:id="@+id/progress_bar_hubs_switcher"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:indeterminate="true"
+        android:visibility="visible" />
 
     <Spinner
         android:id="@+id/hub_list_picker_spinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal" />
+        android:layout_gravity="center_horizontal"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/loading_hub_switcher_text_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:gravity="center"
+        android:text="@string/loading_text"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <TextView
         android:id="@+id/textView3"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:background="@color/colorPrimary"
         android:gravity="center"
-        android:text="If your home network or the password for accessing the network changed you should update it on the hub using the following button:"
+        android:text="@string/description_text_change_hub_wifi_network"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <Button
@@ -31,5 +53,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:text="Update the hub WIFI connection" />
+        android:background="@color/activar"
+        android:text="@string/update_the_hub_wifi_connection"
+        android:textColor="@color/blanco" />
 </LinearLayout>

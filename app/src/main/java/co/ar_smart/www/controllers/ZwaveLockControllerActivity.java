@@ -22,7 +22,7 @@ public class ZwaveLockControllerActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_sonos_controller);
+        setContentView(R.layout.activity_zwave_lock_controller);
         final Intent intent = getIntent();
         API_TOKEN = intent.getStringExtra(EXTRA_MESSAGE);
         endpoint = intent.getParcelableExtra(EXTRA_OBJECT);

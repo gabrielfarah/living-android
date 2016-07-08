@@ -11,7 +11,9 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -41,6 +43,8 @@ public class SettingsActivity extends AppCompatActivity {
     private ArrayList<Hub> hubs;
     private Spinner hub_picker;
     private ArrayAdapter<Hub> dataAdapter;
+    private TextView loading;
+    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +63,8 @@ public class SettingsActivity extends AppCompatActivity {
         }
 
         hub_picker = (Spinner) findViewById(R.id.hub_list_picker_spinner);
+        loading = (TextView) findViewById(R.id.loading_hub_switcher_text_view);
+        progressBar = (ProgressBar) findViewById(R.id.progress_bar_hubs_switcher);
         Button openUpdateWifiButton = (Button) findViewById(R.id.open_update_wifi_button);
 
         openUpdateWifiButton.setOnClickListener(new View.OnClickListener() {
@@ -107,6 +113,9 @@ public class SettingsActivity extends AppCompatActivity {
                         hubs.clear();
                         hubs.addAll(response.body());
                         dataAdapter.notifyDataSetChanged();
+                        loading.setVisibility(View.GONE);
+                        progressBar.setVisibility(View.GONE);
+                        hub_picker.setVisibility(View.VISIBLE);
                     }
                 } else {
                     AnalyticsApplication.getInstance().trackEvent("Weird Event", "NoAccessToHubs", "The user do not have access to the hubs? token:" + API_TOKEN);

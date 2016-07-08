@@ -25,19 +25,19 @@
             android:id="@+id/sonos_back_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/places_ic_clear" />
+            android:background="@drawable/delete_btn" />
 
         <Button
             android:id="@+id/sonos_play_pause_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/places_ic_clear" />
+            android:background="@drawable/delete_btn" />
 
         <Button
             android:id="@+id/sonos_next_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/places_ic_clear" />
+            android:background="@drawable/delete_btn" />
     </LinearLayout>
 
     <ListView

@@ -20,6 +20,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.SeekBar;
@@ -69,8 +70,6 @@ import co.ar_smart.www.user.ManagementUserActivity;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.http.GET;
-import retrofit2.http.Path;
 
 import static co.ar_smart.www.helpers.Constants.DEFAULT_EMAIL;
 import static co.ar_smart.www.helpers.Constants.DEFAULT_HUB;
@@ -85,52 +84,6 @@ import static co.ar_smart.www.helpers.Constants.PREF_EMAIL;
 import static co.ar_smart.www.helpers.Constants.PREF_HUB;
 import static co.ar_smart.www.helpers.Constants.PREF_JWT;
 import static co.ar_smart.www.helpers.Constants.PREF_PASSWORD;
-
-/**
- * This interface implements a Retrofit interface for the Home Activity
- */
-interface HomeClient {
-    /**
-     * This function get all the endpoints inside a hub given a hub id.
-     *
-     * @param hub_id The ID of the hub from which to get the endpoints
-     * @return A list containing all the endpoints
-     */
-    @GET("hubs/{hub_id}/endpoints/")
-    Call<List<Endpoint>> endpoints(
-            @Path("hub_id") String hub_id
-    );
-
-    /**
-     * This function obtains all the hubs for the current user
-     *
-     * @return A list of all the hubs the user is available to query
-     */
-    @GET("hubs/")
-    Call<List<Hub>> hubs();
-
-    /**
-     * This function obtains a particular hub given a valid hub ID
-     *
-     * @param hub_id The ID of the hub to get
-     * @return The hub matching the hub ID
-     */
-    @GET("hubs/{hub_id}/")
-    Call<Hub> hub(
-            @Path("hub_id") String hub_id
-    );
-
-    /**
-     * This function get all the modes inside a hub given a hub id.
-     *
-     * @param hub_id The ID of the hub from which to get the endpoints
-     * @return A list containing all the endpoints
-     */
-    @GET("hubs/{hub_id}/modes/")
-    Call<List<Mode>> modes(
-            @Path("hub_id") String hub_id
-    );
-}
 
 /**
  * This activity implements the main screen of the Living application.
@@ -200,6 +153,9 @@ public class HomeActivity extends AppCompatActivity {
     private Runnable runnableEndpointStates;
     private Context mContext;
     private boolean doubleBackToExitPressedOnce = false;
+    private Button devicesButton;
+    private Button scenesButton;
+    private Button roomsButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -215,6 +171,35 @@ public class HomeActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setHomeButtonEnabled(true);
         }
+
+        devicesButton = (Button) findViewById(R.id.devices_home_button);
+        scenesButton = (Button) findViewById(R.id.scenes_home_button);
+        roomsButton = (Button) findViewById(R.id.rooms_home_button);
+        devicesButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                devicesButton.setSelected(true);
+                scenesButton.setSelected(false);
+                roomsButton.setSelected(false);
+            }
+        });
+        scenesButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                devicesButton.setSelected(false);
+                scenesButton.setSelected(true);
+                roomsButton.setSelected(false);
+            }
+        });
+        roomsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                devicesButton.setSelected(false);
+                scenesButton.setSelected(false);
+                roomsButton.setSelected(true);
+            }
+        });
+
         addNavMenuItems();
         setupDrawer();
 
@@ -726,11 +711,6 @@ public class HomeActivity extends AppCompatActivity {
             public void onFailure(Call<List<Endpoint>> call, Throwable t) {
                 // something went completely south (like no internet connection)
                 Constants.showNoInternetMessage(getApplicationContext());
-                try {
-                    Log.d("Error", call.request().body().toString());
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
                 t.printStackTrace();
                 AnalyticsApplication.getInstance().trackException(new Exception(t));
             }
@@ -1071,6 +1051,25 @@ public class HomeActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    @Override
+    public void onBackPressed() {
+
+        if (doubleBackToExitPressedOnce) {
+            return;
+        }
+
+        this.doubleBackToExitPressedOnce = true;
+        Toast.makeText(this, "Please click BACK again to Log out", Toast.LENGTH_SHORT).show();
+
+        new Handler().postDelayed(new Runnable() {
+
+            @Override
+            public void run() {
+                doubleBackToExitPressedOnce = false;
+            }
+        }, 2000);
+    }
+
     private class EndpointIcons implements co.ar_smart.www.interfaces.IDrawable {
 
         private String image;
@@ -1088,24 +1087,5 @@ public class HomeActivity extends AppCompatActivity {
         public boolean isActive() {
             return false;
         }
-    }
-
-    @Override
-    public void onBackPressed() {
-
-        if (doubleBackToExitPressedOnce) {
-            return;
-        }
-
-        this.doubleBackToExitPressedOnce = true;
-        Toast.makeText(this, "Please click BACK again to Log out", Toast.LENGTH_SHORT).show();
-
-        new Handler().postDelayed(new Runnable() {
-
-            @Override
-            public void run() {
-                doubleBackToExitPressedOnce=false;
-            }
-        }, 2000);
     }
 }

@@ -13,6 +13,8 @@ import co.ar_smart.www.living.R;
 import co.ar_smart.www.pojos.hue.HueEndpoint;
 import co.ar_smart.www.pojos.sonos.SonosEndpoint;
 import co.ar_smart.www.pojos.zwave_binary.ZwaveBinaryEndpoint;
+import co.ar_smart.www.pojos.zwave_level.ZwaveLevelEndpoint;
+import co.ar_smart.www.pojos.zwave_lock.ZwaveLockEndpoint;
 import okhttp3.MediaType;
 
 /**
@@ -251,6 +253,8 @@ public final class Constants {
         uiMapClasses.put("ui-sonos", new SonosEndpoint());
         uiMapClasses.put("ui-binary-light-zwave", new ZwaveBinaryEndpoint());
         uiMapClasses.put("ui-binary-outlet-zwave", new ZwaveBinaryEndpoint());
+        uiMapClasses.put("ui-lock-zwave", new ZwaveLockEndpoint());
+        uiMapClasses.put("ui-shades-zwave", new ZwaveLevelEndpoint());
         uiMapClasses.put("ui-hue", new HueEndpoint());
         return uiMapClasses;
     }
