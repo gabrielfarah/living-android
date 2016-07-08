@@ -40,6 +40,7 @@ import java.util.Date;
 import java.util.List;
 
 import co.ar_smart.www.actions.ActionActivity;
+import co.ar_smart.www.adapters.HomeGridAdapter;
 import co.ar_smart.www.adapters.HomeGridDevicesAdapter;
 import co.ar_smart.www.analytics.AnalyticsApplication;
 import co.ar_smart.www.controllers.SonosControllerActivity;
@@ -53,9 +54,11 @@ import co.ar_smart.www.helpers.Constants;
 import co.ar_smart.www.helpers.JWTManager;
 import co.ar_smart.www.helpers.ModeManager;
 import co.ar_smart.www.helpers.RetrofitServiceGenerator;
+import co.ar_smart.www.helpers.RoomManager;
 import co.ar_smart.www.helpers.UserManager;
 import co.ar_smart.www.interfaces.IHomeClient;
 import co.ar_smart.www.modes.ModeManagementActivity;
+import co.ar_smart.www.pojos.Command;
 import co.ar_smart.www.pojos.Endpoint;
 import co.ar_smart.www.pojos.EndpointState;
 import co.ar_smart.www.pojos.Hub;
@@ -147,8 +150,14 @@ public class HomeActivity extends AppCompatActivity {
     private boolean stopHandlerFlag = false;
     private Handler pollingResponseHandler = new Handler();
     private ArrayList<Hub> hubs = new ArrayList<>();
+    private ArrayList<RoomManager.Triplet> rooms = new ArrayList<>();
     private ArrayList<EndpointIcons> endpointIcons = new ArrayList<>();
     private HomeGridDevicesAdapter gridAdapter = new HomeGridDevicesAdapter(HomeActivity.this, endpoint_devices);
+    private HomeGridAdapter<Mode> gridScenesAdapter = new HomeGridAdapter<>(HomeActivity.this, modes);
+    private HomeGridAdapter<RoomManager.Triplet> gridRoomsAdapter = new HomeGridAdapter<>(HomeActivity.this, rooms);
+    private GridView homeMainGridView;
+    private GridView homeScenesGridView;
+    private GridView homeRoomsGridView;
     private Runnable runnableEndpointStatesResponse;
     private Runnable runnableEndpointStates;
     private Context mContext;
@@ -172,6 +181,10 @@ public class HomeActivity extends AppCompatActivity {
             getSupportActionBar().setHomeButtonEnabled(true);
         }
 
+        homeMainGridView = (GridView) findViewById(R.id.gridView);
+        homeScenesGridView = (GridView) findViewById(R.id.gridScenesView);
+        homeRoomsGridView = (GridView) findViewById(R.id.gridRoomsView);
+
         devicesButton = (Button) findViewById(R.id.devices_home_button);
         scenesButton = (Button) findViewById(R.id.scenes_home_button);
         roomsButton = (Button) findViewById(R.id.rooms_home_button);
@@ -184,6 +197,10 @@ public class HomeActivity extends AppCompatActivity {
                 devicesButton.setTextColor(ContextCompat.getColor(mContext, R.color.blanco));
                 scenesButton.setTextColor(ContextCompat.getColor(mContext, R.color.soporte));
                 roomsButton.setTextColor(ContextCompat.getColor(mContext, R.color.soporte));
+                homeMainGridView.setVisibility(View.VISIBLE);
+                homeScenesGridView.setVisibility(View.GONE);
+                homeRoomsGridView.setVisibility(View.GONE);
+
             }
         });
         scenesButton.setOnClickListener(new View.OnClickListener() {
@@ -195,6 +212,9 @@ public class HomeActivity extends AppCompatActivity {
                 devicesButton.setTextColor(ContextCompat.getColor(mContext, R.color.soporte));
                 scenesButton.setTextColor(ContextCompat.getColor(mContext, R.color.blanco));
                 roomsButton.setTextColor(ContextCompat.getColor(mContext, R.color.soporte));
+                homeMainGridView.setVisibility(View.GONE);
+                homeScenesGridView.setVisibility(View.VISIBLE);
+                homeRoomsGridView.setVisibility(View.GONE);
             }
         });
         roomsButton.setOnClickListener(new View.OnClickListener() {
@@ -206,6 +226,9 @@ public class HomeActivity extends AppCompatActivity {
                 devicesButton.setTextColor(ContextCompat.getColor(mContext, R.color.soporte));
                 scenesButton.setTextColor(ContextCompat.getColor(mContext, R.color.soporte));
                 roomsButton.setTextColor(ContextCompat.getColor(mContext, R.color.blanco));
+                homeMainGridView.setVisibility(View.GONE);
+                homeScenesGridView.setVisibility(View.GONE);
+                homeRoomsGridView.setVisibility(View.VISIBLE);
             }
         });
 
@@ -708,6 +731,8 @@ public class HomeActivity extends AppCompatActivity {
                     } else {
                         setGridLayout(response.body());
                         endpointsPolledsuccessfully = true;
+                        rooms = RoomManager.getDefaultRooms(endpoint_devices, PREFERRED_HUB_ID);
+                        setRoomsGridLayout();
                     }
                 } else {
                     // error response, no access to resource?
@@ -749,6 +774,7 @@ public class HomeActivity extends AppCompatActivity {
                         }
                     }
                     modesPolledSuccesfully = true;
+                    setScenesGridLayout(modes);
                 }
             }
 
@@ -898,6 +924,58 @@ public class HomeActivity extends AppCompatActivity {
             });
         }
     }
+
+    private void setScenesGridLayout(final List<Mode> listScenes) {
+        if (homeScenesGridView != null) {
+            homeScenesGridView.setAdapter(gridScenesAdapter);
+            homeScenesGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
+                    Toast.makeText(HomeActivity.this, listScenes.get(position).getName(),
+                            Toast.LENGTH_SHORT).show();
+                    processModeRoomClick(listScenes.get(position).getPayload());
+                }
+            });
+        }
+    }
+
+    private void setRoomsGridLayout() {
+        gridRoomsAdapter.updateItems(rooms);
+        if (homeRoomsGridView != null) {
+            homeRoomsGridView.setAdapter(gridRoomsAdapter);
+            gridRoomsAdapter.notifyDataSetChanged();
+            homeRoomsGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
+                    Toast.makeText(HomeActivity.this, rooms.get(position).getName(),
+                            Toast.LENGTH_SHORT).show();
+                    if (rooms.get(position).getClicked()) {
+                        processModeRoomClick(rooms.get(position).getOff());
+                    } else {
+                        processModeRoomClick(rooms.get(position).getOn());
+                    }
+                }
+            });
+        }
+    }
+
+    private void processModeRoomClick(List<Command> commads) {
+        Log.d("COMMAND", commads.toString());
+        CommandManager.sendCommandWithoutResult(API_TOKEN, PREFERRED_HUB_ID, commads.toString(), new CommandManager.ResponseCallbackInterface() {
+            @Override
+            public void onFailureCallback() {
+                Constants.showNoInternetMessage(mContext);
+            }
+
+            @Override
+            public void onSuccessCallback(JSONObject jObject) {
+                Log.d("respuesta", jObject.toString());
+            }
+
+            @Override
+            public void onUnsuccessfulCallback() {
+            }
+        });
+    }
+
 
     /**
      * This method is in charge of opening the corresponding controller for each device depending the UI parameter of the device

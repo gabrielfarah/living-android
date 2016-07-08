@@ -6,11 +6,13 @@ import android.os.Parcelable;
 import java.util.ArrayList;
 import java.util.List;
 
+import co.ar_smart.www.interfaces.IGridItem;
+
 /**
  * This class represents a scene
  * Created by Gabriel on 5/4/2016.
  */
-public class Mode implements Parcelable {
+public class Mode implements Parcelable, IGridItem {
     /**
      * The parcelable creator
      */
@@ -136,6 +138,11 @@ public class Mode implements Parcelable {
      */
     public void setName(String name) {
         this.name = name;
+    }
+
+    @Override
+    public String getImage() {
+        return "mode";
     }
 
     /**

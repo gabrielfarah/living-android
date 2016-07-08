@@ -54,7 +54,11 @@ public class Room implements Parcelable{
 
     public String getDescription()
     {
-        return description;
+        if (description == null || description.isEmpty()) {
+            return "Unnamed Room";
+        } else {
+            return description;
+        }
     }
 
     @Override
