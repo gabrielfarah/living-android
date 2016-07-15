@@ -12,6 +12,8 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import co.ar_smart.www.analytics.AnalyticsApplication;
 import co.ar_smart.www.helpers.Constants;
@@ -79,12 +81,19 @@ public class ChangePasswordActivity extends AppCompatActivity {
         String nOld_pass = old_pass.getText().toString();
         String nNew_pass = new_pass.getText().toString();
         String nNew_pass2 = new_pass2.getText().toString();
+        Pattern pattern = Pattern.compile(Constants.PASSWORD_REGEX);
+        Matcher matcher = pattern.matcher(nNew_pass.trim());
         if ((nOld_pass.isEmpty()) || (nNew_pass.isEmpty()) || (nNew_pass2.isEmpty())) {
             Constants.showCustomMessage(getApplicationContext(), getResources().getString(R.string.label_error_message_fill_fields));
         } else {
             if (!nNew_pass.equals(nNew_pass2)) {
                 Constants.showCustomMessage(getApplicationContext(), getResources().getString(R.string.label_error_message_passwords_missmatch));
-            } else {
+            }
+            else if(!matcher.matches())
+            {
+                Constants.showCustomMessage(getApplicationContext(), getResources().getString(R.string.not_regex_password));
+            }
+            else {
                 changePassword(nOld_pass, nNew_pass, API_TOKEN, new ChangePasswordCallbackInterface() {
                     @Override
                     public void onFailureCallback() {

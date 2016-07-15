@@ -272,4 +272,9 @@ public final class Constants {
     public enum Operand {
         less, greater, equals, between, not_between, distinc
     }
+
+    /**
+     * Password Regex
+     */
+    public final static String PASSWORD_REGEX = "(?=.*\\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$";
 }

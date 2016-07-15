@@ -1,9 +1,15 @@
 package co.ar_smart.www.register;
 
+import android.Manifest;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.SpannableString;
@@ -21,6 +27,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import co.ar_smart.www.analytics.AnalyticsApplication;
+import co.ar_smart.www.helpers.Constants;
 import co.ar_smart.www.helpers.JWTManager;
 import co.ar_smart.www.living.LoginActivity;
 import co.ar_smart.www.living.LoginRegisterActivity;
@@ -75,6 +82,19 @@ public class NewAdminActivity extends AppCompatActivity
      * EditText for user password
      */
     private EditText edtPassword;
+    /**
+     * Constant used when the application verifies the permissions given by the user
+     */
+    private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 0;
+    /**
+     * Boolean that represent if the user give the required permissions
+     */
+    private boolean permissionCheck = false;
+
+    /**
+     * Actual context of application
+     */
+    private Context mContext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -82,6 +102,7 @@ public class NewAdminActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_admin);
         setTitle(R.string.nav_bar_new_user_title);
+        mContext = this;
 
         // Add underling to the existing account textView
         TextView txvExistingAccount = (TextView) findViewById(R.id.txvExistingAccount);
@@ -131,8 +152,7 @@ public class NewAdminActivity extends AppCompatActivity
                 && (!edtConfEmail.getText().toString().trim().equals(""))
                 && (!edtPassword.getText().toString().trim().equals(""));
         boolean emailsEqual = edtEmail.getText().toString().trim().equals(edtConfEmail.getText().toString().trim());
-        String passRegex = "(?=.*\\d)(?=.*[a-z])(?=.*[A-Z]).{4,8}$";
-        Pattern pattern = Pattern.compile(passRegex);
+        Pattern pattern = Pattern.compile(Constants.PASSWORD_REGEX);
         Matcher matcher = pattern.matcher(edtPassword.getText().toString().trim());
         if (!filledFields)
         {
@@ -254,9 +274,71 @@ public class NewAdminActivity extends AppCompatActivity
      */
     private void createdUser()
     {
+        new AlertDialog.Builder(mContext)
+                .setMessage("The application will ask you permission to access to your location via gps and wifi, it allows it to offer you some features, please accept them.")
+                .setCancelable(false)
+                .setPositiveButton("Ok", new DialogInterface.OnClickListener()
+                {
+                    public void onClick(DialogInterface dialog, int id)
+                    {
+                        //Initialize atribute in charge of getting the static map image
+                        askAccessFineLocationPermissions();
+                    }
+                })
+                .create().show();
+    }
 
-        Intent i = new Intent(this, CreatedUserActivity.class);
-        startActivity(i);
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION) {
+            for (int i = 0; i < permissions.length; i++) {
+                String permission = permissions[i];
+                int grantResult = grantResults[i];
+
+                if (permission.equals(Manifest.permission.ACCESS_FINE_LOCATION)) {
+                    if (grantResult == PackageManager.PERMISSION_GRANTED) {
+                        Intent intent = new Intent(this, CreatedUserActivity.class);
+                        startActivity(intent);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Method that initialize the atributes that get the static map for the next activity
+     */
+    private void initializeAll() {
+        //verifies if the user have given the required permissions
+        permissionCheck = (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)!=-1);
+        // in the positive case creates and initialize the atributes for getting the static map image
+        if (permissionCheck) {
+            Intent i = new Intent(this, CreatedUserActivity.class);
+            startActivity(i);
+        }
+        else {
+            // in the negative case shows again the permission ask so the user can accept them.
+            askAccessFineLocationPermissions();
+            initializeAll();
+        }
+    }
+    /**
+     * This method ask the user the required permissions for the application to work well
+     */
+    private void askAccessFineLocationPermissions() {
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED ) {
+
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+
+            // PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION is an
+            // app-defined int constant. The callback method gets the
+            // result of the request.
+        }
     }
 
     /**

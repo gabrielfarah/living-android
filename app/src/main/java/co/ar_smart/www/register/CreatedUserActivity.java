@@ -45,14 +45,7 @@ public class CreatedUserActivity extends AppCompatActivity implements GoogleApiC
      */
     Location mLastLocation;
 
-    /**
-     * Constant used when the application verifies the permissions given by the user
-     */
-    private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 0;
-    /**
-     * Boolean that represent if the user give the required permissions
-     */
-    private boolean permissionCheck = false;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -61,56 +54,22 @@ public class CreatedUserActivity extends AppCompatActivity implements GoogleApiC
         setContentView(R.layout.activity_created_user);
         final Context mContext = this;
 
-        //Initialize atribute in charge of getting the static map image
-        askAndroidPermissions();
-        initializeAll();
+        if (mGoogleApiClient == null) {
+            mGoogleApiClient = new GoogleApiClient.Builder(this)
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .addApi(LocationServices.API)
+                    .build();
+        }
+        mGoogleApiClient.connect();
+        mLastLocation = new Location("Last registered location");
+        mLastLocation.setLatitude(Constants.DEFAULT_LATITUDE);
+        mLastLocation.setLongitude(Constants.DEFAULT_LONGITUDE);
     }
 
-    /**
-     * Method that initialize the atributes that get the static map for the next activity
-     */
-    private void initializeAll() {
-        //verifies if the user have given the required permissions
-        permissionCheck = (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)!=-1)
-                            && (ContextCompat.checkSelfPermission(this,Manifest.permission.ACCESS_COARSE_LOCATION)!=-1);
-        // in the positive case creates and initialize the atributes for getting the static map image
-        if (permissionCheck) {
-            if (mGoogleApiClient == null) {
-                mGoogleApiClient = new GoogleApiClient.Builder(this)
-                        .addConnectionCallbacks(this)
-                        .addOnConnectionFailedListener(this)
-                        .addApi(LocationServices.API)
-                        .build();
-            }
-            mGoogleApiClient.connect();
-            mLastLocation = new Location("Last registered location");
-            mLastLocation.setLatitude(Constants.DEFAULT_LATITUDE);
-            mLastLocation.setLongitude(Constants.DEFAULT_LONGITUDE);
-        }
-        else {
-            // in the negative case shows again the permission ask so the user can accept them.
-            askAndroidPermissions();
-            initializeAll();
-        }
-    }
 
-    /**
-     * This method ask the user the required permissions for the application to work well
-     */
-    private void askAndroidPermissions() {
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
-                    PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
 
-            // PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION is an
-            // app-defined int constant. The callback method gets the
-            // result of the request.
-        }
-    }
 
     /**
      * Creates bitmap with static map of last registered location
@@ -119,8 +78,8 @@ public class CreatedUserActivity extends AppCompatActivity implements GoogleApiC
     public void registerHub(View v)
     {
 
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
-        {
+        //if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+        //{
             //Assign last registered location
             mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
             if(mLastLocation==null)
@@ -157,7 +116,7 @@ public class CreatedUserActivity extends AppCompatActivity implements GoogleApiC
                     registerHub(myBitmap);
                 }
             });
-        }
+       // }
     }
 
     /**

@@ -97,7 +97,7 @@
     <string name="label_prop_req_hub_name">Name your home:</string>
     <string name="edit_text_prop_req_hub_name_hint">Eg: Home, Office …</string>
     <string name="label_prop_req_hub_image">Capture or select an \nimage for your home</string>
-    <string name="label_prop_reg_hub_map">Locate your home in the map, so some actions can be executed when you arrive or leave of the area</string>
+    <string name="label_prop_reg_hub_map">Locate your home clicking in the map, so some actions can be executed when you arrive or leave of the area</string>
     <string name="label_continue">Continue</string>
     <string name="title_activity_map_register_hub">Select Location</string>
     <string name="label_map_register_back">If you want to relocate your hub, press \nthe desire place for a few seconds</string>
@@ -148,7 +148,7 @@
     <string name="btn_trigger_on_positive_range">When it is inside range</string>
     <string name="btn_trigger_on_negative_range">When it is outside range</string>
     <string name="not_regex_password">The password must contain at least one capital letter,
-        and a number and its length must be 8.</string>
+        and a number and its length must be at least 8.</string>
     <string name="toast_error_connecting_to_local_webserver">Please make sure your phone WIFI is active and connected to the \"Domu-AP\" network. Also make sure to momentarily deactivate the mobile data in your phone</string>
     <string name="welcome_messages">The WIFI network: %1$s does not exist.</string>
     <string name="nav_label_devices">Devices</string>

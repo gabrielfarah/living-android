@@ -12,6 +12,7 @@ import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -148,13 +149,30 @@ public class PropertiesRegisterHubActivity extends AppCompatActivity
         {
             continueMap.setOnClickListener(listenerProperties);
         }
-        askAndroidPermissions();
+        showMessage();
+
+    }
+
+    private void showMessage()
+    {
+        new android.app.AlertDialog.Builder(mContext)
+                .setMessage("The application will ask you permission to read your external storage, it allows it to offer you some features, please accept them.")
+                .setCancelable(false)
+                .setPositiveButton("Ok", new DialogInterface.OnClickListener()
+                {
+                    public void onClick(DialogInterface dialog, int id)
+                    {
+                        askAndroidPermissions();
+                    }
+                })
+                .create().show();
     }
 
     /**
      * This method ask the user the required permissions for the application to work well
      */
-    private void askAndroidPermissions() {
+    private void askAndroidPermissions()
+    {
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -166,6 +184,23 @@ public class PropertiesRegisterHubActivity extends AppCompatActivity
             // PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION is an
             // app-defined int constant. The callback method gets the
             // result of the request.
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE) {
+            for (int i = 0; i < permissions.length; i++) {
+                String permission = permissions[i];
+                int grantResult = grantResults[i];
+
+                if (permission.equals(Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                    if (grantResult != PackageManager.PERMISSION_GRANTED) {
+                        showMessage();
+                    }
+                }
+            }
         }
     }
 
