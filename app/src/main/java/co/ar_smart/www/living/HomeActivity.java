@@ -584,7 +584,7 @@ public class HomeActivity extends AppCompatActivity {
                 // while the handler is not stoped create a new request every time delta
                 if (!stopHandlerFlag && endpointStatesTimeoutDate.after(new Date())) {
                     processEndpointStatesResponse();
-                    pollingResponseHandler.postDelayed(this, 2000);
+                    pollingResponseHandler.postDelayed(this, 5000);
                 }
             }
         };
@@ -627,6 +627,7 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void updateEndpointStates(ArrayList<EndpointState> endpointStates) {
+        //TODO mejorar esto, el doble loop es horrible
         for (int i = 0; i < endpoint_devices.size(); i++) {
             for (int j = 0; j < endpointStates.size(); j++) {
                 EndpointState es = endpointStates.get(j);

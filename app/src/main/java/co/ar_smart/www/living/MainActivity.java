@@ -1,10 +1,10 @@
 package co.ar_smart.www.living;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -40,7 +40,7 @@ import static co.ar_smart.www.helpers.Constants.PREF_PASSWORD;
  * If none of the above works, then it will redirect to the login activity.
  * Created by Gabriel on 4/27/2016.
  */
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends Activity {
     /**
      * The user email
      */
