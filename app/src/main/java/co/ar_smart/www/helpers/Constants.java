@@ -156,7 +156,7 @@ public final class Constants {
 
     public static final String ACTION_ADD = "ACTION_add";
 
-    public static final int TIMEOUT_DEVICES__SECS = 30;
+    public static final int TIMEOUT_DEVICES__SECS = 60;
 
     public static final int PULL_INTERVAL_SECS = 2;
 

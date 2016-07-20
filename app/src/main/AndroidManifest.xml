@@ -54,7 +54,8 @@
             android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="portrait"/>
         <activity android:name="co.ar_smart.www.endpoints.ManagementEndpointsActivity"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait">
+        </activity>
         <activity android:name="co.ar_smart.www.actions.ActionActivity"
             android:screenOrientation="portrait"/>
         <activity android:name="co.ar_smart.www.user.GuestManagementActivity"
@@ -108,6 +109,8 @@
         <activity android:name="co.ar_smart.www.endpoints.DevicesActivity"
             android:screenOrientation="portrait"/>
         <activity android:name="co.ar_smart.www.endpoints.DeleteDeviceActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name="co.ar_smart.www.endpoints.DeleteZwaveActivity"
             android:screenOrientation="portrait"/>
         <activity android:name="co.ar_smart.www.modes.ModeManagementActivity"
             android:screenOrientation="portrait"/>

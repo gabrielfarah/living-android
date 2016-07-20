@@ -29,7 +29,7 @@ public class EditIconActivity extends AppCompatActivity {
     /**
      * Icon list
      */
-    private  List<Icons> ic;
+    private  Icons[] ic;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,26 +42,19 @@ public class EditIconActivity extends AppCompatActivity {
         }
 
         grid=(GridView) findViewById(R.id.gridIcons);
-        Map<Integer,Integer> dic=new HashMap<>();
-        dic.put(1,R.drawable.light_icon);
-        dic.put(2,R.drawable.light_icon);
-        dic.put(3,R.drawable.light_icon);
-        dic.put(4,R.drawable.light_icon);
+
+
         ImageView ima=new ImageView(getApplicationContext());
         ima.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.light_icon));
 
-        //Prueba
-        ic=new ArrayList<>();
-        ic.add(new Icons("ligh"));
-        ic.add(new Icons("ligh"));
-        ic.add(new Icons("ligh"));
+        ic=new Icons[]{new Icons("light"), new Icons("light2"), new Icons("light3"), new Icons( "light4"), new Icons("light5"), new Icons("hue"), new Icons("hue2"), new Icons("sonos"), new Icons("music"), new Icons("music2"), new Icons("music3"), new Icons("music4"), new Icons("power-outlet"), new Icons("power-outlet2"), new Icons("power-outlet3"), new Icons("power-outlet4"), new Icons("door-lock"), new Icons("door-lock2"), new Icons("shades"), new Icons("shades2"), new Icons("shades3"), new Icons("shades4"), new Icons("temperature"), new Icons("temperature2"), new Icons("sensor"), new Icons("alarm"), new Icons("alarm2"), new Icons("alarm3"), new Icons("battery"), new Icons("coffee-maker"), new Icons("door"), new Icons("door2"), new Icons("energy"), new Icons("energy2"), new Icons("energy3"), new Icons("energy4"), new Icons("lamp"), new Icons("lamp2"), new Icons("lamp3"), new Icons("movement-sensor"), new Icons("movement-sensor2"), new Icons("movement-sensor3"), new Icons("movement-sensor4"), new Icons("open-close-sensor"),new Icons("open-close-sensor2"), new Icons("open-close-sensor3"), new Icons("water"), new Icons("water2"), new Icons("water3")};
 
         GridDevicesAdapter<Icons> adapter=new GridDevicesAdapter(getApplicationContext(),ic);
         grid.setAdapter(adapter);
         grid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String r=ic.get(position).getImage();
+                String r=ic[position].getImage();
                 Intent returnIntent = new Intent();
                 returnIntent.putExtra("result",r);
                 setResult(Activity.RESULT_OK,returnIntent);
