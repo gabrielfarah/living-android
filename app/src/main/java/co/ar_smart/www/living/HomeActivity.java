@@ -168,10 +168,6 @@ public class HomeActivity extends AppCompatActivity {
     private Button devicesButton;
     private Button scenesButton;
     private Button roomsButton;
-    /**
-     * Background path selected by user
-     */
-    private String backgrnd_path;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -180,7 +176,7 @@ public class HomeActivity extends AppCompatActivity {
         final Intent intent = getIntent();
         API_TOKEN = intent.getStringExtra(EXTRA_MESSAGE);
         mContext = this;
-        backgrnd_path = getBackgroundPath();
+        String backgrnd_path = getBackgroundPath();
         Drawable d;
         if(backgrnd_path.contains("drawable://"))
         {
@@ -545,7 +541,6 @@ public class HomeActivity extends AppCompatActivity {
         editor.remove(PREF_JWT);
         editor.remove(PREF_HUB);
         editor.apply();
-        openLoginActivity();
     }
 
     /**
@@ -553,6 +548,13 @@ public class HomeActivity extends AppCompatActivity {
      */
     public void openLoginActivity() {
         Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
+    }
+    /**
+     * This method will open the login register activity.
+     */
+    public void openLoginRegisterActivity() {
+        Intent intent = new Intent(this, LoginRegisterActivity.class);
         startActivity(intent);
     }
 
@@ -719,6 +721,7 @@ public class HomeActivity extends AppCompatActivity {
                 @Override
                 public void onUnsuccessfulCallback() {
                     successfulLogout();
+                    openLoginActivity();
                 }
 
                 @Override
@@ -1177,7 +1180,8 @@ public class HomeActivity extends AppCompatActivity {
     public void onBackPressed() {
 
         if (doubleBackToExitPressedOnce) {
-            return;
+            successfulLogout();
+            openLoginRegisterActivity();
         }
 
         this.doubleBackToExitPressedOnce = true;

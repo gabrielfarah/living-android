@@ -43,7 +43,7 @@
     <string name="label_local_conf_wifi">Enter your home Wi-Fi network</string>
     <string name="label_local_conf_password">Enter your home Wi-Fi password</string>
     <string name="label_local_conf_time_zones">Select your home time zone</string>
-    <string name="label_local_conf_submit_button">Connect Living to my home Wifi</string>
+    <string name="label_local_conf_submit_button">Connect Domu to my home Wifi</string>
     <string name="nav_menu_open">Open navigation drawer</string>
     <string name="nav_menu_close">Close navigation drawer</string>
     <string name="label_notification_feed">Activity</string>
@@ -58,6 +58,7 @@
     <string name="edit_text_new_user_email">E-mail</string>
     <string name="edit_text_new_user_confirm_email">Confirm E-mail</string>
     <string name="edit_text_new_user_password">Password</string>
+    <string name="edit_text_new_user_conf_password">Confirm Password</string>
     <string name="toast_incomplete_form">Incomplete Form</string>
     <string name="toast_not_matching_email">The e-mails are not equal</string>
     <string name="create_user_error">Error creating user</string>
@@ -189,4 +190,5 @@
     <string name="home_menu_devices">DEVICES</string>
     <string name="home_menu_scenes">SCENES</string>
     <string name="home_menu_rooms">ROOMS</string>
+    <string name="toast_not_matching_password">The passwords are not equal</string>
 </resources>
