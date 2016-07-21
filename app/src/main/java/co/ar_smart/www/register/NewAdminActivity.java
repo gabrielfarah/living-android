@@ -1,6 +1,7 @@
 package co.ar_smart.www.register;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -14,7 +15,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.SpannableString;
 import android.text.style.UnderlineSpan;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -86,10 +86,6 @@ public class NewAdminActivity extends AppCompatActivity
      * Constant used when the application verifies the permissions given by the user
      */
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 0;
-    /**
-     * Boolean that represent if the user give the required permissions
-     */
-    private boolean permissionCheck = false;
 
     /**
      * Actual context of application
@@ -274,18 +270,34 @@ public class NewAdminActivity extends AppCompatActivity
      */
     private void createdUser()
     {
-        new AlertDialog.Builder(mContext)
-                .setMessage("The application will ask you permission to access to your location via gps and wifi, it allows it to offer you some features, please accept them.")
-                .setCancelable(false)
-                .setPositiveButton("Ok", new DialogInterface.OnClickListener()
-                {
-                    public void onClick(DialogInterface dialog, int id)
-                    {
-                        //Initialize atribute in charge of getting the static map image
-                        askAccessFineLocationPermissions();
-                    }
-                })
-                .create().show();
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED ) {
+
+            runOnUiThread(new Runnable() {
+                public void run() {
+                    new AlertDialog.Builder(mContext)
+                            .setMessage(R.string.permission_location_message)
+                            .setCancelable(false)
+                            .setPositiveButton("Ok", new DialogInterface.OnClickListener()
+                            {
+                                public void onClick(DialogInterface dialog, int id)
+                                {
+                                    ActivityCompat.requestPermissions((Activity) mContext,
+                                            new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                                            PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+                                }
+                            })
+                            .create().show();
+                }
+            });
+        }
+        else
+        {
+            Intent intent = new Intent(this, CreatedUserActivity.class);
+            startActivity(intent);
+        }
+
     }
 
     @Override
@@ -306,40 +318,6 @@ public class NewAdminActivity extends AppCompatActivity
         }
     }
 
-    /**
-     * Method that initialize the atributes that get the static map for the next activity
-     */
-    private void initializeAll() {
-        //verifies if the user have given the required permissions
-        permissionCheck = (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)!=-1);
-        // in the positive case creates and initialize the atributes for getting the static map image
-        if (permissionCheck) {
-            Intent i = new Intent(this, CreatedUserActivity.class);
-            startActivity(i);
-        }
-        else {
-            // in the negative case shows again the permission ask so the user can accept them.
-            askAccessFineLocationPermissions();
-            initializeAll();
-        }
-    }
-    /**
-     * This method ask the user the required permissions for the application to work well
-     */
-    private void askAccessFineLocationPermissions() {
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED ) {
-
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                    PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
-
-            // PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION is an
-            // app-defined int constant. The callback method gets the
-            // result of the request.
-        }
-    }
 
     /**
      * This method display a dialog message in the UI thread given a message.

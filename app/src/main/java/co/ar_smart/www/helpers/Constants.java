@@ -167,12 +167,10 @@ public final class Constants {
      *
      */
     public static final String EXTRA_LIST_PARCELABLE_FIRST = "co.ar-smart.www.living.EXTRA_LIST_PARCELABLE_FIRST";
-    ;
     /**
      * Array of the days of the week
      */
     public static final String[] daysArray = new String[]{"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
-    ;
     /**
      * Default boolean list of selected days
      */
@@ -277,4 +275,9 @@ public final class Constants {
      * Password Regex
      */
     public final static String PASSWORD_REGEX = "(?=.*\\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$";
+
+    /**
+     * Constant for path to user selected background
+     */
+    public final static String DEFLT_BACKGRND = "default_backgroung";
 }
