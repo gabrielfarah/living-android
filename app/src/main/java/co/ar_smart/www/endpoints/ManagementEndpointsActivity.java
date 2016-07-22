@@ -63,30 +63,6 @@ public class ManagementEndpointsActivity extends AppCompatActivity {
     }
 
     /**
-     * This method will clear the saved credentials of the user in the shared preferences.
-     * It will also redirect the user to the login activity.
-     */
-    private void successfulLogout() {
-        SharedPreferences settings = getSharedPreferences(PREFS_NAME,
-                Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = settings.edit();
-        editor.remove(PREF_EMAIL);
-        editor.remove(PREF_PASSWORD);
-        editor.remove(PREF_JWT);
-        editor.remove(PREF_HUB);
-        editor.apply();
-        openLoginActivity();
-    }
-
-    /**
-     * This method will open the login activity.
-     */
-    public void openLoginActivity() {
-        Intent intent = new Intent(this, LoginActivity.class);
-        startActivity(intent);
-    }
-
-    /**
      * Open add wifi activity
      */
     public void addWifi(View v)

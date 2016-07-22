@@ -536,7 +536,6 @@ public class HomeActivity extends AppCompatActivity {
         SharedPreferences settings = getSharedPreferences(PREFS_NAME,
                 Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = settings.edit();
-        editor.remove(PREF_EMAIL);
         editor.remove(PREF_PASSWORD);
         editor.remove(PREF_JWT);
         editor.remove(PREF_HUB);

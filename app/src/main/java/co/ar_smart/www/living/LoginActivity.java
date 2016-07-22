@@ -5,10 +5,12 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.SpannableString;
+import android.text.method.PasswordTransformationMethod;
+import android.text.method.TransformationMethod;
 import android.text.style.UnderlineSpan;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -19,6 +21,7 @@ import android.widget.Toast;
 import co.ar_smart.www.helpers.JWTManager;
 import co.ar_smart.www.register.NewAdminActivity;
 
+import static co.ar_smart.www.helpers.Constants.DEFAULT_EMAIL;
 import static co.ar_smart.www.helpers.Constants.EXTRA_MESSAGE;
 import static co.ar_smart.www.helpers.Constants.PREFS_NAME;
 import static co.ar_smart.www.helpers.Constants.PREF_EMAIL;
@@ -44,6 +47,10 @@ public class LoginActivity extends AppCompatActivity {
      * The backend auth token
      */
     private String API_TOKEN = "";
+    /**
+     * Boolean used to know if the password is been show
+     */
+    private boolean showingPasswords;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +65,7 @@ public class LoginActivity extends AppCompatActivity {
         //emailText.setHintTextColor(ContextCompat.getColor(getApplicationContext(), R.color.blanco));
         passwordText.setTypeface(Typeface.SERIF);
         //passwordText.setHintTextColor(ContextCompat.getColor(getApplicationContext(), R.color.blanco));
+        setLastEmail(emailText);
         if (loginButton != null) {
             loginButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -108,6 +116,42 @@ public class LoginActivity extends AppCompatActivity {
         {
             txvExistingAccount.setText(content);
         }
+        emailText.setOnTouchListener(new View.OnTouchListener() {
+            final int DRAWABLE_RIGHT = 2;
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_UP) {
+                    int leftEdgeOfRightDrawable = emailText.getRight()
+                            - emailText.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width()
+                            - emailText.getPaddingEnd();
+                    if (event.getRawX() >= leftEdgeOfRightDrawable)
+                    {
+                        emailText.setText("");
+                    }
+                }
+                return false;
+            }
+        });
+        passwordText.setOnTouchListener(new View.OnTouchListener() {
+            final int DRAWABLE_RIGHT = 2;
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_UP) {
+                    int leftEdgeOfRightDrawable = passwordText.getRight()
+                            - passwordText.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width()
+                            - passwordText.getPaddingEnd();
+                    if (event.getRawX() >= leftEdgeOfRightDrawable)
+                    {
+                        TransformationMethod tempTransMeth = (showingPasswords)?null:new PasswordTransformationMethod();
+                        int drawable = (showingPasswords)?R.drawable.hide_pass:R.drawable.show_pass;
+                        passwordText.setTransformationMethod(tempTransMeth);
+                        passwordText.setCompoundDrawablesWithIntrinsicBounds(0,0,drawable,0);
+                        showingPasswords = !showingPasswords;
+                    }
+                }
+                return false;
+            }
+        });
     }
 
     /**
@@ -179,5 +223,22 @@ public class LoginActivity extends AppCompatActivity {
         super.onBackPressed();
         Intent i = new Intent(this, LoginRegisterActivity.class);
         startActivity(i);
+    }
+
+    /**
+     * Method that set the last sign in email in the edit text
+     * @param lastEmail - Edit text where last sign in email is show
+     */
+    public void setLastEmail(EditText lastEmail)
+    {
+        //Get the information of the user from the SharedPreferences
+        SharedPreferences settings = getSharedPreferences(PREFS_NAME,
+                Context.MODE_PRIVATE);
+        // Get values using keys
+        String EMAIL = settings.getString(PREF_EMAIL, DEFAULT_EMAIL);
+        if(!EMAIL.equals(DEFAULT_EMAIL))
+        {
+            lastEmail.setText(EMAIL);
+        }
     }
 }

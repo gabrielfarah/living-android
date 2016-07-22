@@ -99,7 +99,9 @@ public class NewAdminActivity extends AppCompatActivity
      * Actual context of application
      */
     private Context mContext;
-
+    /**
+     * Boolean used to know if the password is been show
+     */
     private boolean showingPasswords;
 
     @Override

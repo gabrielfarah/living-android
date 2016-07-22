@@ -98,7 +98,7 @@ public class RegisterHubActivity extends AppCompatActivity
                     }
                     else
                     {
-                        hubSerial = edtHubSerial.getText().toString();
+                        hubSerial = edtHubSerial.getText().toString().trim();
                         getToken();
                     }
                 }
