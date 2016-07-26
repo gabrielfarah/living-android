@@ -30,13 +30,13 @@
         <activity
             android:name=".LoginActivity"
             android:label="@string/login_title"
-            android:theme="@style/NewAdmin"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait"
+            android:theme="@style/NewAdmin" />
         <activity android:name=".HomeActivity"
             android:screenOrientation="portrait"/>
         <activity android:name=".LoginRegisterActivity"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name="co.ar_smart.www.register.LivingLocalConfigurationActivity"
             android:screenOrientation="portrait"/>
         <activity android:name="co.ar_smart.www.controllers.SonosControllerActivity"
@@ -47,12 +47,12 @@
             android:screenOrientation="portrait"/>
         <activity
             android:name="co.ar_smart.www.register.NewAdminActivity"
-            android:theme="@style/NewAdmin"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait"
+            android:theme="@style/NewAdmin" />
         <activity
             android:name="co.ar_smart.www.register.CreatedUserActivity"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name="co.ar_smart.www.endpoints.ManagementEndpointsActivity"
             android:screenOrientation="portrait"/>
         <activity android:name="co.ar_smart.www.actions.ActionActivity"
@@ -65,12 +65,12 @@
             android:screenOrientation="portrait"/>
         <activity
             android:name="co.ar_smart.www.controllers.hue.HueColorControllerActivity"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name="co.ar_smart.www.controllers.hue.HueControllerActivity"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name="co.ar_smart.www.controllers.ZwavePresenceBinarySensorControllerActivity"
             android:screenOrientation="portrait"/>
         <activity android:name="co.ar_smart.www.register.PropertiesRegisterHubActivity"
@@ -95,8 +95,8 @@
             android:screenOrientation="portrait"/>
         <activity
             android:name="co.ar_smart.www.register.RegisteredHubActivity"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name="co.ar_smart.www.endpoints.NewDevicesActivity"
             android:screenOrientation="portrait"/>
         <activity android:name="co.ar_smart.www.endpoints.EditDeviceActivity"
@@ -111,15 +111,12 @@
             android:screenOrientation="portrait"/>
         <activity android:name="co.ar_smart.www.modes.ModeManagementActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name="co.ar_smart.www.modes.ListModesActivity"
-            android:screenOrientation="portrait"/>
         <activity android:name="co.ar_smart.www.modes.DeleteModesActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name="co.ar_smart.www.modes.EditModeActivity"
             android:screenOrientation="portrait"/>
         <activity android:name="co.ar_smart.www.modes.ListCommandsActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name="co.ar_smart.www.modes.NewModeActivity"
+        <activity
+            android:name="co.ar_smart.www.modes.ModeActivity"
             android:screenOrientation="portrait"/>
         <activity android:name="co.ar_smart.www.modes.ModeEndpointActivityPicker"
             android:screenOrientation="portrait"/>

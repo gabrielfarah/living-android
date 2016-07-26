@@ -34,14 +34,7 @@ public class HomeGridDevicesAdapter extends BaseAdapter {
         endpoints = endpointGrid;
     }
 
-    public Drawable setTint(int dr, int color) {
-        Drawable d = ResourcesCompat.getDrawable(context.getResources(), dr, null);
-        Drawable wrappedDrawable = DrawableCompat.wrap(d);
-        DrawableCompat.setTint(wrappedDrawable, color);
-        return wrappedDrawable;
-    }
-
-    private int getDrawableFromString(String name) {
+    public static int getDrawableFromString(String name) {
         if (name != null) {
             switch (name) {
                 case "light":
@@ -145,6 +138,13 @@ public class HomeGridDevicesAdapter extends BaseAdapter {
             }
         }
         return R.drawable.default_icon;
+    }
+
+    public Drawable setTint(int dr, int color) {
+        Drawable d = ResourcesCompat.getDrawable(context.getResources(), dr, null);
+        Drawable wrappedDrawable = DrawableCompat.wrap(d);
+        DrawableCompat.setTint(wrappedDrawable, color);
+        return wrappedDrawable;
     }
 
     @Override

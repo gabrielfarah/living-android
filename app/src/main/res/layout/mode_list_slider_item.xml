@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:weightSum="1">
+
+    <CheckBox
+        android:id="@+id/endpoint_in_scene_check_box"
+        android:layout_width="0dip"
+        android:layout_height="match_parent"
+        android:layout_weight="0.1"
+        android:gravity="center_vertical"
+        android:scaleX="1.30"
+        android:scaleY="1.30"
+        android:tint="@color/colorPrimaryDark" />
+
+    <ImageView
+        android:id="@+id/icon_endpoint_in_scene"
+        android:layout_width="0dip"
+        android:layout_height="match_parent"
+        android:layout_weight="0.2"
+        android:adjustViewBounds="true"
+        android:src="@drawable/default_icon"
+        android:tint="@color/colorPrimaryDark" />
+
+    <RelativeLayout
+        android:layout_width="0dip"
+        android:layout_height="match_parent"
+        android:layout_weight="0.7"
+        android:gravity="center_vertical">
+
+        <LinearLayout
+            android:id="@+id/text_holder_linear_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:weightSum="1">
+
+            <TextView
+                android:id="@+id/name_endpoint_in_scene"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.6"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:text="House Device"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/state_endpoint_in_scene_text_view"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.4"
+                android:text="0%"
+                android:textAlignment="textEnd"
+                android:textSize="20sp" />
+        </LinearLayout>
+
+        <SeekBar
+            android:id="@+id/state_endpoint_in_scene_seekbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/text_holder_linear_layout"
+            android:textOff="Unlock" />
+    </RelativeLayout>
+</LinearLayout>

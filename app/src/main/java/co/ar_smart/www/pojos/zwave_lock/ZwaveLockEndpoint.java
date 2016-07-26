@@ -1,5 +1,6 @@
 package co.ar_smart.www.pojos.zwave_lock;
 
+import co.ar_smart.www.helpers.Constants;
 import co.ar_smart.www.interfaces.ICommandClass;
 import co.ar_smart.www.pojos.Command;
 import co.ar_smart.www.pojos.Endpoint;
@@ -37,7 +38,7 @@ public class ZwaveLockEndpoint implements ICommandClass {
 
     public Command getOpenCommand() {
         Command c = new Command(endpoint);
-        c.setFunction("zwif_dlck_op_set");
+        c.setFunction(Constants.ZWAVE_FUNCTION_DOOR_SET);
         c.setType("zwave");
         c.setNode(endpoint.getNode());
         c.setV(0);
@@ -46,7 +47,7 @@ public class ZwaveLockEndpoint implements ICommandClass {
 
     public Command getCloseCommand() {
         Command c = new Command(endpoint);
-        c.setFunction("zwif_dlck_op_set");
+        c.setFunction(Constants.ZWAVE_FUNCTION_DOOR_SET);
         c.setType("zwave");
         c.setNode(endpoint.getNode());
         c.setV(255);

@@ -5,6 +5,7 @@ import android.os.Parcelable;
 
 import com.google.gson.JsonObject;
 
+import co.ar_smart.www.helpers.Constants;
 import co.ar_smart.www.interfaces.ICommandClass;
 import co.ar_smart.www.pojos.Command;
 import co.ar_smart.www.pojos.Endpoint;
@@ -161,7 +162,7 @@ public class HueEndpoint implements Parcelable, ICommandClass {
     @Override
     public Command getTurnOnCommand() {
         Command c = new Command(endpoint);
-        c.setFunction("turn_on_all_lights");
+        c.setFunction(Constants.HUE_FUNCTION_ON);
         c.setTarget("hue");
         return c;
     }
@@ -169,7 +170,7 @@ public class HueEndpoint implements Parcelable, ICommandClass {
     @Override
     public Command getTurnOffCommand() {
         Command c = new Command(endpoint);
-        c.setFunction("turn_off_all_lights");
+        c.setFunction(Constants.HUE_FUNCTION_OFF);
         c.setTarget("hue");
         return c;
     }

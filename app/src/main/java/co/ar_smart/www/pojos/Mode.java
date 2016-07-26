@@ -171,4 +171,12 @@ public class Mode implements Parcelable, IGridItem {
 
         return sameSame;
     }
+
+    public void addCommandToPayload(Command command) {
+        payload.add(command);
+    }
+
+    public void removeCommandFromPayload(Command command) {
+        payload.remove(command);
+    }
 }

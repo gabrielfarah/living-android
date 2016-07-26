@@ -1,5 +1,6 @@
 package co.ar_smart.www.pojos.zwave_binary;
 
+import co.ar_smart.www.helpers.Constants;
 import co.ar_smart.www.interfaces.ICommandClass;
 import co.ar_smart.www.pojos.Command;
 import co.ar_smart.www.pojos.Endpoint;
@@ -38,7 +39,7 @@ public class ZwaveBinaryEndpoint implements ICommandClass {
     @Override
     public Command getTurnOnCommand() {
         Command c = new Command(endpoint);
-        c.setFunction("zwif_switch_set");
+        c.setFunction(Constants.ZWAVE_FUNCTION_BINARY_SET);
         c.setType("zwave");
         c.setNode(endpoint.getNode());
         c.setV(255);
@@ -48,7 +49,7 @@ public class ZwaveBinaryEndpoint implements ICommandClass {
     @Override
     public Command getTurnOffCommand() {
         Command c = new Command(endpoint);
-        c.setFunction("zwif_switch_set");
+        c.setFunction(Constants.ZWAVE_FUNCTION_BINARY_SET);
         c.setType("zwave");
         c.setNode(endpoint.getNode());
         c.setV(0);

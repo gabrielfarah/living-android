@@ -167,16 +167,44 @@ public final class Constants {
      *
      */
     public static final String EXTRA_LIST_PARCELABLE_FIRST = "co.ar-smart.www.living.EXTRA_LIST_PARCELABLE_FIRST";
-    ;
     /**
      * Array of the days of the week
      */
     public static final String[] daysArray = new String[]{"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
-    ;
     /**
      * Default boolean list of selected days
      */
     public static final boolean[] boolSelectedDaysArray = new boolean[]{true, false, true, false, true, false, true};
+    public static final String UI_CLASS_SONOS = "ui-sonos";
+    public static final String UI_CLASS_ZWAVE_BINAY_LIGHT = "ui-binary-light-zwave";
+    public static final String UI_CLASS_ZWAVE_LEVEL_LIGHT = "ui-level-light-zwave";
+    public static final String UI_CLASS_ZWAVE_LEVEL_THERMOSTAT = "ui-level-thermostat-zwave";
+    public static final String UI_CLASS_ZWAVE_BINARY_OUTLET = "ui-binary-outlet-zwave";
+    public static final String UI_CLASS_ZWAVE_LOCK = "ui-lock-zwave";
+    public static final String UI_CLASS_ZWAVE_SHADES = "ui-shades-zwave";
+    public static final String UI_CLASS_ZWAVE_TEMPERATURE_SENSOR = "ui-temp-sensor-zwave";
+    public static final String UI_CLASS_HUE = "ui-hue";
+    public static final String UI_CLASS_ZWAVE_BINARY_SWITCH = "ui-switch-binary-zwave";
+    public static final String UI_CLASS_ZWAVE_OPEN_CLOSE_SENSOR = "ui-sensor-open-close-zwave";
+    public static final String UI_CLASS_ZWAVE_MOTION_SENSOR = "ui-sensor-motion-zwave";
+    public static final String UI_CLASS_ZWAVE_LEVEL_SWITCH = "ui-switch-multilevel-zwave";
+    public static final String UI_CLASS_ZWAVE_BINARY_SENSOR = "ui-sensor-binary-zwave";
+    public static final String UI_CLASS_ZWAVE_LEVEL_SENSOR = "ui-sensor-multilevel-zwave";
+    public static final String UI_CLASS_ZWAVE_BINARY_GENERIC = "ui-basic-zwave";
+    public static final String UI_CLASS_ZWAVE_WATER_SENSOR = "ui-water-sensor-zwave";
+    public static final String UI_CLASS_ZWAVE_ENERGY_SENSOR = "ui-energy-sensor-zwave";
+    public static final String ZWAVE_FUNCTION_LEVEL_SET = "zwif_level_set";
+    public static final String ZWAVE_FUNCTION_DOOR_SET = "zwif_dlck_op_set";
+    public static final String ZWAVE_FUNCTION_BINARY_SET = "zwif_switch_set";
+    public static final String ZWAVE_FUNCTION_BASIC_SET = "zwif_basic_set";
+    public static final String SONOS_FUNCTION_STOP = "stop";
+    public static final String SONOS_FUNCTION_PLAY = "play";
+    public static final String HUE_FUNCTION_OFF = "turn_off_all_lights";
+    public static final String HUE_FUNCTION_ON = "turn_on_all_lights";
+    /**
+     * Password Regex
+     */
+    public final static String PASSWORD_REGEX = "(?=.*\\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$";
     /**
      * HashMap of the days of the week with its abreviatures
      * key for map is a String
@@ -250,12 +278,12 @@ public final class Constants {
 
     public static HashMap<String, ICommandClass> getUiMapClasses() {
         HashMap<String, ICommandClass> uiMapClasses = new HashMap<>();
-        uiMapClasses.put("ui-sonos", new SonosEndpoint());
-        uiMapClasses.put("ui-binary-light-zwave", new ZwaveBinaryEndpoint());
-        uiMapClasses.put("ui-binary-outlet-zwave", new ZwaveBinaryEndpoint());
-        uiMapClasses.put("ui-lock-zwave", new ZwaveLockEndpoint());
-        uiMapClasses.put("ui-shades-zwave", new ZwaveLevelEndpoint());
-        uiMapClasses.put("ui-hue", new HueEndpoint());
+        uiMapClasses.put(UI_CLASS_SONOS, new SonosEndpoint());
+        uiMapClasses.put(UI_CLASS_ZWAVE_BINAY_LIGHT, new ZwaveBinaryEndpoint());
+        uiMapClasses.put(UI_CLASS_ZWAVE_BINARY_OUTLET, new ZwaveBinaryEndpoint());
+        uiMapClasses.put(UI_CLASS_ZWAVE_LOCK, new ZwaveLockEndpoint());
+        uiMapClasses.put(UI_CLASS_ZWAVE_SHADES, new ZwaveLevelEndpoint());
+        uiMapClasses.put(UI_CLASS_HUE, new HueEndpoint());
         return uiMapClasses;
     }
 
@@ -272,9 +300,4 @@ public final class Constants {
     public enum Operand {
         less, greater, equals, between, not_between, distinc
     }
-
-    /**
-     * Password Regex
-     */
-    public final static String PASSWORD_REGEX = "(?=.*\\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$";
 }

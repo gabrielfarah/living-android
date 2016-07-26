@@ -3,6 +3,8 @@ package co.ar_smart.www.pojos;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.ArrayList;
+
 /**
  * This class represents a Living HUB
  * Created by Gabriel on 5/4/2016.
@@ -31,6 +33,10 @@ public class Hub implements Parcelable{
      * the id of the hub controller
      */
     private int id;
+    /**
+     * list of the endpoints connected to the hub
+     */
+    private ArrayList<Endpoint> endpoints;
 
     /**
      * creates a new hub from a parcel instance
@@ -40,6 +46,7 @@ public class Hub implements Parcelable{
     protected Hub(Parcel in) {
         custom_name = in.readString();
         id = in.readInt();
+        in.readTypedList(endpoints, Endpoint.CREATOR);
     }
 
     /**
@@ -77,5 +84,6 @@ public class Hub implements Parcelable{
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(custom_name);
         dest.writeInt(id);
+        dest.writeTypedList(endpoints);
     }
 }

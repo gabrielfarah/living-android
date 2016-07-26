@@ -985,10 +985,10 @@ public class HomeActivity extends AppCompatActivity {
      */
     private void processEndpointClick(Endpoint endpoint) {
         switch (endpoint.getUi_class_command()) {
-            case "ui-sonos":
+            case Constants.UI_CLASS_SONOS:
                 openSONOSController(endpoint);
                 break;
-            case "ui-temperature-s":
+            case Constants.UI_CLASS_ZWAVE_TEMPERATURE_SENSOR:
                 Intent i = new Intent(this, TriggerMainController.class);
                 i.putExtra(EXTRA_MESSAGE, API_TOKEN);
                 i.putExtra(EXTRA_MESSAGE_PREF_HUB, PREFERRED_HUB_ID);
@@ -997,35 +997,19 @@ public class HomeActivity extends AppCompatActivity {
                 i.putExtra(EXTRA_BOOLEAN, false);
                 startActivity(i);
                 break;
-            case "ui-lock":
-                if (endpoint.getEndpoint_type().equalsIgnoreCase("zwave")) {
-                    openZwaveLockController(endpoint);
-                } else {
-                    //TODO
-                }
+            case Constants.UI_CLASS_ZWAVE_LOCK:
+                openZwaveLockController(endpoint);
                 break;
-            case "ui-binary-light":
-                if (endpoint.getEndpoint_type().equalsIgnoreCase("zwave")) {
-                    performZwaveBinaryCommand(endpoint);
-                } else {
-                    //TODO
-                }
+            case Constants.UI_CLASS_ZWAVE_BINAY_LIGHT:
+                performZwaveBinaryCommand(endpoint);
                 break;
-            case "ui-binary-outlet":
-                if (endpoint.getEndpoint_type().equalsIgnoreCase("zwave")) {
-                    performZwaveBinaryCommand(endpoint);
-                } else {
-                    //TODO
-                }
+            case Constants.UI_CLASS_ZWAVE_BINARY_OUTLET:
+                performZwaveBinaryCommand(endpoint);
                 break;
-            case "ui-level-light":
-                if (endpoint.getEndpoint_type().equalsIgnoreCase("zwave")) {
-                    performZwaveLevelCommand(endpoint);
-                } else {
-                    //TODO
-                }
+            case Constants.UI_CLASS_ZWAVE_LEVEL_LIGHT:
+                performZwaveLevelCommand(endpoint);
                 break;
-            case "ui-hue":
+            case Constants.UI_CLASS_HUE:
                 openHueController(endpoint);
                 break;
             default:

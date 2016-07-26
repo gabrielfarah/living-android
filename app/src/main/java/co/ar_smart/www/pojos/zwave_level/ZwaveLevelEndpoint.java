@@ -1,5 +1,6 @@
 package co.ar_smart.www.pojos.zwave_level;
 
+import co.ar_smart.www.helpers.Constants;
 import co.ar_smart.www.interfaces.ICommandClass;
 import co.ar_smart.www.pojos.Command;
 import co.ar_smart.www.pojos.Endpoint;
@@ -37,7 +38,7 @@ public class ZwaveLevelEndpoint implements ICommandClass {
 
     public Command getSetValueCommand(int value) {
         Command c = new Command(endpoint);
-        c.setFunction("zwif_level_set");
+        c.setFunction(Constants.ZWAVE_FUNCTION_LEVEL_SET);
         c.setType("zwave");
         c.setNode(endpoint.getNode());
         c.setV(value);
@@ -47,7 +48,7 @@ public class ZwaveLevelEndpoint implements ICommandClass {
     @Override
     public Command getTurnOnCommand() {
         Command c = new Command(endpoint);
-        c.setFunction("zwif_level_set");
+        c.setFunction(Constants.ZWAVE_FUNCTION_LEVEL_SET);
         c.setType("zwave");
         c.setNode(endpoint.getNode());
         c.setV(255);
@@ -57,7 +58,7 @@ public class ZwaveLevelEndpoint implements ICommandClass {
     @Override
     public Command getTurnOffCommand() {
         Command c = new Command(endpoint);
-        c.setFunction("zwif_level_set");
+        c.setFunction(Constants.ZWAVE_FUNCTION_LEVEL_SET);
         c.setType("zwave");
         c.setNode(endpoint.getNode());
         c.setV(0);

@@ -5,9 +5,9 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -110,16 +110,10 @@ public class DeleteModesActivity extends AppCompatActivity {
      *
      */
     private void deleteMode(int hubid, int id, final int position) {
-        ModeManager.removeMode(hubid, id, API_TOKEN, new ModeManager.ModeCallbackInterface() {
+        ModeManager.removeMode(hubid, id, API_TOKEN, new ModeManager.ModeCallbackInterfaceDelete() {
             @Override
             public void onFailureCallback() {
 
-            }
-
-            @Override
-            public void onSuccessCallback(List<Mode> guest) {
-                modes.remove(position);
-                adapter.notifyDataSetChanged();
             }
 
             @Override
@@ -141,7 +135,7 @@ public class DeleteModesActivity extends AppCompatActivity {
 
     public void getModes(int hubid)
     {
-        ModeManager.getModes(hubid, API_TOKEN, new ModeManager.ModeCallbackInterface(){
+        ModeManager.getModes(hubid, API_TOKEN, new ModeManager.ModeCallbackInterfaceGet() {
             @Override
             public void onFailureCallback() {
             }
@@ -165,11 +159,6 @@ public class DeleteModesActivity extends AppCompatActivity {
 
                 progress.setVisibility(View.GONE);
                 list.setVisibility(View.VISIBLE);
-            }
-
-            @Override
-            public void onSuccessCallback(){
-
             }
 
             @Override

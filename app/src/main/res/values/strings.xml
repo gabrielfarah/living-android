@@ -121,19 +121,25 @@
     <string name="label_add_scene_activity">Add a new scene</string>
     <string name="label_edit_scene_activity">Add Command</string>
     <string name="label_select_devices_activity">Select devices</string>
-    <string name="button_add_new_scene">Add a new scene</string>
+    <string name="button_add_new_scene">Save scene</string>
     <string name="text_add_scene_name">Give the scene a name:</string>
 
-    <string name="label_on">%1$s (ON)</string>
-    <string name="label_off">%1$s (OFF)</string>
+    <string name="label_on">On</string>
+    <string name="label_off">Off</string>
     <string name="label_open">%1$s (OPEN)</string>
     <string name="label_close">%1$s (CLOSE)</string>
-    <string name="label_play">%1$s (PLAY)</string>
-    <string name="label_pause">%1$s (PAUSE)</string>
+    <string name="label_unlock">Unlock</string>
+    <string name="label_lock">Lock</string>
+    <string name="label_unlocked">Unlocked</string>
+    <string name="label_locked">Locked</string>
+    <string name="label_level_percentage">%1$s%%</string>
+    <string name="label_play">Play</string>
+    <string name="label_pause">Pause</string>
     <string name="label_up">%1$s (UP)</string>
     <string name="label_down">%1$s (DOWN)</string>
     <string name="label_selected">%1$s (SELECTED)</string>
     <string name="label_unselected">%1$s (UNSELECTED)</string>
+    <string name="label_number_of_elements_mode">Actions in scene: %1$s</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
@@ -177,4 +183,5 @@
     <string name="enter_your_password">Type your password</string>
     <string name="change_password">Change Password</string>
     <string name="no_account_message">Don\'t have a Living account? Sign up</string>
+    <string name="text_explain_scene">Select the devices you want to include using the left mark and set the devices states using the appropiate controllers to the right.</string>
 </resources>

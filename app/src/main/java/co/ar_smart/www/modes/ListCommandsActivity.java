@@ -5,9 +5,9 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,29 +21,17 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.List;
 
 import co.ar_smart.www.helpers.RetrofitServiceGenerator;
 import co.ar_smart.www.living.R;
 import co.ar_smart.www.pojos.Command;
 import co.ar_smart.www.pojos.Endpoint;
 import co.ar_smart.www.pojos.Mode;
-import okhttp3.RequestBody;
-import okio.Buffer;
-import okio.BufferedSink;
-import okio.ByteString;
-import okio.Source;
-import okio.Timeout;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.http.Body;
-import retrofit2.http.DELETE;
-import retrofit2.http.GET;
 import retrofit2.http.PATCH;
 import retrofit2.http.Path;
 
@@ -190,7 +178,7 @@ public class ListCommandsActivity extends AppCompatActivity {
      */
     public void addnewCommand(View v)
     {
-        Intent i=new Intent(ListCommandsActivity.this,NewModeActivity.class);
+        Intent i = new Intent(ListCommandsActivity.this, ModeActivity.class);
         i.putExtra("modename",mode.getName());
         i.putExtra("modeid",mode.getId());
         i.putExtra(EXTRA_MESSAGE,API_TOKEN);

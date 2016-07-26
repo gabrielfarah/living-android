@@ -1,22 +1,22 @@
 package co.ar_smart.www.modes;
 
-import android.content.DialogInterface;
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import co.ar_smart.www.adapters.ModeAdapter;
 import co.ar_smart.www.helpers.CommandManager;
@@ -45,14 +45,11 @@ public class ModeManagementActivity extends AppCompatActivity {
      * The list of modes the hub contains
      */
     private ArrayList<Mode> modes = new ArrayList<>();
+    private ArrayList<Mode> default_modes = new ArrayList<>();
     /**
      * This field is the ui adapter for displaying the modes list
      */
     private ModeAdapter adapter;
-    /**
-     * This var will be filled with a user promted email
-     */
-    private String new_guest_email_str = "";
     private ArrayList<Endpoint> endpoint_devices;
 
     @Override
@@ -64,6 +61,23 @@ public class ModeManagementActivity extends AppCompatActivity {
         PREFERRED_HUB_ID = intent.getIntExtra(EXTRA_MESSAGE_PREF_HUB, -1);
         modes = intent.getParcelableArrayListExtra(EXTRA_OBJECT);
         endpoint_devices = intent.getParcelableArrayListExtra(EXTRA_ADDITIONAL_OBJECT);
+
+        ArrayList<Mode> temp_remove_modes = new ArrayList<>();
+        for (int i = 0; i < modes.size(); i++) {
+            if (modes.get(i).getId() < 0) {
+                temp_remove_modes.add(modes.get(i));
+            }
+        }
+        modes.removeAll(temp_remove_modes);
+        // Filter the sensors out of the list of endpoints. Sensors can't be inside scenes.
+        // If the user wants to insert a trigger, then he must go to the inside of the sensor in the home.
+        ArrayList<Endpoint> temp_remove = new ArrayList<>();
+        for (int i = 0; i < endpoint_devices.size(); i++) {
+            if (endpoint_devices.get(i).getUi_class_command().contains("sensor")) {
+                temp_remove.add(endpoint_devices.get(i));
+            }
+        }
+        endpoint_devices.removeAll(temp_remove);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setTitle(getResources().getString(R.string.label_manage_modes));
@@ -77,7 +91,7 @@ public class ModeManagementActivity extends AppCompatActivity {
                 }
             });
         }
-        adapter = new ModeAdapter(ModeManagementActivity.this, modes, PREFERRED_HUB_ID, API_TOKEN, this, endpoint_devices);
+        adapter = new ModeAdapter(ModeManagementActivity.this, modes);
         // Attach the adapter to a ListView
         ListView listView = (ListView) findViewById(R.id.mode_list_view);
         if (listView != null) {
@@ -85,19 +99,12 @@ public class ModeManagementActivity extends AppCompatActivity {
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    //createAndShowAlertDialog(modes.get(position));
-                    Log.d("El modo:", modes.get(position).getPayload().toString());
                     performCommand(modes.get(position).getPayload().toString());
                 }
             });
         }
     }
 
-
-
-    /**
-     * This method send a "play track" command to the sonos
-     */
     private void performCommand(String command) {
         CommandManager.sendCommandWithoutResult(API_TOKEN, PREFERRED_HUB_ID, command, new CommandManager.ResponseCallbackInterface() {
             @Override
@@ -123,6 +130,9 @@ public class ModeManagementActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case android.R.id.home:
                 // app icon in action bar clicked; go home
+                Intent output = new Intent();
+                output.putExtra(EXTRA_OBJECT, modes);
+                setResult(RESULT_OK, output);
                 this.finish();
                 return true;
             default:
@@ -130,57 +140,78 @@ public class ModeManagementActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * This method will ask the user to input an email address and will try to add a new guest using this email.
-     * The user must be registered for the request to succeed.
-     */
     private void addNewMode() {
-        //TODO el add deberia de empezarce para resultado y al agregar un modo se deberia de agregar a la lista del UI de aca
-        Intent intent = new Intent(this, NewModeActivity.class);
+        Intent intent = new Intent(this, ModeActivity.class);
         intent.putExtra(EXTRA_MESSAGE, API_TOKEN);
         intent.putExtra(EXTRA_MESSAGE_PREF_HUB, PREFERRED_HUB_ID);
-        intent.putParcelableArrayListExtra(EXTRA_OBJECT, modes);
         intent.putParcelableArrayListExtra(EXTRA_ADDITIONAL_OBJECT, endpoint_devices);
-        startActivity(intent);
+        startActivityForResult(intent, 1);
     }
 
-    /**
-     * This method creates a dialog for the user to validate or cancel the elimination of a guest
-     *
-     * @param guest the user to be confirmed if eliminated or not
-     */
-    private void createAndShowAlertDialog(final Mode guest) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(getResources().getString(R.string.label_confirmation_remove_guest) + guest.getName() + "?");
-        builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                removeUser(guest);
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // Check which request we're responding to
+        if (requestCode == 1) {
+            // Make sure the request was successful
+            if (resultCode == RESULT_OK) {
+                Mode resultingMode = data.getExtras().getParcelable(EXTRA_OBJECT);
+                Log.d("El modo", resultingMode.toString());
+                if (resultingMode != null) {
+                    if (!modes.contains(resultingMode)) {
+                        modes.add(resultingMode);
+                        Log.d("MODES - 1", modes.toString());
+                    } else {
+                        modes.set(modes.indexOf(resultingMode), resultingMode);
+                        Log.d("MODES - 2", modes.toString());
+                    }
+                    adapter.notifyDataSetChanged();
+                }
+            }
+        }
+    }
+
+    public void openDialog(final Mode elimMode) {
+        final Dialog dialog = new Dialog(this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.dialog_warning_delete);
+        TextView txtname = (TextView) dialog.findViewById(R.id.lbl_warning_del_device);
+        txtname.setText(this.getResources().getString(R.string.label_warning_delete_device) + " " + elimMode.getName() + "?");
+        Button dialogButton = (Button) dialog.findViewById(R.id.btnDel);
+        dialogButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                removeMode(elimMode);
                 dialog.dismiss();
             }
         });
-        builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
+
+        dialogButton = (Button) dialog.findViewById(R.id.btnCancelDel);
+        dialogButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
                 dialog.dismiss();
             }
         });
-        AlertDialog dialog = builder.create();
+
         dialog.show();
     }
 
-    /**
-     * This method removes a guest from the guest list of this hub
-     *
-     * @param guest the guest to be removed from the hub
-     */
-    private void removeUser(final Mode guest) {
-        ModeManager.removeMode(PREFERRED_HUB_ID, guest.getId(), API_TOKEN, new ModeManager.ModeCallbackInterface() {
+    public void openEditActivity(final Mode editMode) {
+        Intent i = new Intent(getApplicationContext(), ModeActivity.class);
+        i.putExtra(EXTRA_MESSAGE, API_TOKEN);
+        Bundle b = new Bundle();
+        b.putParcelable(EXTRA_OBJECT, editMode);
+        b.putParcelableArrayList(EXTRA_ADDITIONAL_OBJECT, endpoint_devices);
+        b.putInt(EXTRA_MESSAGE_PREF_HUB, PREFERRED_HUB_ID);
+        i.putExtras(b);
+        startActivityForResult(i, 1);
+    }
+
+    private void removeMode(final Mode guest) {
+        ModeManager.removeMode(PREFERRED_HUB_ID, guest.getId(), API_TOKEN, new ModeManager.ModeCallbackInterfaceDelete() {
             @Override
             public void onFailureCallback() {
                 failedToRemoveMode();
-            }
-
-            @Override
-            public void onSuccessCallback(List<Mode> guest) {
             }
 
             @Override
@@ -209,21 +240,6 @@ public class ModeManagementActivity extends AppCompatActivity {
      */
     private void failedToAddMode() {
         Toast.makeText(getApplicationContext(), getResources().getString(R.string.label_only_failed_add_guest), Toast.LENGTH_LONG).show();
-    }
-
-    public void editModes(View v)
-    {
-        Intent intent = new Intent(this, ListModesActivity.class);
-        intent.putExtra(EXTRA_MESSAGE, API_TOKEN);
-        intent.putParcelableArrayListExtra(EXTRA_ADDITIONAL_OBJECT, endpoint_devices);
-        startActivity(intent);
-    }
-
-    public void delModes(View v)
-    {
-        Intent intent = new Intent(this, DeleteModesActivity.class);
-        intent.putExtra(EXTRA_MESSAGE, API_TOKEN);
-        startActivity(intent);
     }
 
 }

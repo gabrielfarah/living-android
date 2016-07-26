@@ -2,6 +2,7 @@ package co.ar_smart.www.pojos.sonos;
 
 import java.util.ArrayList;
 
+import co.ar_smart.www.helpers.Constants;
 import co.ar_smart.www.interfaces.ICommandClass;
 import co.ar_smart.www.pojos.Command;
 import co.ar_smart.www.pojos.Endpoint;
@@ -146,7 +147,7 @@ public class SonosEndpoint implements ICommandClass {
 
         //play = "[{\"type\":\"wifi\",\"target\":\"sonos\",\"ip\":\"" + endpoint.getIp_address() + "\",\"function\":\"play\",\"parameters\":[]}]";
         play = new Command(nEndpoint);
-        play.setFunction("play");
+        play.setFunction(Constants.SONOS_FUNCTION_PLAY);
         play.setTarget("sonos");
 
         //pause = "[{\"type\":\"wifi\",\"target\":\"sonos\",\"ip\":\"" + endpoint.getIp_address() + "\",\"function\":\"pause\",\"parameters\":[]}]";
@@ -165,7 +166,7 @@ public class SonosEndpoint implements ICommandClass {
         next.setTarget("sonos");
 
         stop = new Command(nEndpoint);
-        stop.setFunction("stop");
+        stop.setFunction(Constants.SONOS_FUNCTION_STOP);
         stop.setTarget("sonos");
     }
 

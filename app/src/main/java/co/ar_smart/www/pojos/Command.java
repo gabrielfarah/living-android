@@ -211,6 +211,27 @@ public class Command implements Parcelable {
     }
 
     @Override
+    public boolean equals(Object anotherObject) {
+        if (!(anotherObject instanceof Command)) {
+            return false;
+        }
+        Command p = (Command) anotherObject;
+        if (this.getEndpoint_id() == -1 || p.getEndpoint_id() == -1) {
+            return false;
+        } else {
+            if (ip == null || p.getIp() == null) {
+                ip = "";
+                p.setIp("");
+            }
+            //Log.d("COMMAND COMPARE","("+endpoint_id+" "+p.getEndpoint_id()+")("+node+" "+p.getNode()+")("+ip+" "+p.getIp()+")("+type+" "+p.getType()+")");
+            return (this.endpoint_id == p.getEndpoint_id() &&
+                    this.node == p.getNode() &&
+                    (this.ip == p.getIp() || this.ip.equalsIgnoreCase(p.getIp())) &&
+                    this.type.equalsIgnoreCase(p.getType()));
+        }
+    }
+
+    @Override
     public String toString() {
         return "{\"type\":\"" + getType() + "\",\"target\":\"" + getTarget() + "\",\"ip\":\"" + getIp() +
                 "\",\"function\":\"" + getFunction() + "\",\"parameters\":" + getParameters().toString() +

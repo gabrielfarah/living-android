@@ -3,6 +3,7 @@
     <color name="colorPrimary">#abe7e5</color>
     <color name="colorPrimaryDark">#37BEBB</color>
     <color name="colorAccent">#FF4081</color>
+    <color name="deleteConfirm">#ed5e68</color>
     <color name="principal">#37BEBB</color>
     <color name="secundario">#808080</color>
     <color name="soporte">#A4A6A9</color>

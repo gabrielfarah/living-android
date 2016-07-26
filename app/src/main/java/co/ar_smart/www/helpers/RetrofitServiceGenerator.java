@@ -59,6 +59,8 @@ public class RetrofitServiceGenerator {
                 return chain.proceed(request);
             }
         });
+        //HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
+        //interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
         Retrofit retrofit = builder.client(httpClient.build()).build();
         return retrofit.create(serviceClass);
     }
