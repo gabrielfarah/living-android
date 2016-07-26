@@ -30,8 +30,9 @@
         <activity
             android:name=".LoginActivity"
             android:label="@string/login_title"
-            android:screenOrientation="portrait"
-            android:theme="@style/NewAdmin" />
+            android:theme="@style/NewAdmin"
+            android:windowSoftInputMode="stateHidden"
+            android:screenOrientation="portrait"/>
         <activity android:name=".HomeActivity"
             android:screenOrientation="portrait"/>
         <activity android:name=".LoginRegisterActivity"
@@ -47,8 +48,9 @@
             android:screenOrientation="portrait"/>
         <activity
             android:name="co.ar_smart.www.register.NewAdminActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/NewAdmin" />
+            android:theme="@style/NewAdmin"
+            android:windowSoftInputMode="stateHidden"
+            android:screenOrientation="portrait"/>
         <activity
             android:name="co.ar_smart.www.register.CreatedUserActivity"
             android:screenOrientation="portrait"
@@ -108,6 +110,8 @@
         <activity android:name="co.ar_smart.www.endpoints.DevicesActivity"
             android:screenOrientation="portrait"/>
         <activity android:name="co.ar_smart.www.endpoints.DeleteDeviceActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name="co.ar_smart.www.endpoints.DeleteZwaveActivity"
             android:screenOrientation="portrait"/>
         <activity android:name="co.ar_smart.www.modes.ModeManagementActivity"
             android:screenOrientation="portrait"/>

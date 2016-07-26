@@ -97,8 +97,8 @@ public class DeleteDeviceActivity extends AppCompatActivity {
                     view=getLayoutInflater().inflate(R.layout.row_list_devices,null);
                     TextView lb=(TextView)view.findViewById(R.id.labelDevadd);
                     lb.setText(devices.get(position).getName());
-                    lb=(TextView)view.findViewById(R.id.labelDevCategoryadd);
-                    lb.setText(devices.get(position).getCategory().getCat());
+                    //lb=(TextView)view.findViewById(R.id.labelDevCategoryadd);
+                    //lb.setText(devices.get(position).getCategory().getCat());
                     ImageView i=(ImageView) view.findViewById(R.id.iconlistad);
                     i.setImageDrawable(ContextCompat.getDrawable(myact, R.drawable.delete_btn));
                 }
@@ -134,10 +134,12 @@ public class DeleteDeviceActivity extends AppCompatActivity {
                     {
                         for(Endpoint endp: li)
                         {
+                            if(endp.getEndpoint_type().equals("wifi"))
                             devices.add(endp);
                         }
 
                         list.setAdapter(adapter);
+                        adapter.notifyDataSetChanged();
                         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                             @Override
                             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

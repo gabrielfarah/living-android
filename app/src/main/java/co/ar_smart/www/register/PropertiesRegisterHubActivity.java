@@ -4,11 +4,11 @@ import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -23,13 +23,15 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationServices;
-
 import java.io.IOException;
-import org.florescu.android.rangeseekbar.RangeSeekBar;
+
 import co.ar_smart.www.helpers.Constants;
 import co.ar_smart.www.living.R;
+
+import static co.ar_smart.www.helpers.Constants.DEFAULT_EMAIL;
+import static co.ar_smart.www.helpers.Constants.DEFLT_BACKGRND;
+import static co.ar_smart.www.helpers.Constants.PREFS_NAME;
+import static co.ar_smart.www.helpers.Constants.PREF_EMAIL;
 
 public class PropertiesRegisterHubActivity extends AppCompatActivity
 {
@@ -38,8 +40,6 @@ public class PropertiesRegisterHubActivity extends AppCompatActivity
      * Constant used when the application verifies the permissions given by the user
      */
     private static final int PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 0;
-    /**
-
     /**
      * Constant for capture image event
      */
@@ -156,7 +156,7 @@ public class PropertiesRegisterHubActivity extends AppCompatActivity
     private void showMessage()
     {
         new android.app.AlertDialog.Builder(mContext)
-                .setMessage("The application will ask you permission to read your external storage, it allows it to offer you some features, please accept them.")
+                .setMessage(R.string.permission_images_message)
                 .setCancelable(false)
                 .setPositiveButton("Ok", new DialogInterface.OnClickListener()
                 {
@@ -175,7 +175,8 @@ public class PropertiesRegisterHubActivity extends AppCompatActivity
     {
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.READ_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
+                != PackageManager.PERMISSION_GRANTED)
+        {
 
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
@@ -188,15 +189,20 @@ public class PropertiesRegisterHubActivity extends AppCompatActivity
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
+    {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE) {
-            for (int i = 0; i < permissions.length; i++) {
+        if (requestCode == PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE)
+        {
+            for (int i = 0; i < permissions.length; i++)
+            {
                 String permission = permissions[i];
                 int grantResult = grantResults[i];
 
-                if (permission.equals(Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                    if (grantResult != PackageManager.PERMISSION_GRANTED) {
+                if (permission.equals(Manifest.permission.READ_EXTERNAL_STORAGE))
+                {
+                    if (grantResult != PackageManager.PERMISSION_GRANTED)
+                    {
                         showMessage();
                     }
                 }
@@ -212,9 +218,10 @@ public class PropertiesRegisterHubActivity extends AppCompatActivity
     public String getOriginalImagePath()
     {
         //verifies if the user have given the required permissions
-        permissionCheck = (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)!=-1);
+        permissionCheck = (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != -1);
         // in the positive case creates and initialize the atributes for getting the static map image
-        if (permissionCheck) {
+        if (permissionCheck)
+        {
             String[] projection = {MediaStore.Images.Media.DATA};
             Cursor cursor = getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection, null, null, null);
             int column_index_data;
@@ -229,7 +236,8 @@ public class PropertiesRegisterHubActivity extends AppCompatActivity
 
             return path;
         }
-        else {
+        else
+        {
             // in the negative case shows again the permission ask so the user can accept them.
             askAndroidPermissions();
             return getOriginalImagePath();
@@ -319,7 +327,7 @@ public class PropertiesRegisterHubActivity extends AppCompatActivity
             try
             {
                 Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-                startActivityForResult(cameraIntent, 1888);
+                startActivityForResult(cameraIntent, CAPTURE_IMAGE_RC);
 
             }
             catch (Exception e)
@@ -341,7 +349,7 @@ public class PropertiesRegisterHubActivity extends AppCompatActivity
             {
                 Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
                 photoPickerIntent.setType("image/*");
-                startActivityForResult(photoPickerIntent, 1889);
+                startActivityForResult(photoPickerIntent, SELECT_IMAGE);
 
             }
             catch (Exception e)
@@ -365,7 +373,7 @@ public class PropertiesRegisterHubActivity extends AppCompatActivity
                 i.putExtra("lat", lastLat);
                 i.putExtra("long", lastLong);
                 i.putExtra("radius", radius);
-                startActivityForResult(i, 1890);
+                startActivityForResult(i, MAP_RC);
 
             }
             catch (Exception e)
@@ -385,25 +393,25 @@ public class PropertiesRegisterHubActivity extends AppCompatActivity
             try
             {
 
-                EditText edit_text_hub_name = (EditText) findViewById(R.id.edit_text_hub_name);
-                if (edit_text_hub_name != null)
+                EditText hub_name = (EditText) findViewById(R.id.edit_text_hub_name);
+                if (hub_name != null)
                 {
-                    hubName = edit_text_hub_name.getText().toString();
+                    hubName = hub_name.getText().toString();
                     if (hubName.equals(""))
                     {
-                        displayMessage("Assign a name for the hub.");
+                        displayMessage(getString(R.string.empty_hub_name));
                     }
                     else if ((finalLong == 0) || (finalLat == 0) || (radius == 0))
                     {
-                        displayMessage("Select a location in the map.");
+                        displayMessage(getString(R.string.not_selected_location));
                     }
                     else if (imagePath.equals(Constants.DEFAULT_BACKGROUND_PATH))
                     {
                         new AlertDialog.Builder(mContext)
                                 .setIcon(android.R.drawable.ic_dialog_alert)
-                                .setTitle("Moving on")
-                                .setMessage("Are you sure you want to use default background image?")
-                                .setPositiveButton("Yes", new DialogInterface.OnClickListener()
+                                .setTitle(R.string.default_background_title)
+                                .setMessage(R.string.default_backgroung_message)
+                                .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener()
                                 {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which)
@@ -412,7 +420,7 @@ public class PropertiesRegisterHubActivity extends AppCompatActivity
                                     }
 
                                 })
-                                .setNegativeButton("No", null)
+                                .setNegativeButton(R.string.no, null)
                                 .show();
                     }
                     else
@@ -435,6 +443,11 @@ public class PropertiesRegisterHubActivity extends AppCompatActivity
      */
     private void registerHub()
     {
+        SharedPreferences settings = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        String email = settings.getString(PREF_EMAIL,DEFAULT_EMAIL);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putString(email+"-"+DEFLT_BACKGRND, imagePath);
+        editor.apply();
         Intent i = new Intent(mContext, RegisterHubActivity.class);
         i.putExtra("hubName", hubName);
         i.putExtra("backgroundPath", imagePath);

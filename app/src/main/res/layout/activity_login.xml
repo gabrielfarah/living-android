@@ -27,6 +27,9 @@
                 android:hint="@string/enter_your_email"
                 android:ellipsize="start"
                 android:gravity="center"
+                android:paddingEnd="5dp"
+                android:paddingStart="25dp"
+                android:drawableEnd="@drawable/delete_btn"
                 android:background="#EEFFFFFF"
                 android:inputType="textEmailAddress" />
             <View
@@ -39,6 +42,9 @@
                 android:layout_height="60dp"
                 android:hint="@string/enter_your_password"
                 android:gravity="center"
+                android:paddingEnd="5dp"
+                android:paddingStart="25dp"
+                android:drawableEnd="@drawable/show_pass"
                 android:ellipsize="start"
                 android:background="#EEFFFFFF"
                 android:inputType="textPassword" />
@@ -58,7 +64,7 @@
             android:textColor="@color/secundario"/>
     </LinearLayout>
     <TextView
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/blanco"
         android:textSize="19sp"

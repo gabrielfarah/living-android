@@ -125,6 +125,7 @@ public class EditRoomActivity extends AppCompatActivity {
                     if(room.equals(rooms.get(position)))
                     {
                         ch.setChecked(true);
+                        last=ch;
                     }
                 }
 

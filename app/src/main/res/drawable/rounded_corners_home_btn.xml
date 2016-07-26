@@ -1,11 +1,5 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <solid android:color="@color/subBarras"></solid>
-    <stroke
-        android:width="0dp"
-        android:color="@color/lineasIconos"></stroke>
+    <solid android:color="@color/white_ctran"/>
     <corners
-        android:bottomLeftRadius="100dip"
-        android:bottomRightRadius="100dip"
-        android:topLeftRadius="100dip"
-        android:topRightRadius="100dip"></corners>
+        android:radius="30dp"/>
 </shape>

@@ -22,6 +22,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.GridView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.Toast;
@@ -74,9 +75,11 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static co.ar_smart.www.helpers.Constants.DEFAULT_BACKGROUND_PATH;
 import static co.ar_smart.www.helpers.Constants.DEFAULT_EMAIL;
 import static co.ar_smart.www.helpers.Constants.DEFAULT_HUB;
 import static co.ar_smart.www.helpers.Constants.DEFAULT_PASSWORD;
+import static co.ar_smart.www.helpers.Constants.DEFLT_BACKGRND;
 import static co.ar_smart.www.helpers.Constants.EXTRA_ADDITIONAL_OBJECT;
 import static co.ar_smart.www.helpers.Constants.EXTRA_BOOLEAN;
 import static co.ar_smart.www.helpers.Constants.EXTRA_MESSAGE;
@@ -173,6 +176,19 @@ public class HomeActivity extends AppCompatActivity {
         final Intent intent = getIntent();
         API_TOKEN = intent.getStringExtra(EXTRA_MESSAGE);
         mContext = this;
+        String backgrnd_path = getBackgroundPath();
+        Drawable d;
+        if(backgrnd_path.contains("drawable://"))
+        {
+            int i = Integer.parseInt(backgrnd_path.split("//")[1]);
+            d = ContextCompat.getDrawable(mContext, i);
+        }
+        else
+        {
+            d = Drawable.createFromPath(backgrnd_path);
+        }
+        LinearLayout homePrincipalLayout = (LinearLayout) findViewById(R.id.homePrincipalLayout);
+        homePrincipalLayout.setBackground(d);
 
         navList = (ListView) findViewById(R.id.homeNavigationList);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.activity_home);
@@ -188,12 +204,20 @@ public class HomeActivity extends AppCompatActivity {
         devicesButton = (Button) findViewById(R.id.devices_home_button);
         scenesButton = (Button) findViewById(R.id.scenes_home_button);
         roomsButton = (Button) findViewById(R.id.rooms_home_button);
+        devicesButton.setSelected(true);
+        devicesButton.setCompoundDrawablesWithIntrinsicBounds(null, ContextCompat.getDrawable(mContext, R.drawable.star_white),null,null);
+        scenesButton.setCompoundDrawablesWithIntrinsicBounds(null, ContextCompat.getDrawable(mContext, R.drawable.hamburguer),null,null);
+        roomsButton.setCompoundDrawablesWithIntrinsicBounds(null, ContextCompat.getDrawable(mContext, R.drawable.squares),null,null);
+        devicesButton.setTextColor(ContextCompat.getColor(mContext, R.color.blanco));
         devicesButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 devicesButton.setSelected(true);
                 scenesButton.setSelected(false);
                 roomsButton.setSelected(false);
+                devicesButton.setCompoundDrawablesWithIntrinsicBounds(null, ContextCompat.getDrawable(mContext, R.drawable.star_white),null,null);
+                scenesButton.setCompoundDrawablesWithIntrinsicBounds(null, ContextCompat.getDrawable(mContext, R.drawable.hamburguer),null,null);
+                roomsButton.setCompoundDrawablesWithIntrinsicBounds(null, ContextCompat.getDrawable(mContext, R.drawable.squares),null,null);
                 devicesButton.setTextColor(ContextCompat.getColor(mContext, R.color.blanco));
                 scenesButton.setTextColor(ContextCompat.getColor(mContext, R.color.soporte));
                 roomsButton.setTextColor(ContextCompat.getColor(mContext, R.color.soporte));
@@ -209,6 +233,9 @@ public class HomeActivity extends AppCompatActivity {
                 devicesButton.setSelected(false);
                 scenesButton.setSelected(true);
                 roomsButton.setSelected(false);
+                devicesButton.setCompoundDrawablesWithIntrinsicBounds(null, ContextCompat.getDrawable(mContext, R.drawable.star),null,null);
+                scenesButton.setCompoundDrawablesWithIntrinsicBounds(null, ContextCompat.getDrawable(mContext, R.drawable.hamburguer_white),null,null);
+                roomsButton.setCompoundDrawablesWithIntrinsicBounds(null, ContextCompat.getDrawable(mContext, R.drawable.squares),null,null);
                 devicesButton.setTextColor(ContextCompat.getColor(mContext, R.color.soporte));
                 scenesButton.setTextColor(ContextCompat.getColor(mContext, R.color.blanco));
                 roomsButton.setTextColor(ContextCompat.getColor(mContext, R.color.soporte));
@@ -223,6 +250,9 @@ public class HomeActivity extends AppCompatActivity {
                 devicesButton.setSelected(false);
                 scenesButton.setSelected(false);
                 roomsButton.setSelected(true);
+                devicesButton.setCompoundDrawablesWithIntrinsicBounds(null, ContextCompat.getDrawable(mContext, R.drawable.star),null,null);
+                scenesButton.setCompoundDrawablesWithIntrinsicBounds(null, ContextCompat.getDrawable(mContext, R.drawable.hamburguer),null,null);
+                roomsButton.setCompoundDrawablesWithIntrinsicBounds(null, ContextCompat.getDrawable(mContext, R.drawable.squares_white),null,null);
                 devicesButton.setTextColor(ContextCompat.getColor(mContext, R.color.soporte));
                 scenesButton.setTextColor(ContextCompat.getColor(mContext, R.color.soporte));
                 roomsButton.setTextColor(ContextCompat.getColor(mContext, R.color.blanco));
@@ -506,12 +536,10 @@ public class HomeActivity extends AppCompatActivity {
         SharedPreferences settings = getSharedPreferences(PREFS_NAME,
                 Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = settings.edit();
-        editor.remove(PREF_EMAIL);
         editor.remove(PREF_PASSWORD);
         editor.remove(PREF_JWT);
         editor.remove(PREF_HUB);
         editor.apply();
-        openLoginActivity();
     }
 
     /**
@@ -519,6 +547,13 @@ public class HomeActivity extends AppCompatActivity {
      */
     public void openLoginActivity() {
         Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
+    }
+    /**
+     * This method will open the login register activity.
+     */
+    public void openLoginRegisterActivity() {
+        Intent intent = new Intent(this, LoginRegisterActivity.class);
         startActivity(intent);
     }
 
@@ -685,6 +720,7 @@ public class HomeActivity extends AppCompatActivity {
                 @Override
                 public void onUnsuccessfulCallback() {
                     successfulLogout();
+                    openLoginActivity();
                 }
 
                 @Override
@@ -1127,7 +1163,8 @@ public class HomeActivity extends AppCompatActivity {
     public void onBackPressed() {
 
         if (doubleBackToExitPressedOnce) {
-            return;
+            successfulLogout();
+            openLoginRegisterActivity();
         }
 
         this.doubleBackToExitPressedOnce = true;
@@ -1140,6 +1177,15 @@ public class HomeActivity extends AppCompatActivity {
                 doubleBackToExitPressedOnce = false;
             }
         }, 2000);
+    }
+
+    public String getBackgroundPath()
+    {
+        SharedPreferences settings = getSharedPreferences(PREFS_NAME,
+                Context.MODE_PRIVATE);
+        String email = settings.getString(PREF_EMAIL, DEFAULT_EMAIL);
+        // Get values using keys
+        return settings.getString(email+"-"+DEFLT_BACKGRND, DEFAULT_BACKGROUND_PATH);
     }
 
     private class EndpointIcons implements co.ar_smart.www.interfaces.IDrawable {

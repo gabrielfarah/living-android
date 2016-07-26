@@ -1,20 +1,24 @@
 package co.ar_smart.www.register;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.SpannableString;
+import android.text.method.PasswordTransformationMethod;
+import android.text.method.TransformationMethod;
 import android.text.style.UnderlineSpan;
-import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -83,18 +87,22 @@ public class NewAdminActivity extends AppCompatActivity
      */
     private EditText edtPassword;
     /**
+     * EditText for user confirmation password
+     */
+    private EditText edtConfPassword;
+    /**
      * Constant used when the application verifies the permissions given by the user
      */
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 0;
-    /**
-     * Boolean that represent if the user give the required permissions
-     */
-    private boolean permissionCheck = false;
 
     /**
      * Actual context of application
      */
     private Context mContext;
+    /**
+     * Boolean used to know if the password is been show
+     */
+    private boolean showingPasswords;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -103,6 +111,7 @@ public class NewAdminActivity extends AppCompatActivity
         setContentView(R.layout.activity_new_admin);
         setTitle(R.string.nav_bar_new_user_title);
         mContext = this;
+        showingPasswords = false;
 
         // Add underling to the existing account textView
         TextView txvExistingAccount = (TextView) findViewById(R.id.txvExistingAccount);
@@ -119,10 +128,38 @@ public class NewAdminActivity extends AppCompatActivity
         }
         //Initialize the variables
         edtName = (EditText) findViewById(R.id.edtName);
+        edtName.setTypeface(Typeface.SERIF);
         edtLastname = (EditText) findViewById(R.id.edtLastname);
+        edtLastname.setTypeface(Typeface.SERIF);
         edtEmail = (EditText) findViewById(R.id.edtEmail);
+        edtEmail.setTypeface(Typeface.SERIF);
         edtConfEmail = (EditText) findViewById(R.id.edtConfEmail);
+        edtConfEmail.setTypeface(Typeface.SERIF);
         edtPassword = (EditText) findViewById(R.id.edtPassword);
+        edtPassword.setTypeface(Typeface.SERIF);
+        edtConfPassword = (EditText) findViewById(R.id.edtConfPassword);
+        edtConfPassword.setTypeface(Typeface.SERIF);
+        edtConfPassword.setOnTouchListener(new View.OnTouchListener() {
+            final int DRAWABLE_RIGHT = 2;
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_UP) {
+                    int leftEdgeOfRightDrawable = edtConfPassword.getRight()
+                            - edtConfPassword.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width()
+                            - edtConfPassword.getPaddingEnd();
+                    if (event.getRawX() >= leftEdgeOfRightDrawable)
+                    {
+                        TransformationMethod tempTransMeth = (showingPasswords)?null:new PasswordTransformationMethod();
+                        int drawable = (showingPasswords)?R.drawable.hide_pass:R.drawable.show_pass;
+                        edtConfPassword.setTransformationMethod(tempTransMeth);
+                        edtPassword.setTransformationMethod(tempTransMeth);
+                        edtConfPassword.setCompoundDrawablesWithIntrinsicBounds(0,0,drawable,0);
+                        showingPasswords = !showingPasswords;
+                    }
+                }
+                return false;
+            }
+        });
     }
 
     /**
@@ -146,14 +183,22 @@ public class NewAdminActivity extends AppCompatActivity
      */
     public void createAccount(View v)
     {
-        boolean filledFields = (!edtName.getText().toString().trim().equals(""))
-                && (!edtLastname.getText().toString().trim().equals(""))
-                && (!edtEmail.getText().toString().trim().equals(""))
-                && (!edtConfEmail.getText().toString().trim().equals(""))
-                && (!edtPassword.getText().toString().trim().equals(""));
-        boolean emailsEqual = edtEmail.getText().toString().trim().equals(edtConfEmail.getText().toString().trim());
+        String name = edtName.getText().toString().trim();
+        String lastName = edtLastname.getText().toString().trim();
+        final String email = edtEmail.getText().toString().trim();
+        String confEmail = edtConfEmail.getText().toString().trim();
+        final String password = edtPassword.getText().toString().trim();
+        String confPassword = edtConfPassword.getText().toString().trim();
+        boolean filledFields = (!name.equals(""))
+                && (!lastName.equals(""))
+                && (!email.equals(""))
+                && (!confEmail.equals(""))
+                && (!password.equals(""))
+                && (!confPassword.equals(""));
+        boolean emailsEqual = email.equals(confEmail);
+        boolean passwordsEqual = password.equals(confPassword);
         Pattern pattern = Pattern.compile(Constants.PASSWORD_REGEX);
-        Matcher matcher = pattern.matcher(edtPassword.getText().toString().trim());
+        Matcher matcher = pattern.matcher(password);
         if (!filledFields)
         {
             displayMessage(getResources().getString(R.string.toast_incomplete_form));
@@ -162,8 +207,11 @@ public class NewAdminActivity extends AppCompatActivity
         {
             displayMessage(getResources().getString(R.string.toast_not_matching_email));
         }
-        else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(edtEmail.getText().toString()).matches()
-                || !android.util.Patterns.EMAIL_ADDRESS.matcher(edtConfEmail.getText().toString()).matches())
+        else if (!passwordsEqual)
+        {
+            displayMessage(getString(R.string.toast_not_matching_password));
+        }
+        else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches())
         {
             displayMessage(getResources().getString(R.string.toast_email_format_error));
         }
@@ -173,17 +221,13 @@ public class NewAdminActivity extends AppCompatActivity
         }
         else
         {
-            email = edtEmail.getText().toString();
-            password = edtPassword.getText().toString();
-            String name = edtName.getText().toString();
-            String lastname = edtLastname.getText().toString();
             JSONObject json = new JSONObject();
             try
             {
                 json.put("password", password);
                 json.put("email", email);
                 json.put("first_name",name);
-                json.put("last_name",lastname);
+                json.put("last_name",lastName);
                 OkHttpClient client = new OkHttpClient();
                 RequestBody body = RequestBody.create(JSON, json.toString());
                 Request request = new Request.Builder()
@@ -274,18 +318,34 @@ public class NewAdminActivity extends AppCompatActivity
      */
     private void createdUser()
     {
-        new AlertDialog.Builder(mContext)
-                .setMessage("The application will ask you permission to access to your location via gps and wifi, it allows it to offer you some features, please accept them.")
-                .setCancelable(false)
-                .setPositiveButton("Ok", new DialogInterface.OnClickListener()
-                {
-                    public void onClick(DialogInterface dialog, int id)
-                    {
-                        //Initialize atribute in charge of getting the static map image
-                        askAccessFineLocationPermissions();
-                    }
-                })
-                .create().show();
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED ) {
+
+            runOnUiThread(new Runnable() {
+                public void run() {
+                    new AlertDialog.Builder(mContext)
+                            .setMessage(R.string.permission_location_message)
+                            .setCancelable(false)
+                            .setPositiveButton("Ok", new DialogInterface.OnClickListener()
+                            {
+                                public void onClick(DialogInterface dialog, int id)
+                                {
+                                    ActivityCompat.requestPermissions((Activity) mContext,
+                                            new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                                            PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+                                }
+                            })
+                            .create().show();
+                }
+            });
+        }
+        else
+        {
+            Intent intent = new Intent(this, CreatedUserActivity.class);
+            startActivity(intent);
+        }
+
     }
 
     @Override
@@ -306,40 +366,6 @@ public class NewAdminActivity extends AppCompatActivity
         }
     }
 
-    /**
-     * Method that initialize the atributes that get the static map for the next activity
-     */
-    private void initializeAll() {
-        //verifies if the user have given the required permissions
-        permissionCheck = (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)!=-1);
-        // in the positive case creates and initialize the atributes for getting the static map image
-        if (permissionCheck) {
-            Intent i = new Intent(this, CreatedUserActivity.class);
-            startActivity(i);
-        }
-        else {
-            // in the negative case shows again the permission ask so the user can accept them.
-            askAccessFineLocationPermissions();
-            initializeAll();
-        }
-    }
-    /**
-     * This method ask the user the required permissions for the application to work well
-     */
-    private void askAccessFineLocationPermissions() {
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED ) {
-
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                    PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
-
-            // PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION is an
-            // app-defined int constant. The callback method gets the
-            // result of the request.
-        }
-    }
 
     /**
      * This method display a dialog message in the UI thread given a message.

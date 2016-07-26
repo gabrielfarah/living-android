@@ -90,7 +90,7 @@ public class HomeGridAdapter<T extends co.ar_smart.www.interfaces.IGridItem> ext
             //imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
 
             gridView.setPadding(4, 4, 4, 4);
-            gridView.setBackgroundColor(ContextCompat.getColor(context, R.color.subBarras));
+            gridView.setBackgroundColor(ContextCompat.getColor(context, R.color.white_ctran));
             if (items.get(position) != null) {
                 int temp = getDrawableFromString(items.get(position).getImage());
                 ImageView imageView = (ImageView) gridView.findViewById(R.id.endpointImage);

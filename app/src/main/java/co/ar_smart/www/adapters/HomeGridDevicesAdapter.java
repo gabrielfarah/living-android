@@ -180,7 +180,7 @@ public class HomeGridDevicesAdapter extends BaseAdapter {
             //imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
 
             gridView.setPadding(4, 4, 4, 4);
-            gridView.setBackgroundColor(ContextCompat.getColor(context, R.color.subBarras));//R.color.subBarras);
+            gridView.setBackgroundColor(ContextCompat.getColor(context, R.color.white_ctran));
             if (endpoints.get(position) != null) {
                 int temp = getDrawableFromString(endpoints.get(position).getImage());
                 ImageView imageView = (ImageView)gridView.findViewById(R.id.endpointImage);
@@ -202,7 +202,7 @@ public class HomeGridDevicesAdapter extends BaseAdapter {
                         Log.d("color", "ORIGINAL");
                     } else {
                         //imageView.setImageResource(temp);
-                        imageView.setImageDrawable(setTint(temp, Color.rgb(209, 211, 212)));
+                        imageView.setImageDrawable(setTint(temp, Color.rgb(128, 128, 128)));
                     }
                 }
             }

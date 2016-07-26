@@ -39,7 +39,7 @@ public class ManagementEndpointsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_management_endpoint);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setTitle(getString(R.string.label_user_management_title));
+            getSupportActionBar().setTitle(getString(R.string.label_endpoint_management_title));
         }
 
         SharedPreferences settings = getSharedPreferences(PREFS_NAME,
@@ -48,18 +48,6 @@ public class ManagementEndpointsActivity extends AppCompatActivity {
 
         token= settings.getString(PREF_JWT, "000");
 
-
-
-        Button loginButton = (Button) findViewById(R.id.logoutButton);
-        if (loginButton != null) {
-            loginButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    AnalyticsApplication.getInstance().trackEvent("User Action", "Logout", "The user logged out");
-                    successfulLogout();
-                }
-            });
-        }
     }
 
     @Override
@@ -72,30 +60,6 @@ public class ManagementEndpointsActivity extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
-    }
-
-    /**
-     * This method will clear the saved credentials of the user in the shared preferences.
-     * It will also redirect the user to the login activity.
-     */
-    private void successfulLogout() {
-        SharedPreferences settings = getSharedPreferences(PREFS_NAME,
-                Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = settings.edit();
-        editor.remove(PREF_EMAIL);
-        editor.remove(PREF_PASSWORD);
-        editor.remove(PREF_JWT);
-        editor.remove(PREF_HUB);
-        editor.apply();
-        openLoginActivity();
-    }
-
-    /**
-     * This method will open the login activity.
-     */
-    public void openLoginActivity() {
-        Intent intent = new Intent(this, LoginActivity.class);
-        startActivity(intent);
     }
 
     /**
@@ -136,7 +100,7 @@ public class ManagementEndpointsActivity extends AppCompatActivity {
      */
     public void delZWave(View v)
     {
-        Intent i=new Intent(ManagementEndpointsActivity.this,DeleteDeviceActivity.class);
+        Intent i=new Intent(ManagementEndpointsActivity.this,DeleteZwaveActivity.class);
         i.putExtra(EXTRA_TYPE_DEVICE,TYPE_DEVICE_ZWAVE);
         i.putExtra(EXTRA_MESSAGE,token);
         startActivity(i);

@@ -24,6 +24,8 @@ import co.ar_smart.www.helpers.Constants;
 import co.ar_smart.www.helpers.RetrofitServiceGenerator;
 import co.ar_smart.www.living.R;
 import co.ar_smart.www.pojos.Endpoint;
+import okhttp3.RequestBody;
+import okio.Buffer;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -211,6 +213,7 @@ public class EditDeviceActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<Endpoint> call, Response<Endpoint> response)
             {
+                String txtx=bodyToString(response.raw().request().body());
                 if (response.isSuccessful()) {
                     Endpoint li=response.body();
                     //devices.add(response.body());
@@ -250,6 +253,7 @@ public class EditDeviceActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<Endpoint> call, Response<Endpoint> response)
             {
+                String txtx=bodyToString(response.raw().request().body());
                 if (response.isSuccessful()) {
                     Endpoint li=response.body();
                     //devices.add(response.body());
@@ -265,6 +269,21 @@ public class EditDeviceActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    public static String bodyToString(final RequestBody request){
+        try {
+            final RequestBody copy = request;
+            final Buffer buffer = new Buffer();
+            if(copy != null)
+                copy.writeTo(buffer);
+            else
+                return "";
+            return buffer.readUtf8();
+        }
+        catch (final IOException e) {
+            return "did not work";
+        }
     }
 
     /**

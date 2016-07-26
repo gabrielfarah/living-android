@@ -35,6 +35,7 @@ import co.ar_smart.www.pojos.EndpointClassCommand;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
+import okio.Buffer;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -144,7 +145,7 @@ public class NewDevicesActivity extends AppCompatActivity {
                         JSONObject jObject = new JSONObject(jsonData);
                         String ur[]=jObject.getString("url").split("/");
                         task=ur[6];
-                        getDevices();
+                        getDevicesWIFI();
                     } catch (JSONException e) {
 
                     }
@@ -152,6 +153,137 @@ public class NewDevicesActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+
+
+    public void getDevicesZWAVE()
+    {
+        NewDeviceClient client = RetrofitServiceGenerator.createService(NewDeviceClient.class, API_TOKEN);
+        Call<ResponseEndPointsZWAVE> call2 = client.getEndPointZ("" + prefered_hub, task);
+        devices.clear();
+
+        call2.enqueue(new Callback<ResponseEndPointsZWAVE>()
+        {
+            @Override
+            public void onResponse(final Call<ResponseEndPointsZWAVE> call, Response<ResponseEndPointsZWAVE> response)
+            {
+                String txtx=bodyToString(response.raw().request().body());
+                if (response.isSuccessful()) {
+                    ResponseEndPointsZWAVE li=response.body();
+                    Log.d("STATUS", li.getStatus());
+                    //devices.add(response.body());
+                    String sta=li.getStatus();
+                    if(sta.equals("done"))
+                    {
+                       Endpoint en=li.getResponse();
+                        Log.d("RESP", en.toString());
+
+                            devices.add(en);
+
+
+                        progress.setVisibility(View.GONE);
+                        list.setVisibility(View.VISIBLE);
+
+                        list.setAdapter(new ArrayAdapter<Endpoint>(NewDevicesActivity.this, android.R.layout.simple_list_item_1, devices)
+                        {
+                            @Override
+                            public View getView(int position, View convertView, ViewGroup parent) {
+                                View view=convertView;
+                                if(view==null)
+                                {
+
+                                    view=getLayoutInflater().inflate(R.layout.row_list_devices,null);
+                                    TextView lb=(TextView)view.findViewById(R.id.labelDevadd);
+                                    lb.setText(devices.get(position).getName());
+                                    lb=(TextView)view.findViewById(R.id.labelDevCategoryadd);
+                                    Category cat = devices.get(position).getCategory();
+                                    if (cat != null) {
+                                        lb.setText(cat.getCat());
+                                    }
+                                    ImageView i=(ImageView) view.findViewById(R.id.iconlistad);
+                                    i.setImageDrawable(ContextCompat.getDrawable(myact, R.drawable.new_cross_btn));
+                                }
+                                //chk.setChecked(checked[position]);
+                                return view;
+                            }
+                        });
+                        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                            @Override
+                            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                                Intent i=new Intent(NewDevicesActivity.this,EditDeviceActivity.class);
+                                Bundle b=new Bundle();
+                                b.putParcelable("EndPoint", devices.get(position));
+                                i.putExtras(b);
+                                Category cat = devices.get(position).getCategory();
+                                if (cat != null) {
+                                    i.putExtra(EXTRA_CATEGORY_DEVICE, cat.getCat());
+                                }
+                                i.putExtra(EXTRA_MESSAGE,API_TOKEN);
+                                i.putExtra(EXTRA_ACTION,ACTION_ADD);
+                                startActivity(i);
+                            }
+                        });
+
+
+                    }
+                    else
+                    {
+                        if(sol<TIMEOUT_DEVICES__SECS) {
+                            sol = sol + PULL_INTERVAL_SECS;
+                            new Handler().postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    getDevicesZWAVE();
+                                }
+                            }, 5000);
+                        }
+                        else
+                        {
+                            Toast.makeText(NewDevicesActivity.this, "Ningun disposivo Encontrado",
+                                    Toast.LENGTH_LONG).show();
+                            progress.setVisibility(View.GONE);
+                            list.setVisibility(View.VISIBLE);
+                            finish();
+                        }
+                    }
+                }
+                else {
+                    try {
+                        Log.d("FAILED", response.errorBody().string());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseEndPointsZWAVE> call, Throwable t) {
+                Toast.makeText(NewDevicesActivity.this, "Ningun disposivo Encontrado",
+                        Toast.LENGTH_SHORT).show();
+                progress.setVisibility(View.GONE);
+                list.setVisibility(View.VISIBLE);
+                t.printStackTrace();
+            }
+        });
+
+    }
+
+
+    public static String bodyToString(final RequestBody request){
+        try {
+            final RequestBody copy = request;
+            final Buffer buffer = new Buffer();
+            if(copy != null)
+                copy.writeTo(buffer);
+            else
+                return "";
+            return buffer.readUtf8();
+        }
+        catch (final IOException e) {
+            return "did not work";
+        }
     }
 
     /**
@@ -186,7 +318,7 @@ public class NewDevicesActivity extends AppCompatActivity {
                         String ur[]=jObject.getString("url").split("/");
                         task=ur[6];
                         Log.d("TASKID", "" + task);
-                        getDevices();
+                        getDevicesWIFI();
                     } catch (JSONException e) {
 
                     }
@@ -198,7 +330,7 @@ public class NewDevicesActivity extends AppCompatActivity {
     /**
      * this method get all new devices detected by the hub
      */
-    public void getDevices()
+    public void getDevicesWIFI()
     {
         NewDeviceClient client = RetrofitServiceGenerator.createService(NewDeviceClient.class, API_TOKEN);
         Call<ResponseEndPoints> call2 = client.getEndPoint("" + prefered_hub, task);
@@ -276,7 +408,7 @@ public class NewDevicesActivity extends AppCompatActivity {
                             new Handler().postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
-                                    getDevices();
+                                    getDevicesWIFI();
                                 }
                             }, 5000);
                         }
@@ -377,6 +509,11 @@ public class NewDevicesActivity extends AppCompatActivity {
                 @Path("hub_id") String hub_id, @Path("task_id") String task_id
         );
 
+        @GET("hubs/{hub_id}/command/response/{task_id}/")
+        Call<ResponseEndPointsZWAVE> getEndPointZ(
+                @Path("hub_id") String hub_id, @Path("task_id") String task_id
+        );
+
         @POST("hubs/{hub_id}/command/response/{task_id}/")
         Call<List<Endpoint>> postEndPoint(
                 @Path("hub_id") String hub_id, @Path("task_id") String task_id
@@ -391,6 +528,19 @@ public class NewDevicesActivity extends AppCompatActivity {
         private String status;
 
         public List<Endpoint> getResponse() {
+            return response;
+        }
+
+        public String getStatus() {
+            return status;
+        }
+
+    }
+    private class ResponseEndPointsZWAVE {
+        private Endpoint response;
+        private String status;
+
+        public Endpoint getResponse() {
             return response;
         }
 
