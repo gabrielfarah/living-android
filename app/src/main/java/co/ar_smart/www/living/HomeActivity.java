@@ -97,6 +97,9 @@ import static co.ar_smart.www.helpers.Constants.PREF_PASSWORD;
  */
 public class HomeActivity extends AppCompatActivity {
 
+    public static final int ACTIVITY_CODE_MODE = 1;
+    public static final int ACTIVITY_CODE_ENDPOINT = 2;
+    public static final int ACTIVITY_CODE_ROOM = 3;
     /**
      * This handler will be used to update the states of all the devices every 5 seconds
      */
@@ -389,7 +392,7 @@ public class HomeActivity extends AppCompatActivity {
         intent.putExtra(EXTRA_MESSAGE_PREF_HUB, PREFERRED_HUB_ID);
         intent.putParcelableArrayListExtra(EXTRA_OBJECT, modes);
         intent.putParcelableArrayListExtra(EXTRA_ADDITIONAL_OBJECT, endpoint_devices);
-        startActivity(intent);
+        startActivityForResult(intent, ACTIVITY_CODE_MODE);
     }
 
     /**
@@ -588,7 +591,7 @@ public class HomeActivity extends AppCompatActivity {
          *
          * {"type":"zwave","function":"zwave_get_all_status","parameters":{}},
          */
-        String command = "[{\"type\":\"wifi\",\"action\":\"wifi_get_all_status\",\"parameters\":{}}]";
+        String command = "[{\"type\":\"zwave\",\"function\":\"zwnet_get_all_status\",\"parameters\":{}}]";
         CommandManager.sendCommandWithResult(API_TOKEN, PREFERRED_HUB_ID, command, new CommandManager.CommandWithResultsCallbackInterface() {
             @Override
             public void onFailureCallback() {
@@ -662,6 +665,7 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void updateEndpointStates(ArrayList<EndpointState> endpointStates) {
+        Log.d("E-STATES:", endpointStates.toString());
         //TODO mejorar esto, el doble loop es horrible
         for (int i = 0; i < endpoint_devices.size(); i++) {
             for (int j = 0; j < endpointStates.size(); j++) {
@@ -675,8 +679,10 @@ public class HomeActivity extends AppCompatActivity {
                 if (es.getNode() == e.getNode()) {
                     e.setState(es.getMainState());
                     e.setActive(es.isActive());
+                    e.setState(es.getState().get(0));
                 }
                 endpoint_devices.set(i, e);
+                Log.d("E-STATES", endpoint_devices.get(i).getState() + " - " + endpoint_devices.get(i).isActive());
                 updateUIWithStates();
             }
         }
@@ -1025,14 +1031,15 @@ public class HomeActivity extends AppCompatActivity {
             case Constants.UI_CLASS_SONOS:
                 openSONOSController(endpoint);
                 break;
+            case Constants.UI_CLASS_ZWAVE_ENERGY_SENSOR:
+            case Constants.UI_CLASS_ZWAVE_LEVEL_SENSOR:
             case Constants.UI_CLASS_ZWAVE_TEMPERATURE_SENSOR:
-                Intent i = new Intent(this, TriggerMainController.class);
-                i.putExtra(EXTRA_MESSAGE, API_TOKEN);
-                i.putExtra(EXTRA_MESSAGE_PREF_HUB, PREFERRED_HUB_ID);
-                i.putExtra(EXTRA_OBJECT, endpoint);
-                i.putExtra(EXTRA_ADDITIONAL_OBJECT, modes);
-                i.putExtra(EXTRA_BOOLEAN, false);
-                startActivity(i);
+                openZwaveLevelSensor(endpoint, false);
+                break;
+            case Constants.UI_CLASS_ZWAVE_BINARY_SENSOR:
+            case Constants.UI_CLASS_ZWAVE_MOTION_SENSOR:
+            case Constants.UI_CLASS_ZWAVE_WATER_SENSOR:
+                openZwaveLevelSensor(endpoint, true);
                 break;
             case Constants.UI_CLASS_ZWAVE_LOCK:
                 openZwaveLockController(endpoint);
@@ -1041,6 +1048,7 @@ public class HomeActivity extends AppCompatActivity {
                 performZwaveBinaryCommand(endpoint);
                 break;
             case Constants.UI_CLASS_ZWAVE_BINARY_OUTLET:
+            case Constants.UI_CLASS_ZWAVE_BINARY_SWITCH:
                 performZwaveBinaryCommand(endpoint);
                 break;
             case Constants.UI_CLASS_ZWAVE_LEVEL_LIGHT:
@@ -1052,6 +1060,16 @@ public class HomeActivity extends AppCompatActivity {
             default:
                 AnalyticsApplication.getInstance().trackEvent("Device Image", "DoNotExist", "The device in hub:" + endpoint.getHub() + " named:" + endpoint.getName() + " the image does not correspong. image:" + endpoint.getImage());
         }
+    }
+
+    private void openZwaveLevelSensor(Endpoint endpoint, boolean isBinary) {
+        Intent i = new Intent(this, TriggerMainController.class);
+        i.putExtra(EXTRA_MESSAGE, API_TOKEN);
+        i.putExtra(EXTRA_MESSAGE_PREF_HUB, PREFERRED_HUB_ID);
+        i.putExtra(EXTRA_OBJECT, endpoint);
+        i.putExtra(EXTRA_ADDITIONAL_OBJECT, modes);
+        i.putExtra(EXTRA_BOOLEAN, isBinary);
+        startActivity(i);
     }
 
     private void performZwaveLevelCommand(final Endpoint endpoint) {
@@ -1187,6 +1205,31 @@ public class HomeActivity extends AppCompatActivity {
         String email = settings.getString(PREF_EMAIL, DEFAULT_EMAIL);
         // Get values using keys
         return settings.getString(email+"-"+DEFLT_BACKGRND, DEFAULT_BACKGROUND_PATH);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // Check which request we're responding to
+        if (requestCode == ACTIVITY_CODE_MODE) {
+            // Make sure the request was successful
+            if (resultCode == RESULT_OK) {
+                modes = data.getExtras().getParcelableArrayList(EXTRA_OBJECT);
+                gridScenesAdapter.updateDataItems(modes);
+            }
+        } else if (requestCode == ACTIVITY_CODE_ENDPOINT) {
+            // Make sure the request was successful
+            if (resultCode == RESULT_OK) {
+                endpoint_devices = data.getExtras().getParcelableArrayList(EXTRA_OBJECT);
+                //setGridLayout(endpoint_devices);
+                gridAdapter.notifyDataSetChanged();
+            }
+        } else if (requestCode == ACTIVITY_CODE_ROOM) {
+            // Make sure the request was successful
+            if (resultCode == RESULT_OK) {
+                rooms = data.getExtras().getParcelableArrayList(EXTRA_OBJECT);
+                gridRoomsAdapter.updateDataItems(rooms);
+            }
+        }
     }
 
     private class EndpointIcons implements co.ar_smart.www.interfaces.IDrawable {

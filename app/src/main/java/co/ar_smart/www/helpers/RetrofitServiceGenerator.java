@@ -6,6 +6,7 @@ import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -59,9 +60,9 @@ public class RetrofitServiceGenerator {
                 return chain.proceed(request);
             }
         });
-        //HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
-        //interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-        Retrofit retrofit = builder.client(httpClient.build()).build();
+        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
+        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+        Retrofit retrofit = builder.client(httpClient.addInterceptor(interceptor).build()).build();
         return retrofit.create(serviceClass);
     }
 }

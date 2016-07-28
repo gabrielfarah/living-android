@@ -83,6 +83,10 @@ public final class Constants {
      */
     public static final String EXTRA_MESSAGE = "co.ar-smart.www.living.MESSAGE";
     /**
+     * UID of intra activities messages. Is used for passing messages between intents among activities.
+     */
+    public static final String EXTRA_ADITIONAL_MESSAGE = "co.ar-smart.www.living.ADITIONAL_MESSAGE";
+    /**
      * UID of intra activities messages (parcelable objects to be passed). Is used for passing pojos between intents among activities.
      */
     public static final String EXTRA_OBJECT = "co.ar-smart.www.living.PARCEL";
@@ -201,10 +205,11 @@ public final class Constants {
     public static final String SONOS_FUNCTION_PLAY = "play";
     public static final String HUE_FUNCTION_OFF = "turn_off_all_lights";
     public static final String HUE_FUNCTION_ON = "turn_on_all_lights";
+    public static final String PASSWORD_REGEX = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\\\S+$).{8,}$";
     /**
-     * Password Regex
+     * Constant for path to user selected background
      */
-    public final static String PASSWORD_REGEX = "(?=.*\\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$";
+    public final static String DEFLT_BACKGRND = "default_backgroung";
     /**
      * HashMap of the days of the week with its abreviatures
      * key for map is a String
@@ -215,6 +220,21 @@ public final class Constants {
      * key for map is an Integer
      */
     private static Map<Integer, String> daysMapInt;
+
+    public static HashMap<String, ICommandClass> getUiMapClasses() {
+        HashMap<String, ICommandClass> uiMapClasses = new HashMap<>();
+        uiMapClasses.put(UI_CLASS_SONOS, new SonosEndpoint());
+        uiMapClasses.put(UI_CLASS_ZWAVE_BINAY_LIGHT, new ZwaveBinaryEndpoint());
+        uiMapClasses.put(UI_CLASS_ZWAVE_LEVEL_LIGHT, new ZwaveLevelEndpoint());
+        uiMapClasses.put(UI_CLASS_ZWAVE_BINARY_OUTLET, new ZwaveBinaryEndpoint());
+        uiMapClasses.put(UI_CLASS_ZWAVE_LOCK, new ZwaveLockEndpoint());
+        uiMapClasses.put(UI_CLASS_ZWAVE_SHADES, new ZwaveLevelEndpoint());
+        uiMapClasses.put(UI_CLASS_HUE, new HueEndpoint());
+        uiMapClasses.put(UI_CLASS_ZWAVE_BINARY_SWITCH, new ZwaveBinaryEndpoint());
+        uiMapClasses.put(UI_CLASS_ZWAVE_LEVEL_SWITCH, new ZwaveLevelEndpoint());
+        uiMapClasses.put(UI_CLASS_ZWAVE_BINARY_GENERIC, new ZwaveBinaryEndpoint());
+        return uiMapClasses;
+    }
 
     public static Map<String,String> getHashMapDaysFromString()
     {
@@ -276,17 +296,6 @@ public final class Constants {
                 Toast.LENGTH_LONG).show();
     }
 
-    public static HashMap<String, ICommandClass> getUiMapClasses() {
-        HashMap<String, ICommandClass> uiMapClasses = new HashMap<>();
-        uiMapClasses.put(UI_CLASS_SONOS, new SonosEndpoint());
-        uiMapClasses.put(UI_CLASS_ZWAVE_BINAY_LIGHT, new ZwaveBinaryEndpoint());
-        uiMapClasses.put(UI_CLASS_ZWAVE_BINARY_OUTLET, new ZwaveBinaryEndpoint());
-        uiMapClasses.put(UI_CLASS_ZWAVE_LOCK, new ZwaveLockEndpoint());
-        uiMapClasses.put(UI_CLASS_ZWAVE_SHADES, new ZwaveLevelEndpoint());
-        uiMapClasses.put(UI_CLASS_HUE, new HueEndpoint());
-        return uiMapClasses;
-    }
-
     /**
      * Enum for sensors type for Triggers
      */
@@ -294,16 +303,11 @@ public final class Constants {
         BINARY, RANGE
     }
 
+
     /**
      * Enum for operands for triggers
      */
     public enum Operand {
         less, greater, equals, between, not_between, distinc
     }
-
-
-    /**
-     * Constant for path to user selected background
-     */
-    public final static String DEFLT_BACKGRND = "default_backgroung";
 }

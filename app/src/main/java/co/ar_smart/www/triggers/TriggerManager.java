@@ -38,6 +38,7 @@ public class TriggerManager
         Log.d("Api_token",API_TOKEN);
         TriggerService triggerClient = RetrofitServiceGenerator.createService(TriggerService.class, API_TOKEN);
         Call call = triggerClient.addTrigger(hub_id, endpoint_id, trigger);
+        Log.d("REQUEST: ", call.request().toString() + " " + call.request().body().toString());
         call.enqueue(new Callback<ResponseBody>()
         {
             @Override
@@ -52,8 +53,15 @@ public class TriggerManager
                     try
                     {
                         String errorMessage = response.message() + " - " + response.code() + " " + response.errorBody().string();
-                        Log.d("DEBUGGG", errorMessage);
-                        AnalyticsApplication.getInstance().trackEvent("ERROR", "CREATEMODE", errorMessage);
+                        //Log.d("DEBUGGG", errorMessage);
+                        /*int maxLogSize = 500;
+                        for(int i = 0; i <= errorMessage.length() / maxLogSize; i++) {
+                            int start = i * maxLogSize;
+                            int end = (i+1) * maxLogSize;
+                            end = end > errorMessage.length() ? errorMessage.length() : end;
+                            Log.d("TAG", errorMessage.substring(start, end));
+                        }
+                        AnalyticsApplication.getInstance().trackEvent("ERROR", "CREATEMODE", errorMessage);*/
                     }
                     catch (IOException e)
                     {

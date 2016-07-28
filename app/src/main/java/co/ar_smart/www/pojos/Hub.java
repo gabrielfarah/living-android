@@ -28,15 +28,15 @@ public class Hub implements Parcelable{
     /**
      * the user given name for the hub
      */
-    private String custom_name;
+    private String custom_name = "";
     /**
      * the id of the hub controller
      */
-    private int id;
+    private int id = -1;
     /**
      * list of the endpoints connected to the hub
      */
-    private ArrayList<Endpoint> endpoints;
+    private ArrayList<Endpoint> endpoints = new ArrayList<>();
 
     /**
      * creates a new hub from a parcel instance

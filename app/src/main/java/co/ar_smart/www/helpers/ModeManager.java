@@ -125,11 +125,7 @@ public class ModeManager {
         ICommandClass te;
         for (Endpoint e : endpoint_devices) {
             Log.d("meto modos1", e.toString());
-            if (e.getEndpoint_type().equalsIgnoreCase("zwave")) {
-                te = map.get(e.getUi_class_command() + "-zwave");
-            } else {
-                te = map.get(e.getUi_class_command());
-            }
+            te = map.get(e.getUi_class_command());
             if (te != null) {
                 te.setEndpoint(e);
                 off_commands.add(te.getTurnOffCommand());

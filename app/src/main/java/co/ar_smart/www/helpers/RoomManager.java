@@ -36,11 +36,7 @@ public class RoomManager {
         for (Endpoint e : endpoint_devices) {
             Triplet temp = new Triplet(new Room(hub_id, e.getRoom()));
             if (!response.contains(temp)) {
-                if (e.getEndpoint_type().equalsIgnoreCase("zwave")) {
-                    te = map.get(e.getUi_class_command() + "-zwave");
-                } else {
-                    te = map.get(e.getUi_class_command());
-                }
+                te = map.get(e.getUi_class_command());
                 if (te != null) {
                     te.setEndpoint(e);
                     temp.addOffCommand(te.getTurnOffCommand());

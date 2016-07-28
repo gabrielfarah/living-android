@@ -188,6 +188,7 @@ public class HomeGridDevicesAdapter extends BaseAdapter {
                 textView.setText(endpoints.get(position).getName());
                 TextView textView2 = (TextView)gridView.findViewById(R.id.endpointRoom);
                 textView2.setText(endpoints.get(position).getRoom());
+                Log.d("ADAPTER SATE:", endpoints.get(position).getState() + " - " + endpoints.get(position).isActive());
                 if (!endpoints.get(position).isActive()) {
                     imageView = (ImageView)gridView.findViewById(R.id.endpointImage);
                     imageView.setImageResource(temp);
@@ -198,10 +199,14 @@ public class HomeGridDevicesAdapter extends BaseAdapter {
 
                     if (endpoints.get(position).getState() > 0) {
                         imageView.setImageDrawable(setTint(temp, Color.rgb(44, 194, 190)));
+                        textView.setTextColor(context.getResources().getColor(R.color.colorPrimaryDark));
+                        textView2.setTextColor(context.getResources().getColor(R.color.colorPrimary));
                         //imageView.setImageResource(temp);
                         Log.d("color", "ORIGINAL");
                     } else {
                         //imageView.setImageResource(temp);
+                        textView.setTextColor(context.getResources().getColor(R.color.soporte));
+                        textView2.setTextColor(context.getResources().getColor(R.color.soporte));
                         imageView.setImageDrawable(setTint(temp, Color.rgb(128, 128, 128)));
                     }
                 }

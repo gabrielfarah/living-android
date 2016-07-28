@@ -122,10 +122,10 @@ public class SonosControllerActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     if (isPlaying) {
                         pauseCommand();
-                        playPauseButton.setBackgroundResource(R.drawable.common_ic_googleplayservices);
+                        playPauseButton.setBackgroundResource(R.drawable.pause_icon);
                     } else {
                         playCommand();
-                        playPauseButton.setBackgroundResource(R.drawable.btn_listo_off);
+                        playPauseButton.setBackgroundResource(R.drawable.play_icon);
                     }
                     isPlaying = !isPlaying;
                 }

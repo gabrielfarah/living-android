@@ -38,6 +38,12 @@ public class HomeGridAdapter<T extends co.ar_smart.www.interfaces.IGridItem> ext
         notifyDataSetChanged();
     }
 
+    public void updateDataItems(List<T> newlist) {
+        items.clear();
+        items.addAll(newlist);
+        this.notifyDataSetChanged();
+    }
+
     private int getDrawableFromString(String name) {
         if (name != null) {
             switch (name) {

@@ -45,12 +45,12 @@ public class ModeManagementActivity extends AppCompatActivity {
      * The list of modes the hub contains
      */
     private ArrayList<Mode> modes = new ArrayList<>();
-    private ArrayList<Mode> default_modes = new ArrayList<>();
     /**
      * This field is the ui adapter for displaying the modes list
      */
     private ModeAdapter adapter;
     private ArrayList<Endpoint> endpoint_devices;
+    private ArrayList<Mode> default_modes = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,13 +62,12 @@ public class ModeManagementActivity extends AppCompatActivity {
         modes = intent.getParcelableArrayListExtra(EXTRA_OBJECT);
         endpoint_devices = intent.getParcelableArrayListExtra(EXTRA_ADDITIONAL_OBJECT);
 
-        ArrayList<Mode> temp_remove_modes = new ArrayList<>();
         for (int i = 0; i < modes.size(); i++) {
             if (modes.get(i).getId() < 0) {
-                temp_remove_modes.add(modes.get(i));
+                default_modes.add(modes.get(i));
             }
         }
-        modes.removeAll(temp_remove_modes);
+        modes.removeAll(default_modes);
         // Filter the sensors out of the list of endpoints. Sensors can't be inside scenes.
         // If the user wants to insert a trigger, then he must go to the inside of the sensor in the home.
         ArrayList<Endpoint> temp_remove = new ArrayList<>();
@@ -130,14 +129,17 @@ public class ModeManagementActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case android.R.id.home:
                 // app icon in action bar clicked; go home
-                Intent output = new Intent();
-                output.putExtra(EXTRA_OBJECT, modes);
-                setResult(RESULT_OK, output);
-                this.finish();
+                responseToParent();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        responseToParent();
     }
 
     private void addNewMode() {
@@ -168,6 +170,14 @@ public class ModeManagementActivity extends AppCompatActivity {
                 }
             }
         }
+    }
+
+    private void responseToParent() {
+        modes.addAll(default_modes);
+        Intent output = new Intent();
+        output.putExtra(EXTRA_OBJECT, modes);
+        setResult(RESULT_OK, output);
+        finish();
     }
 
     public void openDialog(final Mode elimMode) {

@@ -69,13 +69,17 @@ public class TriggerPropertiesActivity extends AppCompatActivity
      */
     LinearLayout lyo_day;
     /**
-     * Current API TOKEN for the user
-     */
-    private String API_TOKEN;
-    /**
      * List of modes of the user
      */
     ArrayList<Mode> modes;
+    /**
+     * RangeSeekBar that gives the range for the trigger in case the sensor is not binary
+     */
+    RangeSeekBar rsb_range;
+    /**
+     * Current API TOKEN for the user
+     */
+    private String API_TOKEN;
     /**
      * Trigger that have the lastest value
      */
@@ -84,10 +88,6 @@ public class TriggerPropertiesActivity extends AppCompatActivity
      * Boolean that represent if the sensor of the trigger is binary or not
      */
     private boolean binary_sensor;
-    /**
-     * RangeSeekBar that gives the range for the trigger in case the sensor is not binary
-     */
-    RangeSeekBar rsb_range;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -98,7 +98,8 @@ public class TriggerPropertiesActivity extends AppCompatActivity
         modes = getIntent().getParcelableArrayListExtra("modes");
         API_TOKEN = getIntent().getStringExtra(EXTRA_MESSAGE);
         trigger = getIntent().getParcelableExtra(EXTRA_OBJECT);
-        binary_sensor = getIntent().getBooleanExtra("binary_sensor", false);
+        // This variable is sent from the parent activity to flag if the sensor is binary or multilevel
+        binary_sensor = getIntent().getBooleanExtra(Constants.EXTRA_ADITIONAL_MESSAGE, false);
         rsb_range = (RangeSeekBar) findViewById(R.id.rsb_range);
         //makes the rangeSeekBar invincible if the sensor is binary
         if (rsb_range != null)
