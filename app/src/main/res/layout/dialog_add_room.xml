@@ -9,14 +9,16 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="left"
+        android:gravity="start"
         android:layout_marginTop="10dp"
-        android:textSize="15dp"
+        android:textSize="15sp"
         android:text="@string/lblnameroom_dialog"
+        android:labelFor="@+id/txtNameNewRoom"
         android:textColor="#848484"/>
     <EditText
         android:id="@+id/txtNameNewRoom"
-        android:textSize="20dp"
+        android:textSize="20sp"
+        android:inputType="text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="10dp"/>
@@ -32,9 +34,9 @@
             android:text="@string/cancel"
             android:textColor="#fff"
             android:background="@drawable/dark_color_btn"
-            android:layout_gravity="left"
-            android:layout_marginRight="5dp"
-            android:layout_marginLeft="50dp"
+            android:layout_gravity="start"
+            android:layout_marginEnd="5dp"
+            android:layout_marginStart="50dp"
             android:layout_weight="1"/>
         <Button
             android:id="@+id/btnAddNewRoom"
@@ -43,8 +45,8 @@
             android:text="@string/accept"
             android:textColor="#fff"
             android:background="@drawable/dark_color_btn"
-            android:layout_gravity="right"
-            android:layout_marginRight="50dp"
+            android:layout_gravity="end"
+            android:layout_marginEnd="50dp"
             android:layout_weight="1"/>
     </LinearLayout>
 </LinearLayout>

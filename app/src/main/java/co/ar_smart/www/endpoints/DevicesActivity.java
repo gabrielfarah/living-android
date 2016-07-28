@@ -155,7 +155,7 @@ public class DevicesActivity extends AppCompatActivity {
                     }
                     else
                     {
-                        Toast.makeText(DevicesActivity.this, "Ningún disposivo Encontrado",
+                        Toast.makeText(DevicesActivity.this, R.string.not_matching_devices,
                                 Toast.LENGTH_SHORT).show();
                         progress.setVisibility(View.GONE);
                         list.setVisibility(View.VISIBLE);
@@ -168,7 +168,7 @@ public class DevicesActivity extends AppCompatActivity {
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                    Toast.makeText(DevicesActivity.this, "Error al solicitar los dispositivos",
+                    Toast.makeText(DevicesActivity.this, R.string.error_requesting_devices,
                             Toast.LENGTH_SHORT).show();
                     progress.setVisibility(View.GONE);
                     list.setVisibility(View.VISIBLE);
@@ -177,7 +177,7 @@ public class DevicesActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<List<Endpoint>> call, Throwable t) {
-                Toast.makeText(DevicesActivity.this, "Error al solicitar los dispositivos",
+                Toast.makeText(DevicesActivity.this, R.string.error_requesting_devices,
                         Toast.LENGTH_SHORT).show();
                 progress.setVisibility(View.GONE);
                 list.setVisibility(View.VISIBLE);

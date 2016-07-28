@@ -61,7 +61,7 @@
                     android:textColor="@color/blanco"
                     android:background="@color/colorPrimaryDark"
                     android:layout_marginBottom="10dp"
-                    android:text="Specific time"/>
+                    android:text="@string/specific_time"/>
 
                 <LinearLayout
                     android:id="@+id/lyo_hour"
@@ -82,7 +82,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_weight="0.7"
-                            android:text="Desde las:"
+                            android:text="@string/from_specific_time"
                             android:textAppearance="?android:attr/textAppearanceMedium"/>
 
                         <TextView
@@ -105,7 +105,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_weight="0.7"
-                            android:text="Hasta las:"
+                            android:text="@string/until_specific_time"
                             android:textAppearance="?android:attr/textAppearanceMedium"/>
 
                         <TextView
@@ -123,7 +123,7 @@
                     android:layout_height="wrap_content"
                     android:textColor="@color/blanco"
                     android:background="@color/colorPrimaryDark"
-                    android:text="Specific Days"/>
+                    android:text="@string/specific_days"/>
 
                 <LinearLayout
                     android:id="@+id/lyo_day"
@@ -139,7 +139,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="0.1"
-                        android:text="Ciertos días:"
+                        android:text="@string/certain_days"
                         android:textAppearance="?android:attr/textAppearanceMedium"/>
 
                     <TextView

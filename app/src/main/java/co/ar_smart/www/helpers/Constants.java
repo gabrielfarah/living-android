@@ -167,7 +167,6 @@ public final class Constants {
      *
      */
     public static final String EXTRA_LIST_PARCELABLE_FIRST = "co.ar-smart.www.living.EXTRA_LIST_PARCELABLE_FIRST";
-    ;
     /**
      * Array of the days of the week
      */
@@ -302,10 +301,6 @@ public final class Constants {
         less, greater, equals, between, not_between, distinc
     }
 
-    /**
-     * Password Regex
-     */
-    public final static String PASSWORD_REGEX = "(?=.*\\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$";
 
     /**
      * Constant for path to user selected background

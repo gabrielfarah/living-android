@@ -241,7 +241,7 @@ public class NewDevicesActivity extends AppCompatActivity {
                         }
                         else
                         {
-                            Toast.makeText(NewDevicesActivity.this, "Ningun disposivo Encontrado",
+                            Toast.makeText(NewDevicesActivity.this, R.string.not_matching_devices,
                                     Toast.LENGTH_LONG).show();
                             progress.setVisibility(View.GONE);
                             list.setVisibility(View.VISIBLE);
@@ -260,7 +260,7 @@ public class NewDevicesActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<ResponseEndPointsZWAVE> call, Throwable t) {
-                Toast.makeText(NewDevicesActivity.this, "Ningun disposivo Encontrado",
+                Toast.makeText(NewDevicesActivity.this, R.string.not_matching_devices,
                         Toast.LENGTH_SHORT).show();
                 progress.setVisibility(View.GONE);
                 list.setVisibility(View.VISIBLE);
@@ -273,10 +273,9 @@ public class NewDevicesActivity extends AppCompatActivity {
 
     public static String bodyToString(final RequestBody request){
         try {
-            final RequestBody copy = request;
             final Buffer buffer = new Buffer();
-            if(copy != null)
-                copy.writeTo(buffer);
+            if(request != null)
+                request.writeTo(buffer);
             else
                 return "";
             return buffer.readUtf8();
@@ -311,8 +310,8 @@ public class NewDevicesActivity extends AppCompatActivity {
             public void onResponse(okhttp3.Call call, okhttp3.Response response) throws IOException {
                 String jsonData = response.body().string();
                 response.body().close();
-                if (!response.isSuccessful()) {
-                } else {
+                if (response.isSuccessful())
+                {
                     try {
                         JSONObject jObject = new JSONObject(jsonData);
                         String ur[]=jObject.getString("url").split("/");
@@ -414,7 +413,7 @@ public class NewDevicesActivity extends AppCompatActivity {
                         }
                         else
                         {
-                            Toast.makeText(NewDevicesActivity.this, "Ningun disposivo Encontrado",
+                            Toast.makeText(NewDevicesActivity.this,R.string.not_matching_devices,
                                     Toast.LENGTH_LONG).show();
                             progress.setVisibility(View.GONE);
                             list.setVisibility(View.VISIBLE);
@@ -433,7 +432,7 @@ public class NewDevicesActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<ResponseEndPoints> call, Throwable t) {
-                Toast.makeText(NewDevicesActivity.this, "Ningun disposivo Encontrado",
+                Toast.makeText(NewDevicesActivity.this, R.string.not_matching_devices,
                         Toast.LENGTH_SHORT).show();
                 progress.setVisibility(View.GONE);
                 list.setVisibility(View.VISIBLE);

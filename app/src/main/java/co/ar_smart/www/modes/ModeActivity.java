@@ -92,10 +92,10 @@ public class ModeActivity extends AppCompatActivity {
                                 postModeToServer(adapter.getMode());
                             }
                         } else {
-                            Constants.showCustomMessage(ModeActivity.this, "Please select at least one action");
+                            Constants.showCustomMessage(ModeActivity.this, getString(R.string.select_at_least_action));
                         }
                     } else {
-                        Constants.showCustomMessage(ModeActivity.this, "Please input a name for the scene");
+                        Constants.showCustomMessage(ModeActivity.this, getString(R.string.error_scene_name_empty));
                     }
                 }
             });
@@ -146,7 +146,7 @@ public class ModeActivity extends AppCompatActivity {
 
             @Override
             public void onUnsuccessfulCallback() {
-                Toast.makeText(getApplicationContext(), "there was a problem doing the request please try again", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), R.string.error_doing_request, Toast.LENGTH_SHORT).show();
             }
 
             @Override

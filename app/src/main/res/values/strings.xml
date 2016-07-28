@@ -1,5 +1,4 @@
 <resources>
-    <string name="label_endpoint_management_title">Devices</string>
     <string name="addwifi_btntext">Add Wifi Device</string>
     <string name="delwifi_btntext">Delete Wifi Device</string>
     <string name="addwave_btntext">Add ZWave Device</string>
@@ -29,16 +28,16 @@
     <string name="label_listcommands_activity_title">Edit Commands</string>
     <string name="label_selectmodedevice_activity_title">Select Device</string>
     <string name="btn_addcommand">Add Command</string>
-    <string name="app_name">Living</string>
+    <string name="app_name">Domu</string>
     <string name="login_title">Login to your account</string>
     <string name="login_text">Login</string>
     <string name="logout_text">Logout</string>
     <string name="register_text">Register</string>
-    <string name="toast_login_failure">There was a problem logging into Living. Are you connected to the internet?</string>
+    <string name="toast_login_failure">There was a problem logging into Domu. Are you connected to the internet?</string>
     <string name="toast_login_bad_credentials">We were unable to login with provided credentials. Did you forgot your password?</string>
-    <string name="toast_login_server_error">We were unable to log into Living. Are you using the latest version of the app?</string>
+    <string name="toast_login_server_error">We were unable to log into Domu. Are you using the latest version of the app?</string>
     <string name="toast_missing_fields">You must fill all the required fields</string>
-    <string name="toast_missing_permission">Please accept the permission Living need it to work</string>
+    <string name="toast_missing_permission">Please accept the permission Domu need it to work</string>
     <string name="toast_missing_internet">Are you connected to the internet?</string>
     <string name="label_local_conf_wifi">Enter your home Wi-Fi network</string>
     <string name="label_local_conf_password">Enter your home Wi-Fi password</string>
@@ -47,8 +46,8 @@
     <string name="nav_menu_open">Open navigation drawer</string>
     <string name="nav_menu_close">Close navigation drawer</string>
     <string name="label_notification_feed">Activity</string>
-    <string name="label_home_activity_title">Living Home</string>
-    <string name="label_nav_bar_title">Living Home</string>
+    <string name="label_home_activity_title">Domu Home</string>
+    <string name="label_nav_bar_title">Domu Home</string>
     <string name="label_user_management_title">User Options</string>
     <string name="nav_bar_new_user_title">New Account</string>
     <string name="btn_new_user_create">Create Account</string>
@@ -63,7 +62,7 @@
     <string name="toast_not_matching_email">The e-mails are not equal</string>
     <string name="create_user_error">Error creating user</string>
     <string name="toast_email_format_error">Incorrect email format</string>
-    <string name="label_created_user_message">Thanks for signing \nin Living.
+    <string name="label_created_user_message">Thanks for signing \nin Domu.
         \n \nIt is only a few steps \nto control your home from \nthe palm of your hand. </string>
     <string name="label_created_user_title">Welcome!</string>
     <string name="label_manage_guests">Manage Guests</string>
@@ -114,7 +113,7 @@
     <string name="edit_text_reg_hub_serial_hint">Eg: LIV463E</string>
     <string name="toast_register_bad_credentials">Are all the fields filled correctly ?</string>
     <string name="label_registered_hub_title">Congratulations!</string>
-    <string name="label_registered_hub_message">Has conectado correctamente \ntu estación.\n \nComienza ahora a automatizar \ntu hogar y vive más cómodo y \nseguro con Living.</string>
+    <string name="label_registered_hub_message">You had correctly connected \nyour station.\n \nStart now to automate your \nhome y live more comfortable \nand safer with Domu.</string>
     <string name="btn_registered_hub">END</string>
     <string name="title_activity_new_devices">NewDevicesActivity</string>
     <string name="label_manage_modes">Manage Scenes</string>
@@ -129,12 +128,12 @@
     <string name="label_on">On</string>
     <string name="label_off">Off</string>
     <string name="label_open">%1$s (OPEN)</string>
-    <string name="label_close">%1$s (CLOSE)</string>
+    <string name="label_close" translatable="false">%1$s (CLOSE)</string>
     <string name="label_unlock">Unlock</string>
     <string name="label_lock">Lock</string>
     <string name="label_unlocked">Unlocked</string>
     <string name="label_locked">Locked</string>
-    <string name="label_level_percentage">%1$s%%</string>
+    <string name="label_level_percentage" translatable="false">%1$s%%</string>
     <string name="label_play">Play</string>
     <string name="label_pause">Pause</string>
     <string name="label_up">%1$s (UP)</string>
@@ -184,13 +183,13 @@
     <string name="enter_your_email">Type your email</string>
     <string name="enter_your_password">Type your password</string>
     <string name="change_password">Change Password</string>
-    <string name="no_account_message">Don\'t have a Living account? Sign up</string>
+    <string name="no_account_message">Don\'t have a Domu account? Sign up</string>
     <string name="empty_hub_name">Assign a name for the hub.</string>
     <string name="not_selected_location">Select a location in the map.</string>
     <string name="default_background_title">Moving on</string>
     <string name="default_backgroung_message">Are you sure you want to use default background image?</string>
     <string name="yes">Yes</string>
-    <string name="no">No</string>
+    <string name="no" translatable="false">No</string>
     <string name="permission_images_message">The application will ask you permission to read your external storage, it allows it to offer you some features, please accept them.</string>
     <string name="permission_location_message">The application will ask you permission to access to your location via gps and wifi, it allows it to offer you some features, please accept them.</string>
     <string name="home_menu_devices">DEVICES</string>
@@ -198,4 +197,36 @@
     <string name="home_menu_rooms">ROOMS</string>
     <string name="toast_not_matching_password">The passwords are not equal</string>
     <string name="text_explain_scene">Select the devices you want to include using the left mark and set the devices states using the appropiate controllers to the right.</string>
+    <string name="btn_map_register_hub_location_selected">Done</string>
+    <string name="specific_time">Specific time</string>
+    <string name="from_specific_time">From:</string>
+    <string name="until_specific_time">Until:</string>
+    <string name="specific_days">Specific Days</string>
+    <string name="certain_days">Certain days:</string>
+    <string name="it_was_successfully_added">It was successfully added</string>
+    <string name="try_again">Try Again</string>
+    <string name="house_device">House Device</string>
+    <string name="error_requesting_devices">Error requesting devices</string>
+    <string name="not_matching_devices">No device found</string>
+    <string name="press_wireless_button">Please press the wireless button in your device</string>
+    <string name="error_registering_device">Failed to register the device</string>
+    <string name="not_matching_areas">No room found</string>
+    <string name="error_requesting_areas">Error requesting rooms</string>
+    <string name="living_room_lights">Living room lights</string>
+    <string name="room_name_used">A room with that name already exits</string>
+    <string name="error_adding_room">Error adding room</string>
+    <string name="pick_home">Pick a home</string>
+    <string name="zwave_level_command">Please select your desired brightness</string>
+    <string name="press_back_logout">Please click BACK again to Log out</string>
+    <string name="please_login">Please login</string>
+    <string name="error_removing_command">Error al eliminar el comandos</string>
+    <string name="select_at_least_action">Please select at least one action</string>
+    <string name="error_scene_name_empty">Please input a name for the scene</string>
+    <string name="error_doing_request">There was a problem doing the request please try again</string>
+    <string name="error_hub_serial_empty">Insert the hub serial</string>
+    <string name="select_beginning_time">Select beginning time:</string>
+    <string name="select_ending_time">Select ending time:</string>
+    <string name="select_days">Select Days</string>
+    <string name="notification_for_trigger">Do you want to receive notifications for this trigger ?</string>
+    <string name="successfully_added_trigger">Trigger successfully created</string>
 </resources>

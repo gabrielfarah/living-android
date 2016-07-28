@@ -167,8 +167,8 @@ public class DeleteZwaveActivity extends AppCompatActivity {
             public void onResponse(okhttp3.Call call, okhttp3.Response response) throws IOException {
                 String jsonData = response.body().string();
                 response.body().close();
-                if (!response.isSuccessful()) {
-                } else {
+                if (response.isSuccessful())
+                {
                     try {
                         JSONObject jObject = new JSONObject(jsonData);
                         String ur[]=jObject.getString("url").split("/");
@@ -266,7 +266,7 @@ public class DeleteZwaveActivity extends AppCompatActivity {
                         }
                         else
                         {
-                            Toast.makeText(DeleteZwaveActivity.this, "Ningun disposivo Encontrado",
+                            Toast.makeText(DeleteZwaveActivity.this, R.string.not_matching_devices,
                                     Toast.LENGTH_LONG).show();
                             progress.setVisibility(View.GONE);
                             list.setVisibility(View.VISIBLE);
@@ -285,7 +285,7 @@ public class DeleteZwaveActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<ResponseEndPoints> call, Throwable t) {
-                Toast.makeText(DeleteZwaveActivity.this, "Ningun disposivo Encontrado",
+                Toast.makeText(DeleteZwaveActivity.this, R.string.not_matching_devices,
                         Toast.LENGTH_SHORT).show();
                 progress.setVisibility(View.GONE);
                 list.setVisibility(View.VISIBLE);
@@ -333,8 +333,6 @@ public class DeleteZwaveActivity extends AppCompatActivity {
             {
                 if (response.isSuccessful()) {
                     List<Endpoint> li=response.body();
-                    if(true)
-                    {
                         for(Endpoint endp: li)
                         {
                             if(endp.getEndpoint_type().equals("zwave"))
@@ -353,15 +351,9 @@ public class DeleteZwaveActivity extends AppCompatActivity {
 
                         progress.setVisibility(View.GONE);
                         list.setVisibility(View.VISIBLE);
-                    }
-                    else
-                    {
-
-                    }
-
                 }
                 else {
-                    Toast.makeText(DeleteZwaveActivity.this, "Error al solicitar los dispositivos",
+                    Toast.makeText(DeleteZwaveActivity.this, R.string.error_requesting_devices,
                             Toast.LENGTH_SHORT).show();
                     progress.setVisibility(View.GONE);
                     list.setVisibility(View.VISIBLE);
@@ -370,7 +362,7 @@ public class DeleteZwaveActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<List<Endpoint>> call, Throwable t) {
-                Toast.makeText(DeleteZwaveActivity.this, "Error al solicitar los dispositivos",
+                Toast.makeText(DeleteZwaveActivity.this, R.string.error_requesting_devices,
                         Toast.LENGTH_SHORT).show();
                 progress.setVisibility(View.GONE);
                 list.setVisibility(View.VISIBLE);
@@ -405,7 +397,7 @@ public class DeleteZwaveActivity extends AppCompatActivity {
                 progress.setVisibility(View.VISIBLE);
                 list.setVisibility(View.GONE);
                 delZwaveService();
-                Toast.makeText(DeleteZwaveActivity.this, "Por favor oprime el botón inhalambrico en tu disposivo",
+                Toast.makeText(DeleteZwaveActivity.this, R.string.press_wireless_button,
                         Toast.LENGTH_LONG).show();
                 dialog.dismiss();
             }

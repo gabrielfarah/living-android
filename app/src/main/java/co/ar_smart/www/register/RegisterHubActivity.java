@@ -94,7 +94,7 @@ public class RegisterHubActivity extends AppCompatActivity
                 {
                     if (edtHubSerial.getText().toString().equals(""))
                     {
-                        Toast.makeText(mContext, "Insert the hub serial", Toast.LENGTH_SHORT);
+                        Toast.makeText(mContext, R.string.error_hub_serial_empty, Toast.LENGTH_SHORT).show();
                     }
                     else
                     {

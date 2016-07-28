@@ -130,35 +130,27 @@ public class DeleteDeviceActivity extends AppCompatActivity {
             {
                 if (response.isSuccessful()) {
                     List<Endpoint> li=response.body();
-                    if(true)
+                    for(Endpoint endp: li)
                     {
-                        for(Endpoint endp: li)
-                        {
-                            if(endp.getEndpoint_type().equals("wifi"))
+                        if(endp.getEndpoint_type().equals("wifi"))
                             devices.add(endp);
+                    }
+
+                    list.setAdapter(adapter);
+                    adapter.notifyDataSetChanged();
+                    list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                            Endpoint e=devices.get(position);
+                            showDialog(e.getName(),getPreferredHub(),""+devices.get(position).getId());
                         }
+                    });
 
-                        list.setAdapter(adapter);
-                        adapter.notifyDataSetChanged();
-                        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                            @Override
-                            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                                Endpoint e=devices.get(position);
-                                showDialog(e.getName(),getPreferredHub(),""+devices.get(position).getId());
-                            }
-                        });
-
-                        progress.setVisibility(View.GONE);
-                        list.setVisibility(View.VISIBLE);
-                    }
-                    else
-                    {
-
-                    }
-
+                    progress.setVisibility(View.GONE);
+                    list.setVisibility(View.VISIBLE);
                 }
                 else {
-                    Toast.makeText(DeleteDeviceActivity.this, "Error al solicitar los dispositivos",
+                    Toast.makeText(DeleteDeviceActivity.this, R.string.error_requesting_devices,
                             Toast.LENGTH_SHORT).show();
                     progress.setVisibility(View.GONE);
                     list.setVisibility(View.VISIBLE);
@@ -167,7 +159,7 @@ public class DeleteDeviceActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<List<Endpoint>> call, Throwable t) {
-                Toast.makeText(DeleteDeviceActivity.this, "Error al solicitar los dispositivos",
+                Toast.makeText(DeleteDeviceActivity.this, R.string.error_requesting_devices,
                         Toast.LENGTH_SHORT).show();
                 progress.setVisibility(View.GONE);
                 list.setVisibility(View.VISIBLE);
@@ -232,14 +224,11 @@ public class DeleteDeviceActivity extends AppCompatActivity {
                 if (response.isSuccessful()) {
                     getDevices();
                 }
-                else {
-
-                }
             }
 
             @Override
             public void onFailure(Call<Endpoint> call, Throwable t) {
-                Toast.makeText(DeleteDeviceActivity.this, "Error al solicitar los dispositivos",
+                Toast.makeText(DeleteDeviceActivity.this, R.string.error_requesting_devices,
                         Toast.LENGTH_SHORT).show();
                 progress.setVisibility(View.GONE);
                 list.setVisibility(View.VISIBLE);

@@ -26,17 +26,17 @@
             android:id="@+id/btnTryAgain"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Cancel"
+            android:text="@string/cancel"
             android:background="@drawable/dark_color_btn"
-            android:layout_gravity="left"
+            android:layout_gravity="start"
             android:layout_weight="1"/>
         <Button
             android:id="@+id/btnCancelFail"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Try Again"
+            android:text="@string/try_again"
             android:background="@drawable/dark_color_btn"
-            android:layout_gravity="right"
+            android:layout_gravity="end"
             android:layout_weight="1"/>
     </LinearLayout>
 </LinearLayout>

@@ -107,7 +107,7 @@ public class MainActivity extends Activity {
                 String jsonData = response.body().string();
                 response.body().close();
                 if (!response.isSuccessful()) {
-                    displayMessage("Please login");
+                    displayMessage(getString(R.string.please_login));
                     openLoginRegisterActivity();
                 } else {
                     try {

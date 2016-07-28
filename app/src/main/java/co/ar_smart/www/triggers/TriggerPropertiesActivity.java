@@ -206,7 +206,7 @@ public class TriggerPropertiesActivity extends AppCompatActivity
                 @Override
                 public void onClick(View v)
                 {
-                    setTime(txv_begin_time, "Select beginning time:", horaInicial);
+                    setTime(txv_begin_time, getString(R.string.select_beginning_time), horaInicial);
                 }
             });
         }
@@ -219,7 +219,7 @@ public class TriggerPropertiesActivity extends AppCompatActivity
                 @Override
                 public void onClick(View v)
                 {
-                    setTime(txv_end_time, "Select ending time:", horaFinal);
+                    setTime(txv_end_time, getString(R.string.select_ending_time), horaFinal);
                 }
             });
         }
@@ -232,7 +232,7 @@ public class TriggerPropertiesActivity extends AppCompatActivity
                 public void onClick(View v)
                 {
                     AlertDialog.Builder builder = new AlertDialog.Builder(TriggerPropertiesActivity.this);
-                    builder.setTitle("Select Days");
+                    builder.setTitle(R.string.select_days);
                     builder.setMultiChoiceItems(Constants.daysArray, selected, new DialogInterface.OnMultiChoiceClickListener()
                     {
                         @Override
@@ -262,7 +262,7 @@ public class TriggerPropertiesActivity extends AppCompatActivity
 
                         }
                     });
-                    builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener()
+                    builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener()
                     {
                         @Override
                         public void onClick(DialogInterface dialog, int id)
@@ -334,8 +334,8 @@ public class TriggerPropertiesActivity extends AppCompatActivity
                     trigger.setDays_of_the_week(days);
                 }
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setMessage("Do you want to receive notifications for this trigger ?")
-                        .setPositiveButton("Yes", new DialogInterface.OnClickListener()
+                builder.setMessage(R.string.notification_for_trigger)
+                        .setPositiveButton("Ok", new DialogInterface.OnClickListener()
                         {
                             public void onClick(DialogInterface dialog, int id)
                             {
@@ -380,7 +380,7 @@ public class TriggerPropertiesActivity extends AppCompatActivity
             @Override
             public void onSuccessCallback()
             {
-                Toast.makeText(getApplicationContext(), "Trigger creado exitosamente", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), R.string.successfully_added_trigger, Toast.LENGTH_SHORT).show();
                 finish();
 
             }
@@ -388,7 +388,7 @@ public class TriggerPropertiesActivity extends AppCompatActivity
             @Override
             public void onUnsuccessfulCallback()
             {
-                Toast.makeText(getApplicationContext(), "There was a problem doing the request please try again", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), R.string.error_doing_request, Toast.LENGTH_SHORT).show();
             }
         });
     }

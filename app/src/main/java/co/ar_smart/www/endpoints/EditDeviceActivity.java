@@ -105,7 +105,7 @@ public class EditDeviceActivity extends AppCompatActivity {
             room=dev.getRoom();
             if(dev.getRoom()!=null)
             icon=dev.getImage();
-            txtName.setText(dev.getName().toString());
+            txtName.setText(dev.getName());
         }
 
         btnIcon.setOnClickListener(new View.OnClickListener() {
@@ -193,7 +193,7 @@ public class EditDeviceActivity extends AppCompatActivity {
      */
     private boolean checkFields()
     {
-        if(!txtName.getText().equals("") && !room.equals("") && !icon.equals(""))
+        if(!txtName.getText().toString().equals("") && !room.equals("") && !icon.equals(""))
         {
             return true;
         }
@@ -231,7 +231,7 @@ public class EditDeviceActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<Endpoint> call, Throwable t) {
-                Toast.makeText(EditDeviceActivity.this, "Error al registrar el dispositivo",
+                Toast.makeText(EditDeviceActivity.this, R.string.error_registering_device,
                         Toast.LENGTH_SHORT).show();
             }
         });
@@ -259,9 +259,6 @@ public class EditDeviceActivity extends AppCompatActivity {
                     //devices.add(response.body());
                     showDialog();
                 }
-                else{
-
-                }
             }
 
             @Override
@@ -273,10 +270,9 @@ public class EditDeviceActivity extends AppCompatActivity {
 
     public static String bodyToString(final RequestBody request){
         try {
-            final RequestBody copy = request;
             final Buffer buffer = new Buffer();
-            if(copy != null)
-                copy.writeTo(buffer);
+            if(request != null)
+                request.writeTo(buffer);
             else
                 return "";
             return buffer.readUtf8();

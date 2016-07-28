@@ -222,7 +222,7 @@ public class ListCommandsActivity extends AppCompatActivity {
                     adapter.notifyDataSetChanged();
                 }
                 else {
-                    Toast.makeText(ListCommandsActivity.this, "Error al eliminar el comandos",
+                    Toast.makeText(ListCommandsActivity.this, R.string.error_removing_command,
                             Toast.LENGTH_SHORT).show();
                     progress.setVisibility(View.GONE);
                     list.setVisibility(View.VISIBLE);
@@ -231,7 +231,7 @@ public class ListCommandsActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<Mode> call, Throwable t) {
-                Toast.makeText(ListCommandsActivity.this, "Error al eliminar el comandos",
+                Toast.makeText(ListCommandsActivity.this, R.string.error_removing_command,
                         Toast.LENGTH_SHORT).show();
                 progress.setVisibility(View.GONE);
                 list.setVisibility(View.VISIBLE);

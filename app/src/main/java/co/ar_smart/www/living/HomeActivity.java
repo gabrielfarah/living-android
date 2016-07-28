@@ -895,7 +895,7 @@ public class HomeActivity extends AppCompatActivity {
         for (int i = 0; i < hubs.size(); i++)
             temp[i] = hubs.get(i).getCustom_name();
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Pick a home");
+        builder.setTitle(R.string.pick_home);
         builder.setItems(temp, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -939,6 +939,7 @@ public class HomeActivity extends AppCompatActivity {
                     processEndpointClick(listaEndpoints.get(position));
                 }
             });
+            //TODO Esto se va a seguir implementando???
             homeMainGridView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
                 @Override
                 public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -1061,7 +1062,7 @@ public class HomeActivity extends AppCompatActivity {
         seek.setProgress(endpoint.getState());
 
         popDialog.setIcon(R.drawable.light_icon);
-        popDialog.setTitle("Please select your desired brightness ");
+        popDialog.setTitle(R.string.zwave_level_command);
         popDialog.setView(seek);
         seek.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -1168,7 +1169,7 @@ public class HomeActivity extends AppCompatActivity {
         }
 
         this.doubleBackToExitPressedOnce = true;
-        Toast.makeText(this, "Please click BACK again to Log out", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, R.string.press_back_logout, Toast.LENGTH_SHORT).show();
 
         new Handler().postDelayed(new Runnable() {
 

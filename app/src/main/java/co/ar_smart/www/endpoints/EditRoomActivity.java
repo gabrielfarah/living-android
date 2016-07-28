@@ -180,19 +180,19 @@ public class EditRoomActivity extends AppCompatActivity {
                             adapter.notifyDataSetChanged();
                         }
                     } else {
-                        Toast.makeText(EditRoomActivity.this, "Ningún área encontrada ",
+                        Toast.makeText(EditRoomActivity.this, R.string.not_matching_areas,
                                 Toast.LENGTH_SHORT).show();
                     }
 
                 } else {
-                    Toast.makeText(EditRoomActivity.this, "Error al solicitar las áreas",
+                    Toast.makeText(EditRoomActivity.this, R.string.error_requesting_areas,
                             Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<List<Room>> call, Throwable t) {
-                Toast.makeText(EditRoomActivity.this, "Error al solicitar las áreas",
+                Toast.makeText(EditRoomActivity.this, R.string.error_requesting_areas,
                         Toast.LENGTH_SHORT).show();
             }
         });
@@ -205,7 +205,7 @@ public class EditRoomActivity extends AppCompatActivity {
     public void showDialog()
     {
         final Dialog dialog = new Dialog(EditRoomActivity.this);
-        dialog.setTitle("Luces Sala");
+        dialog.setTitle(R.string.living_room_lights);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.dialog_add_room);
         final TextView txtname=(TextView) dialog.findViewById(R.id.txtNameNewRoom);
@@ -219,7 +219,7 @@ public class EditRoomActivity extends AppCompatActivity {
                         addRoom(String.valueOf(txtname.getText()).toUpperCase());
                         adapter.notifyDataSetChanged();
                     } else {
-                        Toast.makeText(EditRoomActivity.this, "A room with that name already exits",
+                        Toast.makeText(EditRoomActivity.this, R.string.room_name_used,
                                 Toast.LENGTH_SHORT).show();
                     }
                 }
@@ -257,7 +257,7 @@ public class EditRoomActivity extends AppCompatActivity {
                     rooms.add(newRoom.getDescription());
                     adapter.notifyDataSetChanged();
                 } else {
-                    Toast.makeText(EditRoomActivity.this, "Error al agregar área",
+                    Toast.makeText(EditRoomActivity.this, R.string.error_adding_room,
                             Toast.LENGTH_SHORT).show();
                     try {
                         Log.d("ERROR Agregar AREA 1", response.errorBody().string());
@@ -270,7 +270,7 @@ public class EditRoomActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<Room> call, Throwable t) {
-                Toast.makeText(EditRoomActivity.this, "Error al agregar área",
+                Toast.makeText(EditRoomActivity.this, R.string.error_adding_room,
                         Toast.LENGTH_SHORT).show();
                 Log.d("ERROR Agregar AREA 2", t.getMessage());
                 t.printStackTrace();

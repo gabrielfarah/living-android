@@ -3,26 +3,19 @@ package co.ar_smart.www.endpoints;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
+import android.widget.ImageView;
 
-import co.ar_smart.www.analytics.AnalyticsApplication;
-import co.ar_smart.www.living.LoginActivity;
 import co.ar_smart.www.living.R;
 
-import static co.ar_smart.www.helpers.Constants.ACTION_EDIT;
-import static co.ar_smart.www.helpers.Constants.DEFAULT_HUB;
-import static co.ar_smart.www.helpers.Constants.EXTRA_ACTION;
 import static co.ar_smart.www.helpers.Constants.EXTRA_MESSAGE;
 import static co.ar_smart.www.helpers.Constants.EXTRA_TYPE_DEVICE;
 import static co.ar_smart.www.helpers.Constants.PREFS_NAME;
-import static co.ar_smart.www.helpers.Constants.PREF_EMAIL;
-import static co.ar_smart.www.helpers.Constants.PREF_HUB;
 import static co.ar_smart.www.helpers.Constants.PREF_JWT;
-import static co.ar_smart.www.helpers.Constants.PREF_PASSWORD;
 import static co.ar_smart.www.helpers.Constants.TYPE_DEVICE_WIFI;
 import static co.ar_smart.www.helpers.Constants.TYPE_DEVICE_ZWAVE;
 
@@ -39,7 +32,7 @@ public class ManagementEndpointsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_management_endpoint);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setTitle(getString(R.string.label_endpoint_management_title));
+            getSupportActionBar().setTitle(getString(R.string.label_devices_activity_title));
         }
 
         SharedPreferences settings = getSharedPreferences(PREFS_NAME,
@@ -47,7 +40,14 @@ public class ManagementEndpointsActivity extends AppCompatActivity {
         // Get values using keys
 
         token= settings.getString(PREF_JWT, "000");
+        ImageView img = (ImageView)findViewById(R.id.imgAni);
+        img.setBackgroundResource(R.drawable.basic_animation);
 
+        // Get the background, which has been compiled to an AnimationDrawable object.
+        AnimationDrawable frameAnimation = (AnimationDrawable) img.getBackground();
+
+        // Start the animation (looped playback by default).
+        frameAnimation.start();
     }
 
     @Override

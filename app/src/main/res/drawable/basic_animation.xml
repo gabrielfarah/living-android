@@ -1,0 +1,47 @@
+<!-- Animation frames are wheel0.png through wheel5.png
+     files inside the res/drawable/ folder -->
+<animation-list android:id="@+id/selected"
+                android:oneshot="false"
+                xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@drawable/ac_icon" android:duration="300" />
+    <item android:drawable="@drawable/alarm_icon" android:duration="300" />
+    <item android:drawable="@drawable/alarm_2_icon" android:duration="300" />
+    <item android:drawable="@drawable/alarm_3_icon" android:duration="300" />
+    <item android:drawable="@drawable/battery_icon" android:duration="300" />
+    <item android:drawable="@drawable/cofee_maker_icon" android:duration="300" />
+    <item android:drawable="@drawable/default_icon" android:duration="300" />
+    <item android:drawable="@drawable/door_icon" android:duration="300" />
+    <item android:drawable="@drawable/door_2_icon" android:duration="300" />
+    <item android:drawable="@drawable/door_lock_icon" android:duration="300" />
+    <item android:drawable="@drawable/door_lock_2_icon" android:duration="300" />
+    <item android:drawable="@drawable/energy_icon" android:duration="300" />
+    <item android:drawable="@drawable/energy_2_icon" android:duration="300" />
+    <item android:drawable="@drawable/energy_sensor_icon" android:duration="300" />
+    <item android:drawable="@drawable/hue_icon1" android:duration="300" />
+    <item android:drawable="@drawable/hue_icon2" android:duration="300" />
+    <item android:drawable="@drawable/lamp_icon" android:duration="300" />
+    <item android:drawable="@drawable/lamp_2_icon" android:duration="300" />
+    <item android:drawable="@drawable/lamp_3_icon" android:duration="300" />
+    <item android:drawable="@drawable/light_icon" android:duration="300" />
+    <item android:drawable="@drawable/light_2_icon" android:duration="300" />
+    <item android:drawable="@drawable/light_3_icon" android:duration="300" />
+    <item android:drawable="@drawable/light_4_icon" android:duration="300" />
+    <item android:drawable="@drawable/light_5_icon" android:duration="300" />
+    <item android:drawable="@drawable/movement_sensor_icon" android:duration="300" />
+    <item android:drawable="@drawable/movement_sensor_2_icon" android:duration="300" />
+    <item android:drawable="@drawable/movement_sensor_3_icon" android:duration="300" />
+    <item android:drawable="@drawable/movement_sensor_4_icon" android:duration="300" />
+    <item android:drawable="@drawable/music_icon" android:duration="300" />
+    <item android:drawable="@drawable/music_2_icon" android:duration="300" />
+    <item android:drawable="@drawable/music_3_icon" android:duration="300" />
+    <item android:drawable="@drawable/music_4_icon" android:duration="300" />
+    <item android:drawable="@drawable/music_5_icon" android:duration="300" />
+    <item android:drawable="@drawable/open_close_sensor_icon" android:duration="300" />
+    <item android:drawable="@drawable/open_close_sensor_2_icon" android:duration="300" />
+    <item android:drawable="@drawable/open_close_sensor_3_icon" android:duration="300" />
+    <item android:drawable="@drawable/power_icon" android:duration="300" />
+    <item android:drawable="@drawable/power_outlet_icon" android:duration="300" />
+    <item android:drawable="@drawable/power_outlet_2_icon" android:duration="300" />
+    <item android:drawable="@drawable/sensor_icon" android:duration="300" />
+
+</animation-list>

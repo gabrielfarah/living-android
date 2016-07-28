@@ -32,7 +32,7 @@
         android:ellipsize="end"
         android:gravity="center_vertical"
         android:singleLine="true"
-        android:text="House Device"
+        android:text="@string/house_device"
         android:textSize="16sp" />
 
     <LinearLayout
