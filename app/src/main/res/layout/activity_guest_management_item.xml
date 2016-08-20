@@ -19,5 +19,5 @@
         android:layout_height="wrap_content"
         android:layout_weight=".2"
         android:padding="@dimen/activity_horizontal_margin"
-        android:src="@drawable/delete_btn" />
+        android:src="@drawable/delete_icon" />
 </LinearLayout>

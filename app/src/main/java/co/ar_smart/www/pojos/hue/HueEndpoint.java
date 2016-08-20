@@ -53,7 +53,7 @@ public class HueEndpoint implements Parcelable, ICommandClass {
     /**
      * The parcelable constructor of a new HueEndpoint
      *
-     * @param inparcel with information
+     * @param in parcel with information
      */
     protected HueEndpoint(Parcel in) {
         endpoint = in.readParcelable(Endpoint.class.getClassLoader());

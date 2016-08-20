@@ -69,9 +69,9 @@ public class Hub implements Parcelable{
     @Override
     public String toString(){
         if (custom_name.isEmpty()) {
-            return "( Unnamed Hub )";
+            return "UNNAMED HUB";
         } else {
-            return "(" + custom_name + " " + id + ")";
+            return custom_name.toUpperCase();
         }
     }
 

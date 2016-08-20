@@ -9,6 +9,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.Toast;
@@ -20,6 +21,7 @@ import org.json.JSONObject;
 import java.util.Date;
 
 import co.ar_smart.www.adapters.music_player.TrackAdapter;
+import co.ar_smart.www.analytics.AnalyticsApplication;
 import co.ar_smart.www.helpers.CommandManager;
 import co.ar_smart.www.helpers.Constants;
 import co.ar_smart.www.living.R;
@@ -81,6 +83,8 @@ public class SonosControllerActivity extends AppCompatActivity {
      * the play/pause button
      */
     private Button playPauseButton;
+    private Runnable runnable;
+    private LinearLayout spinner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -122,10 +126,10 @@ public class SonosControllerActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     if (isPlaying) {
                         pauseCommand();
-                        playPauseButton.setBackgroundResource(R.drawable.pause_icon);
+                        playPauseButton.setBackgroundResource(R.drawable.play_icon);
                     } else {
                         playCommand();
-                        playPauseButton.setBackgroundResource(R.drawable.play_icon);
+                        playPauseButton.setBackgroundResource(R.drawable.pause_icon);
                     }
                     isPlaying = !isPlaying;
                 }
@@ -149,6 +153,7 @@ public class SonosControllerActivity extends AppCompatActivity {
                 }
             });
         }
+        spinner = (LinearLayout) findViewById(R.id.sonos_ui_loader);
     }
 
     /**
@@ -168,8 +173,7 @@ public class SonosControllerActivity extends AppCompatActivity {
 
             @Override
             public void onUnsuccessfulCallback() {
-                //TODO bad request
-                Log.d("??", "??");
+                AnalyticsApplication.getInstance().trackEvent("Weird Event", "NoAccessToSonosPlay", "Was a bad request?:" + API_TOKEN + " " + sonosEndpoint.toString());
             }
         });
     }
@@ -178,6 +182,7 @@ public class SonosControllerActivity extends AppCompatActivity {
      * This method send a "pause track" command to the sonos
      */
     private void pauseCommand() {
+        Log.d("PAUSE COMMAND", sonosEndpoint.get_pause());
         CommandManager.sendCommandWithoutResult(API_TOKEN, PREFERRED_HUB_ID,
                 CommandManager.getFormattedCommand(sonosEndpoint.get_pause()), new CommandManager.ResponseCallbackInterface() {
             @Override
@@ -191,7 +196,7 @@ public class SonosControllerActivity extends AppCompatActivity {
 
             @Override
             public void onUnsuccessfulCallback() {
-                //TODO bad request
+                AnalyticsApplication.getInstance().trackEvent("Weird Event", "NoAccessToSonosPause", "Was a bad request?:" + API_TOKEN + " " + sonosEndpoint.toString());
             }
         });
     }
@@ -201,7 +206,7 @@ public class SonosControllerActivity extends AppCompatActivity {
      */
     private void backCommand() {
         CommandManager.sendCommandWithoutResult(API_TOKEN, PREFERRED_HUB_ID,
-                CommandManager.getFormattedCommand(sonosEndpoint.getBack()), new CommandManager.ResponseCallbackInterface() {
+                CommandManager.getFormattedCommand(SonosEndpoint.getBack()), new CommandManager.ResponseCallbackInterface() {
             @Override
             public void onFailureCallback() {
                 Constants.showNoInternetMessage(getApplicationContext());
@@ -213,7 +218,7 @@ public class SonosControllerActivity extends AppCompatActivity {
 
             @Override
             public void onUnsuccessfulCallback() {
-                //TODO bad request
+                AnalyticsApplication.getInstance().trackEvent("Weird Event", "NoAccessToSonosPrev", "Was a bad request?:" + API_TOKEN + " " + sonosEndpoint.toString());
             }
         });
     }
@@ -223,7 +228,7 @@ public class SonosControllerActivity extends AppCompatActivity {
      */
     private void nextCommand() {
         CommandManager.sendCommandWithoutResult(API_TOKEN, PREFERRED_HUB_ID,
-                CommandManager.getFormattedCommand(sonosEndpoint.getNext()), new CommandManager.ResponseCallbackInterface() {
+                CommandManager.getFormattedCommand(SonosEndpoint.getNext()), new CommandManager.ResponseCallbackInterface() {
             @Override
             public void onFailureCallback() {
                 Constants.showNoInternetMessage(getApplicationContext());
@@ -235,7 +240,7 @@ public class SonosControllerActivity extends AppCompatActivity {
 
             @Override
             public void onUnsuccessfulCallback() {
-                //TODO bad request
+                AnalyticsApplication.getInstance().trackEvent("Weird Event", "NoAccessToSonosNext", "Was a bad request?:" + API_TOKEN + " " + sonosEndpoint.toString());
             }
         });
     }
@@ -259,7 +264,7 @@ public class SonosControllerActivity extends AppCompatActivity {
 
             @Override
             public void onUnsuccessfulCallback() {
-                //TODO bad request
+                AnalyticsApplication.getInstance().trackEvent("Weird Event", "NoAccessToSonosVolume", "Was a bad request?:" + API_TOKEN + " " + sonosEndpoint.toString());
             }
         });
     }
@@ -282,7 +287,7 @@ public class SonosControllerActivity extends AppCompatActivity {
 
             @Override
             public void onUnsuccessfulCallback() {
-                //TODO bad request
+                AnalyticsApplication.getInstance().trackEvent("Weird Event", "NoAccessToSonosPlay", "Was a bad request?:" + API_TOKEN + " " + sonosEndpoint.toString());
             }
         });
     }
@@ -308,7 +313,7 @@ public class SonosControllerActivity extends AppCompatActivity {
 
             @Override
             public void onUnsuccessfulCallback() {
-                //TODO bad request?
+                AnalyticsApplication.getInstance().trackEvent("Weird Event", "NoAccessToSonosUi", "Was a bad request?:" + API_TOKEN + " " + sonosEndpoint.toString());
             }
         });
     }
@@ -326,6 +331,7 @@ public class SonosControllerActivity extends AppCompatActivity {
             @Override
             public void onSuccessCallback(JSONObject jObject) {
                 try {
+                    Log.d("Response", jObject.toString());
                     if (jObject.has("status")) {
                         if (!jObject.getString("status").equalsIgnoreCase("processing")) {
                             stopHandlerFlag = true;
@@ -360,9 +366,11 @@ public class SonosControllerActivity extends AppCompatActivity {
         SonosControllerActivity.this.runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                spinner.setVisibility(View.GONE);
                 adapter = new TrackAdapter(SonosControllerActivity.this, sonosEndpoint.getQueue());
                 // Attach the adapter to a ListView
                 ListView listView = (ListView) findViewById(R.id.music_tracks_list_view);
+                listView.setVisibility(View.VISIBLE);
                 if (listView != null) {
                     listView.setAdapter(adapter);
                     listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -386,11 +394,12 @@ public class SonosControllerActivity extends AppCompatActivity {
      * This method will poll the server response every 2 seconds until is stopped by the flag or the timeout expires
      */
     private void loadAsyncResponse() {
-        Runnable runnable = new Runnable() {
+        runnable = new Runnable() {
             @Override
             public void run() {
                 // while the handler is not stoped create a new request every time delta
-                if (!stopHandlerFlag && timeoutDate.after(new Date())) {
+                Date now = new Date();
+                if (!stopHandlerFlag && timeoutDate.after(now)) {
                     processResponse();
                     pollingResponseHandler.postDelayed(this, 2000);
                 }
@@ -410,5 +419,16 @@ public class SonosControllerActivity extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void stopPolling() {
+        stopHandlerFlag = true;
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        pollingResponseHandler.removeCallbacks(runnable);
+        stopPolling();
     }
 }

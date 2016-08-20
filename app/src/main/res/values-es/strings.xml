@@ -226,4 +226,14 @@
     <string name="until_specific_time">Hasta las:</string>
     <string name="welcome_messages">La red WiFi: %1$s no existe</string>
     <string name="yes">Si</string>
+    <string name="delete_room_label">Delete selected rooms</string>
+    <string name="label_confirmation_remove_room">Are you sure you want to remove the selected room?</string>
+    <string name="text_room_explanation_add_device">text_room_explanation_add_device</string>
+    <string name="text_room_explanation_edit">You can customize you home by selecting in wich room eac of you devices are, this way you can control the entire room with one click. To create new rooms press the \"Add Room\" button. </string>
+    <string name="change_selected_hub_button_label">Control the selected home</string>
+    <string name="description_add_wifi">Please, to include a new Z-Wave device into the network, press the button on the device you wish to include. In case you are unsure what button to press, search in the device manual the manufacturer included in the product package.</string>
+    <string name="description_add_zwave">Sometimes Domu is unable to find a device in your network. You could either click triying using the button “try again” or you could manually add the device if you are sure is in your home WIFI with the button “Add manually”.</string>
+    <string name="add_manually">Add Manually</string>
+    <string name="description_delete_zwave">To remove a Z-Wave device from this hub, please click on the pairing button on the device. If you areunsure what button to press, search for \"pairing options\" in the device manual.</string>
+    <string name="default_sonos_music_title">Loading track info...</string>
 </resources>

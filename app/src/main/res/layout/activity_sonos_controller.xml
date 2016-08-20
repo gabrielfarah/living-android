@@ -11,7 +11,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="DAVID CALZADO y su CHARANGA HABANERA - Arriba De Lo Mal Hecho (Video Oficial HD)"
+        android:text="@string/default_sonos_music_title"
         android:textAlignment="center"
         android:textColor="@color/blanco"
         android:textSize="18sp" />
@@ -105,5 +105,21 @@
         android:layout_height="match_parent"
         android:background="@color/blanco"
         android:ellipsize="end"
-        android:singleLine="true" />
+        android:singleLine="true"
+        android:visibility="gone" />
+
+    <RelativeLayout
+        android:id="@+id/sonos_ui_loader"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/blanco">
+
+        <ProgressBar
+            style="?android:attr/progressBarStyleLarge"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_gravity="center" />
+    </RelativeLayout>
 </LinearLayout>

@@ -39,6 +39,8 @@ import static co.ar_smart.www.helpers.Constants.ACTION_EDIT;
 import static co.ar_smart.www.helpers.Constants.DEFAULT_HUB;
 import static co.ar_smart.www.helpers.Constants.EXTRA_ACTION;
 import static co.ar_smart.www.helpers.Constants.EXTRA_MESSAGE;
+import static co.ar_smart.www.helpers.Constants.EXTRA_MESSAGE_PREF_HUB;
+import static co.ar_smart.www.helpers.Constants.EXTRA_OBJECT;
 import static co.ar_smart.www.helpers.Constants.EXTRA_ROOM;
 import static co.ar_smart.www.helpers.Constants.EXTRA_UID;
 import static co.ar_smart.www.helpers.Constants.PREFS_NAME;
@@ -74,22 +76,35 @@ public class EditDeviceActivity extends AppCompatActivity {
      * Current device
      */
     private Endpoint dev;
+    private int PREFERRED_HUB_ID;
 
+    public static String bodyToString(final RequestBody request) {
+        try {
+            final Buffer buffer = new Buffer();
+            if (request != null)
+                request.writeTo(buffer);
+            else
+                return "";
+            return buffer.readUtf8();
+        } catch (final IOException e) {
+            return "did not work";
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_device);
         myact=this;
-        dev=getIntent().getExtras().getParcelable("EndPoint");
+        Intent intent = getIntent();
+        dev = intent.getParcelableExtra(EXTRA_OBJECT);
+        API_TOKEN = intent.getStringExtra(EXTRA_MESSAGE);
+        PREFERRED_HUB_ID = intent.getIntExtra(EXTRA_MESSAGE_PREF_HUB, -1);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setHomeButtonEnabled(true);
             getSupportActionBar().setTitle(dev.getName());
         }
-        Intent intent = getIntent();
-        API_TOKEN = intent.getStringExtra(EXTRA_MESSAGE);
-
         Button btnIcon=(Button) findViewById(R.id.btnEditIcon);
         Button btnRoom=(Button) findViewById(R.id.btnEditRoom);
         txtName=(EditText) findViewById(R.id.txtNameDev);
@@ -126,6 +141,7 @@ public class EditDeviceActivity extends AppCompatActivity {
             }
         });
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.edit_devices_menu, menu);
@@ -188,16 +204,13 @@ public class EditDeviceActivity extends AppCompatActivity {
             }
         }
     }
+
     /**
      * This method check if the fields are empty.
      */
     private boolean checkFields()
     {
-        if(!txtName.getText().toString().equals("") && !room.equals("") && !icon.equals(""))
-        {
-            return true;
-        }
-        return false;
+        return !txtName.getText().toString().equals("") && !room.equals("") && !icon.equals("");
     }
 
     /**
@@ -268,20 +281,6 @@ public class EditDeviceActivity extends AppCompatActivity {
         });
     }
 
-    public static String bodyToString(final RequestBody request){
-        try {
-            final Buffer buffer = new Buffer();
-            if(request != null)
-                request.writeTo(buffer);
-            else
-                return "";
-            return buffer.readUtf8();
-        }
-        catch (final IOException e) {
-            return "did not work";
-        }
-    }
-
     /**
      * Show a notification message dialog when the device was sent to the backend
      */
@@ -308,6 +307,13 @@ public class EditDeviceActivity extends AppCompatActivity {
         dialog.show();
     }
 
+    private String getPreferredHub() {
+        SharedPreferences settings = getSharedPreferences(PREFS_NAME,
+                Context.MODE_PRIVATE);
+        // Get values using keys
+        return settings.getString(PREF_HUB, DEFAULT_HUB);
+    }
+
     /**
      * This interface implements a Retrofit interface for the EditDeviceActivity
      */
@@ -317,12 +323,5 @@ public class EditDeviceActivity extends AppCompatActivity {
 
         @PATCH("hubs/{hub_id}/endpoints/{endp_id}/")
         Call<Endpoint> editDev(@Path("hub_id") String hub_id,@Path("endp_id") String endp_id,@Body Endpoint en);
-    }
-
-    private String getPreferredHub(){
-        SharedPreferences settings = getSharedPreferences(PREFS_NAME,
-                Context.MODE_PRIVATE);
-        // Get values using keys
-        return settings.getString(PREF_HUB, DEFAULT_HUB);
     }
 }

@@ -10,7 +10,7 @@ import android.view.View;
 import android.widget.Button;
 
 import co.ar_smart.www.analytics.AnalyticsApplication;
-import co.ar_smart.www.living.LoginActivity;
+import co.ar_smart.www.living.HomeActivity;
 import co.ar_smart.www.living.LoginRegisterActivity;
 import co.ar_smart.www.living.R;
 import co.ar_smart.www.pojos.User;
@@ -18,7 +18,6 @@ import co.ar_smart.www.pojos.User;
 import static co.ar_smart.www.helpers.Constants.EXTRA_MESSAGE;
 import static co.ar_smart.www.helpers.Constants.EXTRA_OBJECT;
 import static co.ar_smart.www.helpers.Constants.PREFS_NAME;
-import static co.ar_smart.www.helpers.Constants.PREF_EMAIL;
 import static co.ar_smart.www.helpers.Constants.PREF_HUB;
 import static co.ar_smart.www.helpers.Constants.PREF_JWT;
 import static co.ar_smart.www.helpers.Constants.PREF_PASSWORD;
@@ -83,7 +82,7 @@ public class ManagementUserActivity extends AppCompatActivity {
         Intent intent = new Intent(this, EditAccountActivity.class);
         intent.putExtra(EXTRA_MESSAGE, API_TOKEN);
         intent.putExtra(EXTRA_OBJECT, USER);
-        startActivityForResult(intent, RESULT_CANCELED);
+        startActivityForResult(intent, HomeActivity.ACTIVITY_CODE_USER_UPDATE);
     }
 
     @Override
@@ -91,7 +90,7 @@ public class ManagementUserActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case android.R.id.home:
                 // app icon in action bar clicked; go home
-                this.finish();
+                responseToParent();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -123,9 +122,26 @@ public class ManagementUserActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == RESULT_CANCELED) { //TODO why the fuck is -1 (RESULT_CANCELED)?
-            USER = data.getExtras().getParcelable(EXTRA_OBJECT);
+        // Check which request we're responding to
+        if (requestCode == HomeActivity.ACTIVITY_CODE_USER_UPDATE) {
+            // Make sure the request was successful
+            if (resultCode == RESULT_OK) {
+                USER = data.getExtras().getParcelable(EXTRA_OBJECT);
+            }
         }
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public void onBackPressed() {
+        responseToParent();
+        super.onBackPressed();
+    }
+
+    private void responseToParent() {
+        Intent output = new Intent();
+        output.putExtra(EXTRA_OBJECT, USER);
+        setResult(RESULT_OK, output);
+        finish();
     }
 }

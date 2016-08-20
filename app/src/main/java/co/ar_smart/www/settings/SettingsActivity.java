@@ -8,7 +8,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ProgressBar;
@@ -17,7 +16,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import co.ar_smart.www.analytics.AnalyticsApplication;
 import co.ar_smart.www.helpers.Constants;
@@ -54,7 +52,9 @@ public class SettingsActivity extends AppCompatActivity {
         API_TOKEN = intent.getStringExtra(EXTRA_MESSAGE);
         PREFERRED_HUB_ID = intent.getIntExtra(EXTRA_MESSAGE_PREF_HUB, -1);
         hubs = intent.getParcelableArrayListExtra(EXTRA_OBJECT);
-        getHubs();
+        if (hubs.isEmpty()) {
+            getHubs();
+        }
         //leer lista de hubs para cambiarlos
         //Dar opcion de cambiar datos del hub
         if (getSupportActionBar() != null) {
@@ -74,24 +74,39 @@ public class SettingsActivity extends AppCompatActivity {
             }
         });
 
+        Button updatePreferedHub = (Button) findViewById(R.id.change_prefered_hub);
+
         dataAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, hubs);
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         hub_picker.setAdapter(dataAdapter);
-        hub_picker.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        /*hub_picker.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-                int selected = hubs.get(position).getId();
+                *//*int selected = hubs.get(position).getId();
                 if (selected != PREFERRED_HUB_ID) {
                     updatePreferredHub(selected);
                     Log.d("ITEM", hubs.get(position).toString());
                     PREFERRED_HUB_ID = selected;
                     Toast.makeText(SettingsActivity.this, String.format(getResources().getString(R.string.hub_selected_toast_text), hub_picker.getItemAtPosition(position).toString()), Toast.LENGTH_SHORT).show();
-                }
+                }*//*
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parentView) {
                 // your code here
+            }
+        });*/
+
+        updatePreferedHub.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Hub t = (Hub) hub_picker.getSelectedItem();
+                updatePreferredHub(t.getId());
+                Toast.makeText(SettingsActivity.this, String.format(getResources().getString(R.string.hub_selected_toast_text), t.getCustom_name()), Toast.LENGTH_SHORT).show();
+                Intent output = new Intent();
+                output.putExtra(EXTRA_MESSAGE_PREF_HUB, t.getId());
+                setResult(RESULT_OK, output);
+                finish();
             }
         });
     }
@@ -102,11 +117,11 @@ public class SettingsActivity extends AppCompatActivity {
     private void getHubs() {
         IHomeClient livingIHomeClient = RetrofitServiceGenerator.createService(IHomeClient.class, API_TOKEN);
         // Create a call instance for looking up Retrofit contributors.
-        Call<List<Hub>> call = livingIHomeClient.hubs();
+        Call<ArrayList<Hub>> call = livingIHomeClient.hubs();
         //Log.d("OkHttp", String.format("Sending request %s ",call.request().toString()));
-        call.enqueue(new Callback<List<Hub>>() {
+        call.enqueue(new Callback<ArrayList<Hub>>() {
             @Override
-            public void onResponse(Call<List<Hub>> call, Response<List<Hub>> response) {
+            public void onResponse(Call<ArrayList<Hub>> call, Response<ArrayList<Hub>> response) {
                 if (response.isSuccessful()) {
                     // If the user got hubs he can select one to use. If he do not then send it to register one activity.
                     if (!response.body().isEmpty()) {
@@ -123,7 +138,7 @@ public class SettingsActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<List<Hub>> call, Throwable t) {
+            public void onFailure(Call<ArrayList<Hub>> call, Throwable t) {
                 // something went completely south (like no internet connection)
                 Constants.showNoInternetMessage(getApplicationContext());
                 Log.d("Error", t.getMessage());

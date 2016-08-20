@@ -99,7 +99,9 @@ public class HomeActivity extends AppCompatActivity {
 
     public static final int ACTIVITY_CODE_MODE = 1;
     public static final int ACTIVITY_CODE_ENDPOINT = 2;
-    public static final int ACTIVITY_CODE_ROOM = 3;
+    public static final int ACTIVITY_CODE_HUB_CHANGE = 3;
+    public static final int ACTIVITY_CODE_USER_UPDATE = 4;
+
     /**
      * This handler will be used to update the states of all the devices every 5 seconds
      */
@@ -311,6 +313,7 @@ public class HomeActivity extends AppCompatActivity {
 
                 @Override
                 public void onSuccessCallback(User user) {
+                    //TODO el usuario se actualiza aca?
                 }
 
                 @Override
@@ -366,7 +369,7 @@ public class HomeActivity extends AppCompatActivity {
         intent.putParcelableArrayListExtra(EXTRA_OBJECT, hubs);
         intent.putExtra(EXTRA_MESSAGE, API_TOKEN);
         intent.putExtra(EXTRA_MESSAGE_PREF_HUB, PREFERRED_HUB_ID);
-        startActivity(intent);
+        startActivityForResult(intent, ACTIVITY_CODE_HUB_CHANGE);
     }
 
     private void stopPolling() {
@@ -380,7 +383,9 @@ public class HomeActivity extends AppCompatActivity {
     private void openDevicesActivity() {
         Intent i = new Intent(HomeActivity.this, ManagementEndpointsActivity.class);
         i.putExtra(EXTRA_MESSAGE, API_TOKEN);
-        startActivity(i);
+        i.putExtra(EXTRA_MESSAGE_PREF_HUB, PREFERRED_HUB_ID);
+        i.putParcelableArrayListExtra(EXTRA_OBJECT, endpoint_devices);
+        startActivityForResult(i, ACTIVITY_CODE_ENDPOINT);
     }
 
     /**
@@ -422,7 +427,7 @@ public class HomeActivity extends AppCompatActivity {
         Intent intent = new Intent(this, ManagementUserActivity.class);
         intent.putExtra(EXTRA_MESSAGE, API_TOKEN);
         intent.putExtra(EXTRA_OBJECT, currentUSer);
-        startActivity(intent);
+        startActivityForResult(intent, ACTIVITY_CODE_USER_UPDATE);
     }
 
     /**
@@ -524,6 +529,14 @@ public class HomeActivity extends AppCompatActivity {
                 Context.MODE_PRIVATE);
         // Get values using keys
         PREFERRED_HUB_ID = Integer.parseInt(settings.getString(PREF_HUB, DEFAULT_HUB));
+        endpoint_devices.clear();
+        devices.clear();
+        modes.clear();
+        rooms.clear();
+        endpointIcons.clear();
+        gridScenesAdapter.notifyDataSetChanged();
+        gridRoomsAdapter.notifyDataSetChanged();
+        gridAdapter.notifyDataSetChanged();
         if (PREFERRED_HUB_ID == -1) {
             getHubs();
         } else {
@@ -753,11 +766,11 @@ public class HomeActivity extends AppCompatActivity {
      */
     private void getEndpoints() {
         IHomeClient livingIHomeClient = RetrofitServiceGenerator.createService(IHomeClient.class, API_TOKEN);
-        Call<List<Endpoint>> call = livingIHomeClient.endpoints("" + PREFERRED_HUB_ID);
+        Call<ArrayList<Endpoint>> call = livingIHomeClient.endpoints("" + PREFERRED_HUB_ID);
         //Log.d("OkHttp", String.format("Sending request %s ",call.request().toString()));
-        call.enqueue(new Callback<List<Endpoint>>() {
+        call.enqueue(new Callback<ArrayList<Endpoint>>() {
             @Override
-            public void onResponse(Call<List<Endpoint>> call, Response<List<Endpoint>> response) {
+            public void onResponse(Call<ArrayList<Endpoint>> call, Response<ArrayList<Endpoint>> response) {
                 if (response.isSuccessful()) {
                     for (Endpoint endpoint : response.body()) {
                         if (!devices.contains(endpoint.getName())) {
@@ -785,7 +798,7 @@ public class HomeActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<List<Endpoint>> call, Throwable t) {
+            public void onFailure(Call<ArrayList<Endpoint>> call, Throwable t) {
                 // something went completely south (like no internet connection)
                 Constants.showNoInternetMessage(getApplicationContext());
                 t.printStackTrace();
@@ -799,11 +812,11 @@ public class HomeActivity extends AppCompatActivity {
      */
     private void getModes() {
         IHomeClient livingIHomeClient = RetrofitServiceGenerator.createService(IHomeClient.class, API_TOKEN);
-        Call<List<Mode>> call = livingIHomeClient.modes("" + PREFERRED_HUB_ID);
+        Call<ArrayList<Mode>> call = livingIHomeClient.modes("" + PREFERRED_HUB_ID);
         //Log.d("OkHttp", String.format("Sending request %s ",call.request().toString()));
-        call.enqueue(new Callback<List<Mode>>() {
+        call.enqueue(new Callback<ArrayList<Mode>>() {
             @Override
-            public void onResponse(Call<List<Mode>> call, Response<List<Mode>> response) {
+            public void onResponse(Call<ArrayList<Mode>> call, Response<ArrayList<Mode>> response) {
                 if (response.isSuccessful()) {
                     for (Mode mode : response.body()) {
                         if (!modes.contains(mode))
@@ -822,7 +835,7 @@ public class HomeActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<List<Mode>> call, Throwable t) {
+            public void onFailure(Call<ArrayList<Mode>> call, Throwable t) {
                 // something went completely south (like no internet connection)
                 Constants.showNoInternetMessage(getApplicationContext());
                 try {
@@ -843,7 +856,9 @@ public class HomeActivity extends AppCompatActivity {
     private void openManagementDevicesActivity() {
         Intent intent = new Intent(this, ManagementEndpointsActivity.class);
         intent.putExtra(EXTRA_MESSAGE, API_TOKEN);
-        startActivity(intent);
+        intent.putExtra(EXTRA_MESSAGE_PREF_HUB, PREFERRED_HUB_ID);
+        intent.putExtra(EXTRA_OBJECT, endpoint_devices);
+        startActivityForResult(intent, ACTIVITY_CODE_ENDPOINT);
     }
 
     /**
@@ -852,11 +867,11 @@ public class HomeActivity extends AppCompatActivity {
     private void getHubs() {
         IHomeClient livingIHomeClient = RetrofitServiceGenerator.createService(IHomeClient.class, API_TOKEN);
         // Create a call instance for looking up Retrofit contributors.
-        Call<List<Hub>> call = livingIHomeClient.hubs();
+        Call<ArrayList<Hub>> call = livingIHomeClient.hubs();
         //Log.d("OkHttp", String.format("Sending request %s ",call.request().toString()));
-        call.enqueue(new Callback<List<Hub>>() {
+        call.enqueue(new Callback<ArrayList<Hub>>() {
             @Override
-            public void onResponse(Call<List<Hub>> call, Response<List<Hub>> response) {
+            public void onResponse(Call<ArrayList<Hub>> call, Response<ArrayList<Hub>> response) {
                 if (response.isSuccessful()) {
                     // If the user got hubs he can select one to use. If he do not then send it to register one activity.
                     if (!response.body().isEmpty()) {
@@ -872,7 +887,7 @@ public class HomeActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<List<Hub>> call, Throwable t) {
+            public void onFailure(Call<ArrayList<Hub>> call, Throwable t) {
                 // something went completely south (like no internet connection)
                 Constants.showNoInternetMessage(getApplicationContext());
                 Log.d("Error", t.getMessage());
@@ -1075,7 +1090,7 @@ public class HomeActivity extends AppCompatActivity {
     private void performZwaveLevelCommand(final Endpoint endpoint) {
         final AlertDialog.Builder popDialog = new AlertDialog.Builder(this);
         final SeekBar seek = new SeekBar(this);
-        seek.setMax(255);
+        seek.setMax(99);
         seek.setKeyProgressIncrement(1);
         seek.setProgress(endpoint.getState());
 
@@ -1223,11 +1238,21 @@ public class HomeActivity extends AppCompatActivity {
                 //setGridLayout(endpoint_devices);
                 gridAdapter.notifyDataSetChanged();
             }
-        } else if (requestCode == ACTIVITY_CODE_ROOM) {
+        } else if (requestCode == ACTIVITY_CODE_USER_UPDATE) {
             // Make sure the request was successful
             if (resultCode == RESULT_OK) {
-                rooms = data.getExtras().getParcelableArrayList(EXTRA_OBJECT);
-                gridRoomsAdapter.updateDataItems(rooms);
+                currentUSer = data.getExtras().getParcelable(EXTRA_OBJECT);
+            }
+        } else if (requestCode == ACTIVITY_CODE_HUB_CHANGE) {
+            // Make sure the request was successful
+            if (resultCode == RESULT_OK) {
+                int pref_hub = data.getIntExtra(EXTRA_MESSAGE_PREF_HUB, -1);
+                if (pref_hub != -1) {
+                    if (pref_hub != PREFERRED_HUB_ID) {
+                        PREFERRED_HUB_ID = pref_hub;
+                        loadPreferredHub();
+                    }
+                }
             }
         }
     }

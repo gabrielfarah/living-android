@@ -13,38 +13,49 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_weight="0.8"
             android:gravity="center"
-            android:layout_weight="0.8">
+            android:orientation="vertical">
             <ImageView
+                android:id="@+id/imv_state"
                 android:layout_width="150dp"
                 android:layout_height="150dp"
-                android:id="@+id/imv_state"
-                android:src="@drawable/light_icon"/>
+                android:src="@drawable/default_icon" />
+
+            <TextView
+                android:id="@+id/trigger_text_view_state"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/app_name"
+                android:textAlignment="center"
+                android:textSize="25sp" />
 
         </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
+            android:layout_weight="0.1"
             android:gravity="center"
-            android:layout_weight="0.1">
+            android:orientation="vertical">
             <Button
+                android:id="@+id/btn_on_positive"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
                 android:background="@color/colorPrimaryDark"
-                android:textColor="@color/blanco"
                 android:text="Acción al prender"
-                android:id="@+id/btn_on_positive"/>
+                android:textColor="@color/blanco"
+                android:visibility="gone" />
 
             <Button
+                android:id="@+id/btn_on_negative"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
                 android:background="@color/colorPrimaryDark"
-                android:textColor="@color/blanco"
                 android:text="Acción al apagar"
-                android:id="@+id/btn_on_negative"/>
+                android:textColor="@color/blanco"
+                android:visibility="gone" />
         </LinearLayout>
 
     </LinearLayout>

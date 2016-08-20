@@ -66,6 +66,8 @@ public class HueControllerActivity extends AppCompatActivity {
      */
     private String pollingURL;
 
+    private Runnable runnableResponse;
+
     public String getAPI_TOKEN() {
         return API_TOKEN;
     }
@@ -216,7 +218,7 @@ public class HueControllerActivity extends AppCompatActivity {
      * This method will poll the server response every 2 seconds until is stopped by the flag or the timeout expires
      */
     private void loadAsyncResponse() {
-        Runnable runnable = new Runnable() {
+        runnableResponse = new Runnable() {
             @Override
             public void run() {
                 // while the handler is not stoped create a new request every time delta
@@ -227,7 +229,18 @@ public class HueControllerActivity extends AppCompatActivity {
             }
         };
         // start it with:
-        pollingResponseHandler.post(runnable);
+        pollingResponseHandler.post(runnableResponse);
+    }
+
+    private void stopPolling() {
+        stopHandlerFlag = true;
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        pollingResponseHandler.removeCallbacks(runnableResponse);
+        stopPolling();
     }
 
     class ViewPagerAdapter extends FragmentPagerAdapter {

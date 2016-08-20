@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:focusable="false">
+    android:orientation="horizontal">
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -12,20 +12,19 @@
             android:id="@+id/labelDevadd"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:textSize="20dp"
-            android:focusable="false"/>
+            android:focusable="false"
+            android:textSize="20sp" />
         <TextView
             android:id="@+id/labelDevCategoryadd"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:textSize="12dp"
-            android:focusable="false"/>
+            android:focusable="false"
+            android:textSize="12sp" />
     </LinearLayout>
     <ImageView
         android:id="@+id/iconlistad"
-        android:padding="5px"
-        android:layout_margin="10dp"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="1"/>
+        android:layout_weight="1"
+        android:padding="5dp" />
 </LinearLayout>

@@ -1,6 +1,6 @@
 package co.ar_smart.www.interfaces;
 
-import java.util.List;
+import java.util.ArrayList;
 
 import co.ar_smart.www.pojos.Endpoint;
 import co.ar_smart.www.pojos.Hub;
@@ -20,7 +20,7 @@ public interface IHomeClient {
      * @return A list containing all the endpoints
      */
     @GET("hubs/{hub_id}/endpoints/")
-    Call<List<Endpoint>> endpoints(
+    Call<ArrayList<Endpoint>> endpoints(
             @Path("hub_id") String hub_id
     );
 
@@ -30,7 +30,7 @@ public interface IHomeClient {
      * @return A list of all the hubs the user is available to query
      */
     @GET("hubs/")
-    Call<List<Hub>> hubs();
+    Call<ArrayList<Hub>> hubs();
 
     /**
      * This function obtains a particular hub given a valid hub ID
@@ -50,7 +50,7 @@ public interface IHomeClient {
      * @return A list containing all the endpoints
      */
     @GET("hubs/{hub_id}/modes/")
-    Call<List<Mode>> modes(
+    Call<ArrayList<Mode>> modes(
             @Path("hub_id") String hub_id
     );
 }

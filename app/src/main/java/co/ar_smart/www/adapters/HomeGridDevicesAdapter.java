@@ -7,7 +7,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,7 +25,7 @@ import co.ar_smart.www.pojos.Endpoint;
  */
 public class HomeGridDevicesAdapter extends BaseAdapter {
 
-    private Context context;
+    private static Context context;
     private List<Endpoint> endpoints;
 
     public HomeGridDevicesAdapter(Context c, List<Endpoint> endpointGrid) {
@@ -140,7 +139,7 @@ public class HomeGridDevicesAdapter extends BaseAdapter {
         return R.drawable.default_icon;
     }
 
-    public Drawable setTint(int dr, int color) {
+    public static Drawable setTint(int dr, int color) {
         Drawable d = ResourcesCompat.getDrawable(context.getResources(), dr, null);
         Drawable wrappedDrawable = DrawableCompat.wrap(d);
         DrawableCompat.setTint(wrappedDrawable, color);
@@ -168,52 +167,41 @@ public class HomeGridDevicesAdapter extends BaseAdapter {
         LayoutInflater inflater = (LayoutInflater) context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         if (convertView == null) {
-            // get layout from mobile.xml
             gridView = inflater.inflate(R.layout.home_grid_view_item, null);
-            //params.setLayoutDirection(1);
             DisplayMetrics metrics = context.getResources().getDisplayMetrics();
             int screenHeight = metrics.heightPixels;
             AbsListView.LayoutParams params = new AbsListView.LayoutParams(
                     AbsListView.LayoutParams.MATCH_PARENT,
                     screenHeight / 4);
             gridView.setLayoutParams(params);
-            //imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-
             gridView.setPadding(4, 4, 4, 4);
             gridView.setBackgroundColor(ContextCompat.getColor(context, R.color.white_ctran));
-            if (endpoints.get(position) != null) {
-                int temp = getDrawableFromString(endpoints.get(position).getImage());
-                ImageView imageView = (ImageView)gridView.findViewById(R.id.endpointImage);
-                TextView textView = (TextView) gridView.findViewById(R.id.endpointTitle);
-                textView.setText(endpoints.get(position).getName());
-                TextView textView2 = (TextView)gridView.findViewById(R.id.endpointRoom);
-                textView2.setText(endpoints.get(position).getRoom());
-                Log.d("ADAPTER SATE:", endpoints.get(position).getState() + " - " + endpoints.get(position).isActive());
-                if (!endpoints.get(position).isActive()) {
-                    imageView = (ImageView)gridView.findViewById(R.id.endpointImage);
-                    imageView.setImageResource(temp);
-                    imageView.setAlpha((float) 0.4);
-                    Log.d("color", "GRIS");
-                } else {
-                    imageView.setAlpha((float) 1.0);
+        } else {
+            gridView = convertView;
+        }
+        if (endpoints.get(position) != null) {
+            int temp = getDrawableFromString(endpoints.get(position).getImage());
+            ImageView imageView = (ImageView) gridView.findViewById(R.id.endpointImage);
+            TextView textView = (TextView) gridView.findViewById(R.id.endpointTitle);
+            textView.setText(endpoints.get(position).getName());
+            TextView textView2 = (TextView) gridView.findViewById(R.id.endpointRoom);
+            textView2.setText(endpoints.get(position).getRoom()); // En vez del room se puede colocar un estado correspondiente ej. "abierto/cerrado" , "25 C", etc.
+            if (!endpoints.get(position).isActive()) {
+                imageView = (ImageView) gridView.findViewById(R.id.endpointImage);
+                imageView.setImageResource(temp);
+                imageView.setAlpha((float) 0.4);
+            } else {
+                imageView.setAlpha((float) 1.0);
 
-                    if (endpoints.get(position).getState() > 0) {
-                        imageView.setImageDrawable(setTint(temp, Color.rgb(44, 194, 190)));
-                        textView.setTextColor(context.getResources().getColor(R.color.colorPrimaryDark));
-                        textView2.setTextColor(context.getResources().getColor(R.color.colorPrimary));
-                        //imageView.setImageResource(temp);
-                        Log.d("color", "ORIGINAL");
-                    } else {
-                        //imageView.setImageResource(temp);
-                        textView.setTextColor(context.getResources().getColor(R.color.soporte));
-                        textView2.setTextColor(context.getResources().getColor(R.color.soporte));
-                        imageView.setImageDrawable(setTint(temp, Color.rgb(128, 128, 128)));
-                    }
+                if (endpoints.get(position).getState() > 0) {
+                    imageView.setImageDrawable(setTint(temp, Color.rgb(44, 194, 190)));
+                    textView.setTextColor(ContextCompat.getColor(context, R.color.colorPrimaryDark));
+                } else {
+                    textView.setTextColor(ContextCompat.getColor(context, R.color.secundario));
+                    imageView.setImageDrawable(setTint(temp, Color.rgb(128, 128, 128)));
                 }
             }
-            return gridView;
-        } else {
-            return convertView;
         }
+        return gridView;
     }
 }

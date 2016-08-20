@@ -1,9 +1,6 @@
 package co.ar_smart.www.endpoints;
 
-import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.content.ContextCompat;
@@ -14,47 +11,38 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
-import co.ar_smart.www.helpers.RetrofitServiceGenerator;
+import co.ar_smart.www.helpers.CommandManager;
+import co.ar_smart.www.helpers.Constants;
+import co.ar_smart.www.helpers.EndpointManager;
 import co.ar_smart.www.living.R;
 import co.ar_smart.www.pojos.Category;
 import co.ar_smart.www.pojos.Endpoint;
-import co.ar_smart.www.pojos.EndpointClassCommand;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okio.Buffer;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.http.GET;
-import retrofit2.http.POST;
-import retrofit2.http.Path;
 
 import static co.ar_smart.www.helpers.Constants.ACTION_ADD;
-import static co.ar_smart.www.helpers.Constants.BASE_URL;
-import static co.ar_smart.www.helpers.Constants.DEFAULT_HUB;
 import static co.ar_smart.www.helpers.Constants.EXTRA_ACTION;
 import static co.ar_smart.www.helpers.Constants.EXTRA_CATEGORY_DEVICE;
 import static co.ar_smart.www.helpers.Constants.EXTRA_MESSAGE;
+import static co.ar_smart.www.helpers.Constants.EXTRA_MESSAGE_PREF_HUB;
+import static co.ar_smart.www.helpers.Constants.EXTRA_OBJECT;
 import static co.ar_smart.www.helpers.Constants.EXTRA_TYPE_DEVICE;
-import static co.ar_smart.www.helpers.Constants.JSON;
-import static co.ar_smart.www.helpers.Constants.PREFS_NAME;
-import static co.ar_smart.www.helpers.Constants.PREF_HUB;
-import static co.ar_smart.www.helpers.Constants.PULL_INTERVAL_SECS;
-import static co.ar_smart.www.helpers.Constants.TIMEOUT_DEVICES__SECS;
 import static co.ar_smart.www.helpers.Constants.TYPE_DEVICE_WIFI;
 import static co.ar_smart.www.helpers.Constants.TYPE_DEVICE_ZWAVE;
 
@@ -67,7 +55,7 @@ public class NewDevicesActivity extends AppCompatActivity {
     /**
      * Endpoints list
      */
-    private ArrayList<Endpoint> devices;
+    private ArrayList<Endpoint> devices = new ArrayList<>();
     /**
      * Task id from the new devices request
      */
@@ -80,15 +68,19 @@ public class NewDevicesActivity extends AppCompatActivity {
      * Represent the progress circle shown while the devices are been downloaded
      */
     private ProgressBar progress;
-    /**
-     * Integer that represent the elapsed time while the devices are been detected
-     */
-    private int sol;
-    /**
-     * Represent the current instance
-     */
-    private Activity myact;
-    private int prefered_hub;
+    private int PREFERRED_HUB_ID;
+    private Date addDeviceTimeoutDate;
+    private String addDevicePollingURL;
+    private Runnable runnableEndpointAddResponse;
+    private Handler pollingResponseHandler = new Handler();
+    private boolean stopHandlerFlag = false;
+    private ArrayList<Endpoint> endpoints = new ArrayList<>();
+    private int tryCount = 0;
+    private String addType;
+    private ArrayAdapter<Endpoint> adapter;
+    private Button addManuallyButton;
+    private TextView description;
+    private TextView noDeviceMessage;
 
 
     @Override
@@ -99,357 +91,211 @@ public class NewDevicesActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setTitle(getString(R.string.label_newdev_activity_title));
         }
-        myact=this;
-        sol=0;
-        devices=new ArrayList<>();
-
 
         list = (ListView) findViewById(R.id.list_new_devices);
         progress = (ProgressBar) findViewById(R.id.progressnewDev);
+        description = (TextView) findViewById(R.id.add_device_text_view_message);
+        noDeviceMessage = (TextView) findViewById(R.id.no_device_mmesage_while_adding);
+        addManuallyButton = (Button) findViewById(R.id.add_device_wifi_manual_add_button);
+
         Intent intent = getIntent();
-
         API_TOKEN = intent.getStringExtra(EXTRA_MESSAGE);
-        prefered_hub = getPreferredHub();
-        updateDevices(null);
+        PREFERRED_HUB_ID = intent.getIntExtra(EXTRA_MESSAGE_PREF_HUB, -1);
+        addType = intent.getStringExtra(EXTRA_TYPE_DEVICE);
 
+        adapter = new ArrayAdapter<Endpoint>(this, android.R.layout.simple_list_item_1, endpoints) {
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent) {
+                View view = convertView;
+                if (view == null) {
+                    view = getLayoutInflater().inflate(R.layout.row_list_devices, null);
+                    TextView lb = (TextView) view.findViewById(R.id.labelDevadd);
+                    lb.setText(endpoints.get(position).getName());
+                    lb = (TextView) view.findViewById(R.id.labelDevCategoryadd);
+                    Category cat = endpoints.get(position).getCategory();
+                    if (cat != null) {
+                        lb.setText(cat.getCat());
+                    }
+                    ImageView i = (ImageView) view.findViewById(R.id.iconlistad);
+                    i.setImageDrawable(ContextCompat.getDrawable(NewDevicesActivity.this, R.drawable.new_cross_btn));
+                }
+                return view;
+            }
+        };
+        list.setAdapter(adapter);
+        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                Intent i = new Intent(NewDevicesActivity.this, EditDeviceActivity.class);
+                Bundle b = new Bundle();
+                b.putParcelable(EXTRA_OBJECT, endpoints.get(position));
+                i.putExtras(b);
+                Category cat = endpoints.get(position).getCategory();
+                if (cat != null) {
+                    i.putExtra(EXTRA_CATEGORY_DEVICE, cat.getCat());
+                }
+                i.putExtra(EXTRA_MESSAGE, API_TOKEN);
+                i.putExtra(EXTRA_ACTION, ACTION_ADD);
+                startActivity(i);
+            }
+        });
+
+        Button retryButton = (Button) findViewById(R.id.add_device_wifi_try_again_button);
+        retryButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                stopHandlerFlag = false;
+                endpoints.clear();
+                adapter.notifyDataSetChanged();
+                addDevice(addType);
+            }
+        });
+
+        Log.d("TIPO ADD=====", "" + addType);
+
+
+        if (addType != null && addType.equalsIgnoreCase(TYPE_DEVICE_WIFI)) { // Then add a Wifi
+            description.setText(getResources().getString(R.string.description_add_wifi_initial));
+            addManuallyButton.setVisibility(View.GONE);
+        } else if (addType != null && addType.equalsIgnoreCase(TYPE_DEVICE_ZWAVE)) { // Then add a Z-Wave
+            description.setText(getResources().getString(R.string.description_add_zwave));
+        }
+
+        addDevice(addType);
     }
 
-    /**
-     * Send the request for adding a new wifi device
-     */
-    public void  addWifiService()
-    {
-        String json = "";
-        OkHttpClient client = new OkHttpClient();
-        RequestBody body = RequestBody.create(JSON, json);
-        Request request = new Request.Builder()
-                .url(BASE_URL + "hubs/" + prefered_hub + "/command/add/wifi/")
-                .header("Authorization", "JWT "+API_TOKEN)
-                .header("Content-Type", "application/json")
-                .header("Accept", "application/json")
-                .post(body)
-                .build();
-        client.newCall(request).enqueue(new okhttp3.Callback() {
+    private void addDevice(String type) {
+        progress.setVisibility(View.VISIBLE);
+        list.setVisibility(View.GONE);
+        noDeviceMessage.setVisibility(View.GONE);
+        String url = "";
+        if (type != null && type.equalsIgnoreCase(TYPE_DEVICE_WIFI)) { // Then add a Z-Wave
+            url = "/command/add/wifi/";
+        } else if (type != null && type.equalsIgnoreCase(TYPE_DEVICE_ZWAVE)) { // Then add a Wifi
+            url = "/command/add/zwave/";
+        }
+        Log.d("PASO", "1");
+        EndpointManager.sendAddEndpointCommand(API_TOKEN, PREFERRED_HUB_ID, url, new CommandManager.CommandWithResultsCallbackInterface() {
             @Override
-            public void onFailure(okhttp3.Call call, IOException e) {
-
+            public void onFailureCallback() {
+                Log.d("PASO", "-1");
             }
 
             @Override
-            public void onResponse(okhttp3.Call call, okhttp3.Response response) throws IOException {
-                String jsonData = response.body().string();
-                response.body().close();
-                if (!response.isSuccessful()) {
+            public void onSuccessCallback(String pollingUrl, int timeout) {
+                addDeviceTimeoutDate = Constants.calculateTimeout(timeout);
+                addDevicePollingURL = pollingUrl;
+                loadAsyncEndpointAddDeviceResponse();
+            }
+
+            @Override
+            public void onUnsuccessfulCallback() {
+                Log.d("PASO", "-2");
+            }
+        });
+    }
+
+    private void loadAsyncEndpointAddDeviceResponse() {
+        Log.d("PASO", "1.5" + " - " + !stopHandlerFlag + " " + addDeviceTimeoutDate.after(new Date()));
+        runnableEndpointAddResponse = new Runnable() {
+            @Override
+            public void run() {
+                // while the handler is not stoped create a new request every time delta
+                Date now = new Date();
+                if (!stopHandlerFlag && addDeviceTimeoutDate.after(now)) {
+                    processEndpointAddResponse();
+                    Log.d("PASO", "2");
+                    pollingResponseHandler.postDelayed(this, 3000);
+                }
+                // If the request timmed out, we hide the loader animation and set a message.
+                if (!addDeviceTimeoutDate.after(now) && endpoints.isEmpty()) {
+                    progress.setVisibility(View.GONE);
+                    noDeviceMessage.setVisibility(View.VISIBLE);
+                    list.setVisibility(View.GONE);
+                }
+            }
+        };
+        // start it with:
+        pollingResponseHandler.post(runnableEndpointAddResponse);
+    }
+
+    private void processEndpointAddResponse() {
+        Log.d("PASO", "3");
+        CommandManager.getCommandResult(API_TOKEN, addDevicePollingURL, new CommandManager.ResponseCallbackInterface() {
+            @Override
+            public void onFailureCallback() {
+                stopHandlerFlag = true;
+            }
+
+            @Override
+            public void onSuccessCallback(JSONObject jObject) {
+                Log.d("LOG RESPONSE ====", jObject.toString());
+                try {
+                    if (jObject.has("status")) {
+                        if (!jObject.getString("status").equalsIgnoreCase("processing")) {
+                            stopHandlerFlag = true;
+                            Object response = jObject.get("response");
+                            if (response instanceof JSONArray) {
+                                // It's an array
+                                JSONArray endpointJsonArray = (JSONArray) response;
+                                Type listType = new TypeToken<List<Endpoint>>() {
+                                }.getType();
+                                ArrayList<Endpoint> endpointsResponse = new Gson().fromJson(endpointJsonArray.toString(), listType);
+                                endpoints.addAll(endpointsResponse);
+                            } else if (response instanceof JSONObject) {
+                                // It's an object
+                                JSONObject endpointObject = (JSONObject) response;
+                                Endpoint endpointsResponse = new Gson().fromJson(endpointObject.toString(), Endpoint.class);
+                                endpoints.add(endpointsResponse);
+                            } else {
+                                // It's something else, like a string or number
+                            }
+                            Log.d("ENDPOINT", endpoints.toString());
+                            updateUIWithResponse();
+                        }
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onUnsuccessfulCallback() {
+                stopHandlerFlag = true;
+            }
+        });
+    }
+
+    private void updateUIWithResponse() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                progress.setVisibility(View.GONE);
+                list.setVisibility(View.VISIBLE);
+                noDeviceMessage.setVisibility(View.GONE);
+                if (!endpoints.isEmpty()) {
+                    adapter.notifyDataSetChanged();
                 } else {
-                    try {
-                        JSONObject jObject = new JSONObject(jsonData);
-                        String ur[]=jObject.getString("url").split("/");
-                        task=ur[6];
-                        getDevicesWIFI();
-                    } catch (JSONException e) {
-
-                    }
-                }
-            }
-        });
-
-    }
-
-
-
-    public void getDevicesZWAVE()
-    {
-        NewDeviceClient client = RetrofitServiceGenerator.createService(NewDeviceClient.class, API_TOKEN);
-        Call<ResponseEndPointsZWAVE> call2 = client.getEndPointZ("" + prefered_hub, task);
-        devices.clear();
-
-        call2.enqueue(new Callback<ResponseEndPointsZWAVE>()
-        {
-            @Override
-            public void onResponse(final Call<ResponseEndPointsZWAVE> call, Response<ResponseEndPointsZWAVE> response)
-            {
-                String txtx=bodyToString(response.raw().request().body());
-                if (response.isSuccessful()) {
-                    ResponseEndPointsZWAVE li=response.body();
-                    Log.d("STATUS", li.getStatus());
-                    //devices.add(response.body());
-                    String sta=li.getStatus();
-                    if(sta.equals("done"))
-                    {
-                       Endpoint en=li.getResponse();
-                        Log.d("RESP", en.toString());
-
-                            devices.add(en);
-
-
-                        progress.setVisibility(View.GONE);
-                        list.setVisibility(View.VISIBLE);
-
-                        list.setAdapter(new ArrayAdapter<Endpoint>(NewDevicesActivity.this, android.R.layout.simple_list_item_1, devices)
-                        {
-                            @Override
-                            public View getView(int position, View convertView, ViewGroup parent) {
-                                View view=convertView;
-                                if(view==null)
-                                {
-
-                                    view=getLayoutInflater().inflate(R.layout.row_list_devices,null);
-                                    TextView lb=(TextView)view.findViewById(R.id.labelDevadd);
-                                    lb.setText(devices.get(position).getName());
-                                    lb=(TextView)view.findViewById(R.id.labelDevCategoryadd);
-                                    Category cat = devices.get(position).getCategory();
-                                    if (cat != null) {
-                                        lb.setText(cat.getCat());
-                                    }
-                                    ImageView i=(ImageView) view.findViewById(R.id.iconlistad);
-                                    i.setImageDrawable(ContextCompat.getDrawable(myact, R.drawable.new_cross_btn));
-                                }
-                                //chk.setChecked(checked[position]);
-                                return view;
-                            }
-                        });
-                        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                            @Override
-                            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                                Intent i=new Intent(NewDevicesActivity.this,EditDeviceActivity.class);
-                                Bundle b=new Bundle();
-                                b.putParcelable("EndPoint", devices.get(position));
-                                i.putExtras(b);
-                                Category cat = devices.get(position).getCategory();
-                                if (cat != null) {
-                                    i.putExtra(EXTRA_CATEGORY_DEVICE, cat.getCat());
-                                }
-                                i.putExtra(EXTRA_MESSAGE,API_TOKEN);
-                                i.putExtra(EXTRA_ACTION,ACTION_ADD);
-                                startActivity(i);
-                            }
-                        });
-
-
-                    }
-                    else
-                    {
-                        if(sol<TIMEOUT_DEVICES__SECS) {
-                            sol = sol + PULL_INTERVAL_SECS;
-                            new Handler().postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    getDevicesZWAVE();
-                                }
-                            }, 5000);
-                        }
-                        else
-                        {
-                            Toast.makeText(NewDevicesActivity.this, R.string.not_matching_devices,
-                                    Toast.LENGTH_LONG).show();
-                            progress.setVisibility(View.GONE);
-                            list.setVisibility(View.VISIBLE);
-                            finish();
-                        }
-                    }
-                }
-                else {
-                    try {
-                        Log.d("FAILED", response.errorBody().string());
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ResponseEndPointsZWAVE> call, Throwable t) {
-                Toast.makeText(NewDevicesActivity.this, R.string.not_matching_devices,
-                        Toast.LENGTH_SHORT).show();
-                progress.setVisibility(View.GONE);
-                list.setVisibility(View.VISIBLE);
-                t.printStackTrace();
-            }
-        });
-
-    }
-
-
-    public static String bodyToString(final RequestBody request){
-        try {
-            final Buffer buffer = new Buffer();
-            if(request != null)
-                request.writeTo(buffer);
-            else
-                return "";
-            return buffer.readUtf8();
-        }
-        catch (final IOException e) {
-            return "did not work";
-        }
-    }
-
-    /**
-     * Send the request for adding a new zwave device
-     */
-    public void  addZWaveService()
-    {
-        String json = "{}";
-        OkHttpClient client = new OkHttpClient();
-        RequestBody body = RequestBody.create(JSON, json);
-        Request request = new Request.Builder()
-                .url(BASE_URL + "hubs/" + prefered_hub + "/command/add/zwave/")
-                .header("Authorization", "JWT "+API_TOKEN)
-                .header("Content-Type", "application/json")
-                .header("Accept", "application/json")
-                .post(body)
-                .build();
-        client.newCall(request).enqueue(new okhttp3.Callback() {
-            @Override
-            public void onFailure(okhttp3.Call call, IOException e) {
-
-            }
-
-            @Override
-            public void onResponse(okhttp3.Call call, okhttp3.Response response) throws IOException {
-                String jsonData = response.body().string();
-                response.body().close();
-                if (response.isSuccessful())
-                {
-                    try {
-                        JSONObject jObject = new JSONObject(jsonData);
-                        String ur[]=jObject.getString("url").split("/");
-                        task=ur[6];
-                        Log.d("TASKID", "" + task);
-                        getDevicesWIFI();
-                    } catch (JSONException e) {
-
+                    tryCount++;
+                    if (addType != null && addType.equalsIgnoreCase(TYPE_DEVICE_WIFI) && tryCount > 2) { // Then add a Z-Wave
+                        description.setText(getResources().getString(R.string.description_add_wifi));
+                        addManuallyButton.setVisibility(View.VISIBLE);
                     }
                 }
             }
         });
     }
 
-    /**
-     * this method get all new devices detected by the hub
-     */
-    public void getDevicesWIFI()
-    {
-        NewDeviceClient client = RetrofitServiceGenerator.createService(NewDeviceClient.class, API_TOKEN);
-        Call<ResponseEndPoints> call2 = client.getEndPoint("" + prefered_hub, task);
-        devices.clear();
-
-        call2.enqueue(new Callback<ResponseEndPoints>()
-        {
-            @Override
-            public void onResponse(final Call<ResponseEndPoints> call, Response<ResponseEndPoints> response)
-            {
-                if (response.isSuccessful()) {
-                    ResponseEndPoints li=response.body();
-                    Log.d("STATUS", li.getStatus());
-                    //devices.add(response.body());
-                    String sta=li.getStatus();
-                    if(sta.equals("done"))
-                    {
-                        List<Endpoint> en=li.getResponse();
-                        Log.d("RESP", en.toString());
-                        for(Endpoint endp: en)
-                        {
-                            devices.add(endp);
-                        }
-
-                        progress.setVisibility(View.GONE);
-                        list.setVisibility(View.VISIBLE);
-
-                        list.setAdapter(new ArrayAdapter<Endpoint>(NewDevicesActivity.this, android.R.layout.simple_list_item_1, devices)
-                        {
-                            @Override
-                            public View getView(int position, View convertView, ViewGroup parent) {
-                                View view=convertView;
-                                if(view==null)
-                                {
-
-                                    view=getLayoutInflater().inflate(R.layout.row_list_devices,null);
-                                    TextView lb=(TextView)view.findViewById(R.id.labelDevadd);
-                                    lb.setText(devices.get(position).getName());
-                                    lb=(TextView)view.findViewById(R.id.labelDevCategoryadd);
-                                    Category cat = devices.get(position).getCategory();
-                                    if (cat != null) {
-                                        lb.setText(cat.getCat());
-                                    }
-                                    ImageView i=(ImageView) view.findViewById(R.id.iconlistad);
-                                    i.setImageDrawable(ContextCompat.getDrawable(myact, R.drawable.new_cross_btn));
-                                }
-                                //chk.setChecked(checked[position]);
-                                return view;
-                            }
-                        });
-                        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                            @Override
-                            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                                Intent i=new Intent(NewDevicesActivity.this,EditDeviceActivity.class);
-                                Bundle b=new Bundle();
-                                b.putParcelable("EndPoint", devices.get(position));
-                                i.putExtras(b);
-                                Category cat = devices.get(position).getCategory();
-                                if (cat != null) {
-                                    i.putExtra(EXTRA_CATEGORY_DEVICE, cat.getCat());
-                                }
-                                i.putExtra(EXTRA_MESSAGE,API_TOKEN);
-                                i.putExtra(EXTRA_ACTION,ACTION_ADD);
-                                startActivity(i);
-                            }
-                        });
-
-
-                    }
-                    else
-                    {
-                        if(sol<TIMEOUT_DEVICES__SECS) {
-                            sol = sol + PULL_INTERVAL_SECS;
-                            new Handler().postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    getDevicesWIFI();
-                                }
-                            }, 5000);
-                        }
-                        else
-                        {
-                            Toast.makeText(NewDevicesActivity.this,R.string.not_matching_devices,
-                                    Toast.LENGTH_LONG).show();
-                            progress.setVisibility(View.GONE);
-                            list.setVisibility(View.VISIBLE);
-                            finish();
-                        }
-                    }
-                }
-                else {
-                    try {
-                        Log.d("FAILED", response.errorBody().string());
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ResponseEndPoints> call, Throwable t) {
-                Toast.makeText(NewDevicesActivity.this, R.string.not_matching_devices,
-                        Toast.LENGTH_SHORT).show();
-                progress.setVisibility(View.GONE);
-                list.setVisibility(View.VISIBLE);
-                t.printStackTrace();
-            }
-        });
-
+    private void stopPolling() {
+        stopHandlerFlag = true;
     }
 
-    /**
-     * This method get preferred hub from the prefereces
-     */
-    private int getPreferredHub(){
-        SharedPreferences settings = getSharedPreferences(PREFS_NAME,
-                Context.MODE_PRIVATE);
-        // Get values using keys
-        return Integer.parseInt(settings.getString(PREF_HUB, DEFAULT_HUB));
+    @Override
+    public void onPause() {
+        super.onPause();
+        pollingResponseHandler.removeCallbacks(runnableEndpointAddResponse);
+        stopPolling();
     }
 
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -461,92 +307,6 @@ public class NewDevicesActivity extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
-    }
-
-    /**
-     * This method update the list devices
-     */
-    public void updateDevices(View v)
-    {
-        String addType = getIntent().getStringExtra(EXTRA_TYPE_DEVICE);
-        API_TOKEN = getIntent().getStringExtra(EXTRA_MESSAGE);
-
-        progress.setVisibility(View.VISIBLE);
-        list.setVisibility(View.GONE);
-
-        if(addType!=null)
-        {
-            switch (addType)
-            {
-                case TYPE_DEVICE_WIFI:
-                    addWifiService();
-                    break;
-                case TYPE_DEVICE_ZWAVE:
-                    addZWaveService();
-                    break;
-            }
-        }
-    }
-
-    /**
-     * This interface implements a Retrofit interface for the NewDeviceClient Activity
-     */
-    private interface NewDeviceClient {
-
-        @POST("hubs/{hub_id}/command/add/wifi/")
-        Call<List<EndpointClassCommand>> addwifi(
-                @Path("hub_id") String hub_id
-        );
-
-        @POST("hubs/{hub_id}/command/add/zwave/")
-        Call<List<Endpoint>> addzwave(
-                @Path("hub_id") String hub_id
-        );
-
-        @GET("hubs/{hub_id}/command/response/{task_id}/")
-        Call<ResponseEndPoints> getEndPoint(
-                @Path("hub_id") String hub_id, @Path("task_id") String task_id
-        );
-
-        @GET("hubs/{hub_id}/command/response/{task_id}/")
-        Call<ResponseEndPointsZWAVE> getEndPointZ(
-                @Path("hub_id") String hub_id, @Path("task_id") String task_id
-        );
-
-        @POST("hubs/{hub_id}/command/response/{task_id}/")
-        Call<List<Endpoint>> postEndPoint(
-                @Path("hub_id") String hub_id, @Path("task_id") String task_id
-        );
-    }
-
-    /**
-     * This private class represents the backend response when the app is asking for new devices
-     */
-    private class ResponseEndPoints {
-        private List<Endpoint> response;
-        private String status;
-
-        public List<Endpoint> getResponse() {
-            return response;
-        }
-
-        public String getStatus() {
-            return status;
-        }
-
-    }
-    private class ResponseEndPointsZWAVE {
-        private Endpoint response;
-        private String status;
-
-        public Endpoint getResponse() {
-            return response;
-        }
-
-        public String getStatus() {
-            return status;
-        }
-
     }
 
 }

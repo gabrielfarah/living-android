@@ -5,7 +5,6 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -56,22 +55,33 @@ public class ChangePasswordActivity extends AppCompatActivity {
         new_pass.setTypeface(Typeface.SERIF);
         new_pass2 = (EditText) findViewById(R.id.edit_text_new_password_repeat);
         new_pass2.setTypeface(Typeface.SERIF);
+        Button submitButton = (Button) findViewById(R.id.button_change_password);
+        submitButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                changePassword();
+            }
+        });
     }
 
-    @Override
+    /*@Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         // Get the feed icon and add the click action + change its color to white
         getMenuInflater().inflate(R.menu.change_password_menu, menu);
         return true;
-    }
+    }*/
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
         switch (item.getItemId()) {
-            case R.id.change_password:
-                changePassword();
+            case android.R.id.home:
+                // app icon in action bar clicked; go back
+                this.finish();
                 return true;
+            /*case R.id.change_password:
+                changePassword();
+                return true;*/
             default:
                 return super.onOptionsItemSelected(item);
         }

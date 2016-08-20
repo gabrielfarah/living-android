@@ -1,66 +1,41 @@
 package co.ar_smart.www.endpoints;
 
 import android.app.Activity;
-import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Date;
 
+import co.ar_smart.www.analytics.AnalyticsApplication;
+import co.ar_smart.www.helpers.CommandManager;
+import co.ar_smart.www.helpers.Constants;
+import co.ar_smart.www.helpers.EndpointManager;
 import co.ar_smart.www.helpers.RetrofitServiceGenerator;
+import co.ar_smart.www.interfaces.IHomeClient;
 import co.ar_smart.www.living.R;
-import co.ar_smart.www.pojos.Category;
 import co.ar_smart.www.pojos.Endpoint;
-import co.ar_smart.www.pojos.EndpointClassCommand;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.http.GET;
-import retrofit2.http.POST;
-import retrofit2.http.Path;
 
-import static co.ar_smart.www.helpers.Constants.ACTION_ADD;
-import static co.ar_smart.www.helpers.Constants.ACTION_EDIT;
-import static co.ar_smart.www.helpers.Constants.BASE_URL;
-import static co.ar_smart.www.helpers.Constants.DEFAULT_HUB;
-import static co.ar_smart.www.helpers.Constants.EXTRA_ACTION;
-import static co.ar_smart.www.helpers.Constants.EXTRA_CATEGORY_DEVICE;
 import static co.ar_smart.www.helpers.Constants.EXTRA_MESSAGE;
-import static co.ar_smart.www.helpers.Constants.EXTRA_TYPE_DEVICE;
-import static co.ar_smart.www.helpers.Constants.EXTRA_UID;
-import static co.ar_smart.www.helpers.Constants.JSON;
-import static co.ar_smart.www.helpers.Constants.PREFS_NAME;
-import static co.ar_smart.www.helpers.Constants.PREF_HUB;
-import static co.ar_smart.www.helpers.Constants.PULL_INTERVAL_SECS;
-import static co.ar_smart.www.helpers.Constants.TIMEOUT_DEVICES__SECS;
-import static co.ar_smart.www.helpers.Constants.TYPE_DEVICE_WIFI;
-import static co.ar_smart.www.helpers.Constants.TYPE_DEVICE_ZWAVE;
+import static co.ar_smart.www.helpers.Constants.EXTRA_MESSAGE_PREF_HUB;
+import static co.ar_smart.www.helpers.Constants.EXTRA_OBJECT;
 
 public class DeleteZwaveActivity extends AppCompatActivity {
 
@@ -71,7 +46,7 @@ public class DeleteZwaveActivity extends AppCompatActivity {
     /**
      * Endpoints list
      */
-    private ArrayList<Endpoint> devices;
+    private ArrayList<Endpoint> devices = new ArrayList<>();
     /**
      * Task id from the new devices request
      */
@@ -98,27 +73,44 @@ public class DeleteZwaveActivity extends AppCompatActivity {
      * Adapter for the list view
      */
     private ArrayAdapter<Endpoint> adapter;
+    private int PREFERRED_HUB_ID;
+    private Date removeDeviceTimeoutDate;
+    private String removeDevicePollingURL;
+    private Runnable runnableEndpointRemoveResponse;
+    private Handler pollingResponseHandler = new Handler();
+    private boolean stopHandlerFlag = false;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_new_devices);
+        setContentView(R.layout.activity_delete_device);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setTitle(getString(R.string.label_newdev_activity_title));
         }
         myact=this;
         sol=0;
-        devices=new ArrayList<>();
 
 
-        list = (ListView) findViewById(R.id.list_new_devices);
-        progress = (ProgressBar) findViewById(R.id.progressnewDev);
+        list = (ListView) findViewById(R.id.list_DelDevicesHub);
+        progress = (ProgressBar) findViewById(R.id.progressDelDevices);
+        TextView description = (TextView) findViewById(R.id.add_device_text_view_message);
+        description.setText(getResources().getString(R.string.description_delete_zwave));
+        Button tryAgain = (Button) findViewById(R.id.try_again_button_delete_zwave);
+        tryAgain.setVisibility(View.VISIBLE);
+
+        tryAgain.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                removeZwaveDevice();
+            }
+        });
+
         Intent intent = getIntent();
-
         API_TOKEN = intent.getStringExtra(EXTRA_MESSAGE);
-        prefered_hub = getPreferredHub();
+        PREFERRED_HUB_ID = intent.getIntExtra(EXTRA_MESSAGE_PREF_HUB, -1);
+        devices = getIntent().getParcelableArrayListExtra(EXTRA_OBJECT);
         adapter=new ArrayAdapter<Endpoint>(DeleteZwaveActivity.this, android.R.layout.simple_list_item_1, devices){
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
@@ -131,179 +123,142 @@ public class DeleteZwaveActivity extends AppCompatActivity {
                     lb.setText(devices.get(position).getName());
                     lb=(TextView)view.findViewById(R.id.labelDevCategoryadd);
                     lb.setText(devices.get(position).getCategory().getCat());
-                    ImageView i=(ImageView) view.findViewById(R.id.iconlistad);
-                    i.setImageDrawable(ContextCompat.getDrawable(myact, R.drawable.delete_btn));
+                    //ImageView i=(ImageView) view.findViewById(R.id.iconlistad);
+                    //i.setImageDrawable(ContextCompat.getDrawable(myact, R.drawable.delete_icon));
                 }
                 //chk.setChecked(checked[position]);
                 return view;
             }
         };
-        getDevices();
-
+        list.setAdapter(adapter);
+        if (!devices.isEmpty()) {
+            for (int i = 0; i < devices.size(); i++) {
+                if (!devices.get(i).getEndpoint_type().equalsIgnoreCase("zwave")) {
+                    devices.remove(i);
+                }
+            }
+            adapter.notifyDataSetChanged();
+        } else {
+            getDevices();
+        }
+        removeZwaveDevice();
     }
 
-    /**
-     * Send the request for adding a new wifi device
-     */
-    public void  delZwaveService()
-    {
-        String json = "";
-        OkHttpClient client = new OkHttpClient();
-        RequestBody body = RequestBody.create(JSON, json);
-        Request request = new Request.Builder()
-                .url(BASE_URL + "hubs/" + prefered_hub + "/command/remove/zwave/")
-                .header("Authorization", "JWT "+API_TOKEN)
-                .header("Content-Type", "application/json")
-                .header("Accept", "application/json")
-                .post(body)
-                .build();
-        client.newCall(request).enqueue(new okhttp3.Callback() {
+    private void removeZwaveDevice() {
+        progress.setVisibility(View.VISIBLE);
+        list.setVisibility(View.GONE);
+        String url = "/command/remove/zwave/";
+        Log.d("PASO", "1");
+        EndpointManager.sendAddEndpointCommand(API_TOKEN, PREFERRED_HUB_ID, url, new CommandManager.CommandWithResultsCallbackInterface() {
             @Override
-            public void onFailure(okhttp3.Call call, IOException e) {
-
+            public void onFailureCallback() {
+                Log.d("PASO", "-1");
             }
 
             @Override
-            public void onResponse(okhttp3.Call call, okhttp3.Response response) throws IOException {
-                String jsonData = response.body().string();
-                response.body().close();
-                if (response.isSuccessful())
-                {
-                    try {
-                        JSONObject jObject = new JSONObject(jsonData);
-                        String ur[]=jObject.getString("url").split("/");
-                        task=ur[8];
-                        delDevices();
-                    } catch (JSONException e) {
+            public void onSuccessCallback(String pollingUrl, int timeout) {
+                removeDeviceTimeoutDate = Constants.calculateTimeout(timeout);
+                removeDevicePollingURL = pollingUrl;
+                loadAsyncEndpointRemoveDeviceResponse();
+            }
 
-                    }
+            @Override
+            public void onUnsuccessfulCallback() {
+                Log.d("PASO", "-2");
+            }
+        });
+    }
+
+
+    private void loadAsyncEndpointRemoveDeviceResponse() {
+        Log.d("PASO", "1.5" + " - " + !stopHandlerFlag + " " + removeDeviceTimeoutDate.after(new Date()));
+        runnableEndpointRemoveResponse = new Runnable() {
+            @Override
+            public void run() {
+                // while the handler is not stoped create a new request every time delta
+                Date now = new Date();
+                if (!stopHandlerFlag && removeDeviceTimeoutDate.after(now)) {
+                    processEndpointRemoveResponse();
+                    Log.d("PASO", "2");
+                    pollingResponseHandler.postDelayed(this, 3000);
                 }
+            }
+        };
+        // start it with:
+        pollingResponseHandler.post(runnableEndpointRemoveResponse);
+    }
+
+    private void processEndpointRemoveResponse() {
+        Log.d("PASO", "3");
+        CommandManager.getCommandResult(API_TOKEN, removeDevicePollingURL, new CommandManager.ResponseCallbackInterface() {
+            @Override
+            public void onFailureCallback() {
+                stopHandlerFlag = true;
+                Constants.showNoInternetMessage(getApplicationContext());
+            }
+
+            @Override
+            public void onSuccessCallback(JSONObject jObject) {
+                Log.d("LOG RESPONSE ====", jObject.toString());
+                try {
+                    if (jObject.has("status")) {
+                        if (!jObject.getString("status").equalsIgnoreCase("processing")) {
+                            stopHandlerFlag = true;
+                            updateUIWithResponse();
+                        }
+                    }
+                } catch (JSONException e) {
+                    AnalyticsApplication.getInstance().trackException(new Exception(e));
+                }
+            }
+
+            @Override
+            public void onUnsuccessfulCallback() {
+                stopHandlerFlag = true;
+            }
+        });
+    }
+
+    public void getDevices() {
+        IHomeClient livingIHomeClient = RetrofitServiceGenerator.createService(IHomeClient.class, API_TOKEN);
+        Call<ArrayList<Endpoint>> call = livingIHomeClient.endpoints("" + PREFERRED_HUB_ID);
+        //Log.d("OkHttp", String.format("Sending request %s ",call.request().toString()));
+        call.enqueue(new Callback<ArrayList<Endpoint>>() {
+            @Override
+            public void onResponse(Call<ArrayList<Endpoint>> call, Response<ArrayList<Endpoint>> response) {
+                if (response.isSuccessful()) {
+                    devices = response.body();
+                    for (int i = 0; i < devices.size(); i++) {
+                        if (!devices.get(i).getEndpoint_type().equalsIgnoreCase("zwave")) {
+                            devices.remove(i);
+                        }
+                    }
+                    updateUIWithResponse();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ArrayList<Endpoint>> call, Throwable t) {
+                // something went completely south (like no internet connection)
+                Constants.showNoInternetMessage(getApplicationContext());
+                t.printStackTrace();
+                AnalyticsApplication.getInstance().trackException(new Exception(t));
             }
         });
 
     }
 
-    /**
-     * this method get all new devices detected by the hub
-     */
-    public void delDevices()
-    {
-        DelZWaveDeviceClient client = RetrofitServiceGenerator.createService(DelZWaveDeviceClient.class, API_TOKEN);
-        Call<ResponseEndPoints> call2 = client.delEndPoint("" + prefered_hub, task);
-        devices.clear();
-
-        call2.enqueue(new Callback<ResponseEndPoints>()
-        {
+    private void updateUIWithResponse() {
+        runOnUiThread(new Runnable() {
             @Override
-            public void onResponse(final Call<ResponseEndPoints> call, Response<ResponseEndPoints> response)
-            {
-                if (response.isSuccessful()) {
-                    ResponseEndPoints li=response.body();
-                    //Log.d("STATUS", li.getStatus());
-                    //devices.add(response.body());
-                    String sta=li.getStatus();
-                    if(sta.equals("done"))
-                    {
-                        String en=li.getResponse();
-                        adapter.notifyDataSetChanged();
-
-                        progress.setVisibility(View.GONE);
-                        list.setVisibility(View.VISIBLE);
-
-                        list.setAdapter(new ArrayAdapter<Endpoint>(DeleteZwaveActivity.this, android.R.layout.simple_list_item_1, devices)
-                        {
-                            @Override
-                            public View getView(int position, View convertView, ViewGroup parent) {
-                                View view=convertView;
-                                if(view==null)
-                                {
-
-                                    view=getLayoutInflater().inflate(R.layout.row_list_devices,null);
-                                    TextView lb=(TextView)view.findViewById(R.id.labelDevadd);
-                                    lb.setText(devices.get(position).getName());
-                                    lb=(TextView)view.findViewById(R.id.labelDevCategoryadd);
-                                    Category cat = devices.get(position).getCategory();
-                                    if (cat != null) {
-                                        lb.setText(cat.getCat());
-                                    }
-                                    ImageView i=(ImageView) view.findViewById(R.id.iconlistad);
-                                    i.setImageDrawable(ContextCompat.getDrawable(myact, R.drawable.new_cross_btn));
-                                }
-                                //chk.setChecked(checked[position]);
-                                return view;
-                            }
-                        });
-                        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                            @Override
-                            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                                Intent i=new Intent(DeleteZwaveActivity.this,EditDeviceActivity.class);
-                                Bundle b=new Bundle();
-                                b.putParcelable("EndPoint", devices.get(position));
-                                i.putExtras(b);
-                                Category cat = devices.get(position).getCategory();
-                                if (cat != null) {
-                                    i.putExtra(EXTRA_CATEGORY_DEVICE, cat.getCat());
-                                }
-                                i.putExtra(EXTRA_MESSAGE,API_TOKEN);
-                                i.putExtra(EXTRA_ACTION,ACTION_ADD);
-                                startActivity(i);
-                            }
-                        });
-
-
-                    }
-                    else
-                    {
-                        if(sol<TIMEOUT_DEVICES__SECS) {
-                            sol = sol + PULL_INTERVAL_SECS;
-                            new Handler().postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    delDevices();
-                                }
-                            }, 5000);
-                        }
-                        else
-                        {
-                            Toast.makeText(DeleteZwaveActivity.this, R.string.not_matching_devices,
-                                    Toast.LENGTH_LONG).show();
-                            progress.setVisibility(View.GONE);
-                            list.setVisibility(View.VISIBLE);
-                            finish();
-                        }
-                    }
-                }
-                else {
-                    try {
-                        Log.d("FAILED", response.errorBody().string());
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ResponseEndPoints> call, Throwable t) {
-                Toast.makeText(DeleteZwaveActivity.this, R.string.not_matching_devices,
-                        Toast.LENGTH_SHORT).show();
+            public void run() {
                 progress.setVisibility(View.GONE);
                 list.setVisibility(View.VISIBLE);
-                t.printStackTrace();
+                adapter.notifyDataSetChanged();
             }
         });
-
     }
 
-    /**
-     * This method get preferred hub from the prefereces
-     */
-    private int getPreferredHub(){
-        SharedPreferences settings = getSharedPreferences(PREFS_NAME,
-                Context.MODE_PRIVATE);
-        // Get values using keys
-        return Integer.parseInt(settings.getString(PREF_HUB, DEFAULT_HUB));
-    }
 
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -316,133 +271,15 @@ public class DeleteZwaveActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * this method get all devices
-     */
-
-    public void getDevices()
-    {
-        final DelZWaveDeviceClient client = RetrofitServiceGenerator.createService(DelZWaveDeviceClient.class, API_TOKEN);
-        Call<List<Endpoint>> call2 = client.getendpoints(""+getPreferredHub());
-        devices.clear();
-
-        call2.enqueue(new Callback<List<Endpoint>>()
-        {
-            @Override
-            public void onResponse(Call<List<Endpoint>> call, Response<List<Endpoint>> response)
-            {
-                if (response.isSuccessful()) {
-                    List<Endpoint> li=response.body();
-                        for(Endpoint endp: li)
-                        {
-                            if(endp.getEndpoint_type().equals("zwave"))
-                                devices.add(endp);
-                        }
-
-                        list.setAdapter(adapter);
-                        adapter.notifyDataSetChanged();
-                        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                            @Override
-                            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                                Endpoint e=devices.get(position);
-                                showDialog(e.getName(),""+getPreferredHub(),""+devices.get(position).getId());
-                            }
-                        });
-
-                        progress.setVisibility(View.GONE);
-                        list.setVisibility(View.VISIBLE);
-                }
-                else {
-                    Toast.makeText(DeleteZwaveActivity.this, R.string.error_requesting_devices,
-                            Toast.LENGTH_SHORT).show();
-                    progress.setVisibility(View.GONE);
-                    list.setVisibility(View.VISIBLE);
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<Endpoint>> call, Throwable t) {
-                Toast.makeText(DeleteZwaveActivity.this, R.string.error_requesting_devices,
-                        Toast.LENGTH_SHORT).show();
-                progress.setVisibility(View.GONE);
-                list.setVisibility(View.VISIBLE);
-
-            }
-        });
-
-
+    private void stopPolling() {
+        stopHandlerFlag = true;
     }
 
-
-    /**
-     * Show a warning dialog asking if the user is sure to delete the device selected
-     * @param devi name device selected from the list
-     * @param hu preferred hub
-     * @param idd id device
-     */
-
-    public void showDialog(String devi, String hu,String idd)
-    {
-        final String h=hu;
-        final String i=idd;
-        final Dialog dialog = new Dialog(DeleteZwaveActivity.this);
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setContentView(R.layout.dialog_warning_delete);
-        TextView txtname=(TextView) dialog.findViewById(R.id.lbl_warning_del_device);
-        txtname.setText(getResources().getString(R.string.label_warning_delete_device)+" "+devi+"?");
-        Button dialogButton = (Button) dialog.findViewById(R.id.btnDel);
-        dialogButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                progress.setVisibility(View.VISIBLE);
-                list.setVisibility(View.GONE);
-                delZwaveService();
-                Toast.makeText(DeleteZwaveActivity.this, R.string.press_wireless_button,
-                        Toast.LENGTH_LONG).show();
-                dialog.dismiss();
-            }
-        });
-
-        dialogButton = (Button) dialog.findViewById(R.id.btnCancelDel);
-        dialogButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.dismiss();
-            }
-        });
-
-        dialog.show();
-    }
-
-    /**
-     * This interface implements a Retrofit interface for the NewDeviceClient Activity
-     */
-    private interface DelZWaveDeviceClient {
-
-        @GET("hubs/{hub_id}/command/remove/zwave/response/{task_id}/")
-        Call<ResponseEndPoints> delEndPoint(
-                @Path("hub_id") String hub_id, @Path("task_id") String task_id
-        );
-
-        @GET("hubs/{hub_id}/endpoints/")
-        Call<List<Endpoint>> getendpoints(@Path("hub_id") String hub_id);
-    }
-
-    /**
-     * This private class represents the backend response when the app is asking for new devices
-     */
-    private class ResponseEndPoints {
-        private String response;
-        private String status;
-
-        public String getResponse() {
-            return response;
-        }
-
-        public String getStatus() {
-            return status;
-        }
-
+    @Override
+    public void onPause() {
+        super.onPause();
+        pollingResponseHandler.removeCallbacks(runnableEndpointRemoveResponse);
+        stopPolling();
     }
 
 }

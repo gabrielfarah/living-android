@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -33,7 +32,6 @@ public class EditAccountActivity extends AppCompatActivity {
         final Intent intent = getIntent();
         API_TOKEN = intent.getStringExtra(EXTRA_MESSAGE);
         USER = intent.getParcelableExtra(EXTRA_OBJECT);
-        Log.d("USER", USER.toString());
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setTitle(getString(R.string.label_user_management_title));

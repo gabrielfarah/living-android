@@ -20,11 +20,13 @@ public class Room implements Parcelable{
         }
     };
     private String description;
-    private int hub;
+    private int hub = -1;
+    private int id = -1;
 
     protected Room(Parcel in) {
         description = in.readString();
         hub = in.readInt();
+        id = in.readInt();
     }
 
     public Room(int h,String d)
@@ -35,6 +37,14 @@ public class Room implements Parcelable{
 
     public int getHub() {
         return hub;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String toString(){
@@ -50,6 +60,7 @@ public class Room implements Parcelable{
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(description);
         dest.writeInt(hub);
+        dest.writeInt(id);
     }
 
     public String getDescription()
@@ -65,7 +76,7 @@ public class Room implements Parcelable{
     public boolean equals(Object object) {
         boolean sameSame = false;
 
-        if (object != null && object instanceof Mode) {
+        if (object != null && object instanceof Room) {
             sameSame = this.description == ((Room) object).getDescription();
         }
 

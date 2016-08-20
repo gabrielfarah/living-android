@@ -205,7 +205,7 @@ public final class Constants {
     public static final String SONOS_FUNCTION_PLAY = "play";
     public static final String HUE_FUNCTION_OFF = "turn_off_all_lights";
     public static final String HUE_FUNCTION_ON = "turn_on_all_lights";
-    public static final String PASSWORD_REGEX = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\\\S+$).{8,}$";
+    public static final String PASSWORD_REGEX = "(/^(?=.*\\d)(?=.*[A-Z])([@$%&#])[0-9a-zA-Z]{4,}$/)";
     /**
      * Constant for path to user selected background
      */
@@ -266,6 +266,10 @@ public final class Constants {
             daysMapInt.put(6, "Sun");
         }
         return daysMapInt;
+    }
+
+    public static double FToCTemperature(int f) {
+        return (f - 32) / 1.8000;
     }
 
     /**
