@@ -2,6 +2,7 @@ package co.ar_smart.www.helpers;
 
 import android.util.Log;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -61,4 +62,55 @@ public class EndpointManager {
             }
         });
     }
+
+    public static void getEndpointData(String API_TOKEN, int hub_id, int endpoint_id, int days_delta, final ResponseCallbackInterface callback) {
+        Request request = new Request.Builder()
+                .url(BASE_URL + "hubs/" + hub_id + "/endpoints/" + endpoint_id + "/data/" + days_delta + "/")
+                .header("Authorization", "JWT " + API_TOKEN)
+                .get()
+                .build();
+        client.newCall(request).enqueue(new okhttp3.Callback() {
+            @Override
+            public void onFailure(okhttp3.Call call, IOException e) {
+                AnalyticsApplication.getInstance().trackException(e);
+                e.printStackTrace();
+                callback.onFailureCallback();
+            }
+
+            @Override
+            public void onResponse(okhttp3.Call call, okhttp3.Response response) throws IOException {
+                String jsonData = response.body().string();
+                response.body().close();
+                if (!response.isSuccessful()) {
+                    //for (int i = 0; i <jsonData.toString().length(); i++){}
+                    Log.d("UNSUCCESS", call.request().toString());
+                    Log.d("UNSUCCESS:", jsonData.toString());
+                    callback.onUnsuccessfulCallback();
+                } else {
+                    try {
+                        JSONArray data = new JSONArray(jsonData);
+                        callback.onSuccessCallback(data);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        AnalyticsApplication.getInstance().trackException(e);
+                    }
+                }
+            }
+        });
+    }
+
+    /**
+     * This interface implements the callbacks for the sendCommandWithoutResult method
+     */
+    public interface ResponseCallbackInterface {
+        /**
+         * This methods will be called once the app could not perform the request. eg.  if the mobile device dont have internet
+         */
+        void onFailureCallback();
+
+        void onSuccessCallback(JSONArray data);
+
+        void onUnsuccessfulCallback();
+    }
+
 }

@@ -21,6 +21,8 @@ import co.ar_smart.www.helpers.Constants;
 import co.ar_smart.www.living.R;
 import co.ar_smart.www.pojos.hue.HueEndpoint;
 import co.ar_smart.www.pojos.hue.HueLight;
+import co.ar_smart.www.pojos.hue.HueLightGroup;
+import co.ar_smart.www.pojos.hue.IHueObject;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -36,7 +38,7 @@ public class SceneColorPickerFragment extends Fragment {
 
     // TODO: Rename and change types of parameters
     private List<Map.Entry<String, String>> scenes = new java.util.ArrayList<>();
-    private HueLight hueLight;
+    private IHueObject hueLight;
     private HueEndpoint hueEndpoint;
     private HueColorControllerActivity parentActivity;
 
@@ -53,7 +55,7 @@ public class SceneColorPickerFragment extends Fragment {
      * @return A new instance of fragment ColorPickerFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static SceneColorPickerFragment newInstance(HueLight hueLight, HueEndpoint hueEndpoint) {
+    public static SceneColorPickerFragment newInstance(IHueObject hueLight, HueEndpoint hueEndpoint) {
         SceneColorPickerFragment fragment = new SceneColorPickerFragment();
         Bundle args = new Bundle();
         args.putParcelable(ARG_PARAM1, hueLight);
@@ -115,11 +117,17 @@ public class SceneColorPickerFragment extends Fragment {
 
     private void changeColor(int value) {
         int color = getColorFromPosition(value);
-        int lid = hueLight.getLight_id();
+        int lid = hueLight.getId();
         int r = Color.red(color);
         int g = Color.green(color);
         int b = Color.blue(color);
-        CommandManager.sendCommandWithoutResult(parentActivity.getAPI_TOKEN(), parentActivity.getPREFERRED_HUB_ID(), hueEndpoint.getSetRGBColorCommand(lid, r, g, b).toString(), new CommandManager.ResponseCallbackInterface() {
+        String command = "{}";
+        if (hueLight instanceof HueLight) {
+            command = hueEndpoint.getSetRGBColorCommand(lid, r, g, b).toString();
+        } else if (hueLight instanceof HueLightGroup) {
+            command = hueEndpoint.getSetRGBColorGroupCommand(lid, r, g, b).toString();
+        }
+        CommandManager.sendCommandWithoutResult(parentActivity.getAPI_TOKEN(), parentActivity.getPREFERRED_HUB_ID(), command, new CommandManager.ResponseCallbackInterface() {
             @Override
             public void onFailureCallback() {
                 Constants.showNoInternetMessage(getActivity().getApplicationContext());

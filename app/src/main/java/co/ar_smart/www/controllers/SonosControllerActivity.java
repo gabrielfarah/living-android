@@ -9,9 +9,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.SeekBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -39,6 +40,12 @@ import static co.ar_smart.www.helpers.Constants.EXTRA_OBJECT;
  */
 public class SonosControllerActivity extends AppCompatActivity {
 
+    private static final String PLAY_MODE_NORMAL = "NORMAL";
+    private static final String PLAY_MODE_SHUFFLE_NOREPEAT = "SHUFFLE_NOREPEAT";
+    private static final String PLAY_MODE_REPEAT_ALL = "REPEAT_ALL";
+    private static final String PLAY_MODE_SHUFFLE = "SHUFFLE";
+    boolean shuffleOn = false;
+    boolean repeatOn = false;
     /**
      * The backend auth token
      */
@@ -84,7 +91,9 @@ public class SonosControllerActivity extends AppCompatActivity {
      */
     private Button playPauseButton;
     private Runnable runnable;
-    private LinearLayout spinner;
+    private RelativeLayout spinner;
+    private TextView current_track_text;
+    private int track_number = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,6 +107,7 @@ public class SonosControllerActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setTitle(endpoint.getName());
         }
+        current_track_text = (TextView) findViewById(R.id.sonos_current_track_name_text_view);
         sonosEndpoint = new SonosEndpoint(endpoint);
         getUI();
         volControl = (SeekBar) findViewById(R.id.sonos_sound_seek_bar);
@@ -153,7 +163,80 @@ public class SonosControllerActivity extends AppCompatActivity {
                 }
             });
         }
-        spinner = (LinearLayout) findViewById(R.id.sonos_ui_loader);
+        spinner = (RelativeLayout) findViewById(R.id.sonos_ui_loader);
+        Button repeatButton = (Button) findViewById(R.id.sonos_repeat_button);
+        repeatButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (repeatOn && !shuffleOn) {
+                    //NORMAL
+                    shuffleRepeatCommand(PLAY_MODE_NORMAL);
+                    repeatOn = false;
+                } else if (repeatOn && shuffleOn) {
+                    //SHUFFLE_NOREPEAT
+                    shuffleRepeatCommand(PLAY_MODE_SHUFFLE_NOREPEAT);
+                    repeatOn = false;
+                } else if (!repeatOn && !shuffleOn) {
+                    //REPEAT_ALL
+                    shuffleRepeatCommand(PLAY_MODE_REPEAT_ALL);
+                    repeatOn = true;
+                } else {
+                    //!repeatOn && shuffleOn
+                    //SHUFFLE
+                    shuffleRepeatCommand(PLAY_MODE_SHUFFLE);
+                    repeatOn = true;
+                }
+            }
+        });
+        Button shuffleButton = (Button) findViewById(R.id.sonos_shuffle_button);
+        shuffleButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (repeatOn && !shuffleOn) {
+                    //SHUFFLE
+                    shuffleRepeatCommand(PLAY_MODE_SHUFFLE);
+                    shuffleOn = true;
+                } else if (repeatOn && shuffleOn) {
+                    //REPEAT_ALL
+                    shuffleRepeatCommand(PLAY_MODE_REPEAT_ALL);
+                    shuffleOn = false;
+                } else if (!repeatOn && !shuffleOn) {
+                    //SHUFFLE_NOREPEAT
+                    shuffleRepeatCommand(PLAY_MODE_SHUFFLE_NOREPEAT);
+                    shuffleOn = true;
+                } else {
+                    //!repeatOn && shuffleOn
+                    //NORMAL
+                    shuffleRepeatCommand(PLAY_MODE_NORMAL);
+                    shuffleOn = false;
+                }
+            }
+        });
+    }
+
+    private void shuffleRepeatCommand(String mode) {
+        Log.d("SHUFFLE/REPEAT COMMAND", sonosEndpoint.getShuffleRepeatCommand(mode));
+        CommandManager.sendCommandWithoutResult(API_TOKEN, PREFERRED_HUB_ID,
+                CommandManager.getFormattedCommand(sonosEndpoint.get_play()), new CommandManager.ResponseCallbackInterface() {
+                    @Override
+                    public void onFailureCallback() {
+                        Constants.showNoInternetMessage(getApplicationContext());
+                    }
+
+                    @Override
+                    public void onSuccessCallback(JSONObject jObject) {
+                    }
+
+                    @Override
+                    public void onUnsuccessfulCallback() {
+                        AnalyticsApplication.getInstance().trackEvent("Weird Event", "NoAccessToSonosShuffle", "Was a bad request?:" + API_TOKEN + " " + sonosEndpoint.toString());
+                    }
+                });
+    }
+
+    private void setPlayState() {
+        playPauseButton.setBackgroundResource(R.drawable.pause_icon);
+        isPlaying = true;
     }
 
     /**
@@ -205,6 +288,8 @@ public class SonosControllerActivity extends AppCompatActivity {
      * This method send a "play previous track" command to the sonos
      */
     private void backCommand() {
+        track_number--;
+        updateCurrentTrack();
         CommandManager.sendCommandWithoutResult(API_TOKEN, PREFERRED_HUB_ID,
                 CommandManager.getFormattedCommand(SonosEndpoint.getBack()), new CommandManager.ResponseCallbackInterface() {
             @Override
@@ -227,6 +312,8 @@ public class SonosControllerActivity extends AppCompatActivity {
      * This method send a "play next track" command to the sonos
      */
     private void nextCommand() {
+        track_number++;
+        updateCurrentTrack();
         CommandManager.sendCommandWithoutResult(API_TOKEN, PREFERRED_HUB_ID,
                 CommandManager.getFormattedCommand(SonosEndpoint.getNext()), new CommandManager.ResponseCallbackInterface() {
             @Override
@@ -251,6 +338,7 @@ public class SonosControllerActivity extends AppCompatActivity {
      * @param volume the new volume to set in the sonos device
      */
     private void volumeCommand(int volume) {
+        Log.d("VOLUME COMMAND", sonosEndpoint.getVolumeCommand(volume));
         CommandManager.sendCommandWithoutResult(API_TOKEN, PREFERRED_HUB_ID,
                 CommandManager.getFormattedCommand(sonosEndpoint.getVolumeCommand(volume)), new CommandManager.ResponseCallbackInterface() {
             @Override
@@ -275,6 +363,10 @@ public class SonosControllerActivity extends AppCompatActivity {
      * @param position the position of the song to play in the queue
      */
     private void playTrackFromQueue(int position) {
+        setPlayState();
+        track_number = position;
+        updateCurrentTrack();
+        Log.d("TRACK COMMAND", sonosEndpoint.getPlayTrackFromQueueCommand(position));
         CommandManager.sendCommandWithoutResult(API_TOKEN, PREFERRED_HUB_ID,
                 CommandManager.getFormattedCommand(sonosEndpoint.getPlayTrackFromQueueCommand(position)), new CommandManager.ResponseCallbackInterface() {
             @Override
@@ -290,6 +382,18 @@ public class SonosControllerActivity extends AppCompatActivity {
                 AnalyticsApplication.getInstance().trackEvent("Weird Event", "NoAccessToSonosPlay", "Was a bad request?:" + API_TOKEN + " " + sonosEndpoint.toString());
             }
         });
+    }
+
+    private void updateCurrentTrack() {
+        int size = sonosEndpoint.getQueue().size();
+        if (track_number < 0) {
+            track_number = 0;
+        }
+        if (size > track_number) {
+            current_track_text.setText(sonosEndpoint.getTrackFromQueue(track_number).getTitle());
+        } else {
+            track_number = size;
+        }
     }
 
     /**
@@ -336,15 +440,24 @@ public class SonosControllerActivity extends AppCompatActivity {
                         if (!jObject.getString("status").equalsIgnoreCase("processing")) {
                             stopHandlerFlag = true;
                             JSONObject ui = jObject.getJSONObject("response");
-                            sonosEndpoint.setMute(ui.getBoolean("mute"));
-                            sonosEndpoint.setVolume(ui.getInt("volume"));
-                            sonosEndpoint.setState(ui.getString("state"));
-                            JSONArray tracks = ui.getJSONArray("queue");
-                            for (int i = 0; i < tracks.length(); i++) {
-                                JSONObject t = tracks.getJSONObject(i);
-                                sonosEndpoint.addMusicTrack(new MusicTrack(t.getString("title"), t.getInt("queue_number"), t.getString("album_art_uri"), t.getString("item_id"), t.getString("artist"), t.getString("desc")));
+                            if (!ui.has("ERROR")) {
+                                sonosEndpoint.setMute(ui.getBoolean("mute"));
+                                sonosEndpoint.setVolume(ui.getInt("volume"));
+                                sonosEndpoint.setState(ui.getString("state"));
+                                sonosEndpoint.setPlay_mode(PLAY_MODE_NORMAL);//sonosEndpoint.setPlay_mode(ui.getString("play_mode"));
+                                JSONArray tracks = ui.getJSONArray("queue");
+                                for (int i = 0; i < tracks.length(); i++) {
+                                    JSONObject t = tracks.getJSONObject(i);
+                                    sonosEndpoint.addMusicTrack(new MusicTrack(t.getString("title"), t.getInt("queue_number"), t.getString("album_art_uri"), t.getString("item_id"), t.getString("artist"), t.getString("desc")));
+                                }
+                                JSONObject t = ui.getJSONObject("current_track");
+                                MusicTrack current_track = new MusicTrack(t.getString("title"), t.getInt("playlist_position"), t.getString("album_art"), "", t.getString("artist"), t.getString("title"));
+                                track_number = t.getInt("playlist_position");
+                                sonosEndpoint.setCurrent_track(current_track);
+                                addUIComponents();
+                            } else {
+                                manageNoSonosConnection();
                             }
-                            addUIComponents();
                         }
                     }
                 } catch (JSONException e) {
@@ -355,6 +468,19 @@ public class SonosControllerActivity extends AppCompatActivity {
             @Override
             public void onUnsuccessfulCallback() {
                 stopHandlerFlag = true;
+            }
+        });
+    }
+
+    private void manageNoSonosConnection() {
+        SonosControllerActivity.this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                spinner.removeAllViews();
+                TextView message = new TextView(getApplicationContext());
+                message.setText("The SONOS player was unreachable, make sure is connected to the same WIFI network as the HUB and try again.");
+                message.setGravity(View.TEXT_ALIGNMENT_CENTER);
+                spinner.addView(message);
             }
         });
     }
@@ -384,8 +510,9 @@ public class SonosControllerActivity extends AppCompatActivity {
                 volControl.setProgress(sonosEndpoint.getVolume());
                 if (sonosEndpoint.getState().equalsIgnoreCase("PLAYING")) {
                     isPlaying = true;
-                    playPauseButton.setBackgroundResource(R.drawable.btn_listo_off);
+                    playPauseButton.setBackgroundResource(R.drawable.pause_icon);
                 }
+                current_track_text.setText(sonosEndpoint.getCurrent_track().getTitle());
             }
         });
     }

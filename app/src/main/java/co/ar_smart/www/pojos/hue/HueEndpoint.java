@@ -119,6 +119,19 @@ public class HueEndpoint implements Parcelable, ICommandClass {
         return c;
     }
 
+    public Command getSetRGBColorGroupCommand(int gid, int r, int g, int b) {
+        Command c = new Command(endpoint);
+        c.setFunction("set_color_to_group_by_id");
+        c.setTarget("hue");
+        JsonObject jp = new JsonObject();
+        jp.addProperty("r", r);
+        jp.addProperty("g", g);
+        jp.addProperty("b", b);
+        jp.addProperty("group_id", gid);
+        c.setParameters(jp);
+        return c;
+    }
+
     /**
      * This method creates the command for setting the brightness of a hue light
      * @param lid the ID of the light

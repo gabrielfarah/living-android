@@ -37,6 +37,7 @@ import static co.ar_smart.www.helpers.Constants.DEFAULT_HUB;
 import static co.ar_smart.www.helpers.Constants.EXTRA_ACTION;
 import static co.ar_smart.www.helpers.Constants.EXTRA_CATEGORY_DEVICE;
 import static co.ar_smart.www.helpers.Constants.EXTRA_MESSAGE;
+import static co.ar_smart.www.helpers.Constants.EXTRA_OBJECT;
 import static co.ar_smart.www.helpers.Constants.EXTRA_UID;
 import static co.ar_smart.www.helpers.Constants.PREFS_NAME;
 import static co.ar_smart.www.helpers.Constants.PREF_HUB;
@@ -86,9 +87,44 @@ public class DevicesActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         API_TOKEN = intent.getStringExtra(EXTRA_MESSAGE);
+        devices = getIntent().getParcelableArrayListExtra(EXTRA_OBJECT);
 
-        getDevices();
+        list.setAdapter(new ArrayAdapter<Endpoint>(DevicesActivity.this, android.R.layout.simple_list_item_1, devices) {
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent) {
+                View view = convertView;
+                if (view == null) {
+                    view = getLayoutInflater().inflate(R.layout.row_list_devices, null);
+                    TextView lb = (TextView) view.findViewById(R.id.labelDevadd);
+                    lb.setText(devices.get(position).getName());
+                    lb = (TextView) view.findViewById(R.id.labelDevCategoryadd);
+                    lb.setText(devices.get(position).getCategory().getCat());
+                    ImageView i = (ImageView) view.findViewById(R.id.iconlistad);
+                    i.setImageDrawable(ContextCompat.getDrawable(myact, R.drawable.edit_mode));
+                }
+                //chk.setChecked(checked[position]);
+                return view;
+            }
+        });
+        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
+                Intent i = new Intent(DevicesActivity.this, EditDeviceActivity.class);
+                Bundle b = new Bundle();
+                b.putParcelable(EXTRA_OBJECT, devices.get(position));
+                i.putExtras(b);
+                i.putExtra(EXTRA_CATEGORY_DEVICE, devices.get(position).getCategory());
+                i.putExtra(EXTRA_MESSAGE, API_TOKEN);
+                i.putExtra(EXTRA_ACTION, ACTION_EDIT);
+                i.putExtra(EXTRA_UID, String.valueOf(devices.get(position).getId()));
+
+                startActivity(i);
+            }
+        });
+
+        progress.setVisibility(View.GONE);
+        list.setVisibility(View.VISIBLE);
     }
 
     /**

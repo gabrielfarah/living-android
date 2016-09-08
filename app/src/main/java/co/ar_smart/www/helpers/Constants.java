@@ -1,6 +1,12 @@
 package co.ar_smart.www.helpers;
 
+import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
+import android.view.View;
+import android.view.Window;
+import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.Calendar;
@@ -300,13 +306,40 @@ public final class Constants {
                 Toast.LENGTH_LONG).show();
     }
 
+    public static void showDialogMessage(final String message, final String submessage, final Activity context) {
+        context.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                final Dialog dialog = new Dialog(context);
+                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                dialog.setContentView(R.layout.dialog_device_added);
+
+                TextView title = (TextView) dialog.findViewById(R.id.titleAddDevice);
+                title.setText(message);
+
+                TextView subtitle = (TextView) dialog.findViewById(R.id.subtitleAddDevice);
+                subtitle.setText(submessage);
+
+                Button dialogButton = (Button) dialog.findViewById(R.id.btnDialogDevAdd);
+                dialogButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+                        context.finish();
+                    }
+                });
+                dialog.show();
+            }
+        });
+    }
+
+
     /**
      * Enum for sensors type for Triggers
      */
     public enum Trigger_type {
         BINARY, RANGE
     }
-
 
     /**
      * Enum for operands for triggers

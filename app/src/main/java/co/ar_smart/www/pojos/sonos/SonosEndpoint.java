@@ -65,6 +65,11 @@ public class SonosEndpoint implements ICommandClass {
      * The track list currently on the Sonos queue
      */
     private ArrayList<MusicTrack> queue = new ArrayList<>();
+    private MusicTrack current_track;
+    /**
+     * The play mode of the player: NORMAL – Turns off shuffle and repeat. REPEAT_ALL – Turns on repeat and turns off shuffle. SHUFFLE – Turns on shuffle and repeat. SHUFFLE_NOREPEAT – Turns on shuffle and turns off repeat.
+     */
+    private String play_mode;
 
     /**
      * The constructor of a new ZwaveBinaryEndpoint class
@@ -279,7 +284,7 @@ public class SonosEndpoint implements ICommandClass {
      * @return the get volume song command
      */
     public String getVolumeCommand(int volume) {
-        return "[{\"type\":\"wifi\",\"target\":\"sonos\",\"ip\":\"" + endpoint.getIp_address() + "\",\"function\":\"set_volume\",\"parameters\":{\"volume\":" + volume + "}}]";
+        return "{\"type\":\"wifi\",\"target\":\"sonos\",\"ip\":\"" + endpoint.getIp_address() + "\",\"function\":\"set_volume\",\"parameters\":{\"volume\":" + volume + "}}";
     }
 
     /**
@@ -287,7 +292,15 @@ public class SonosEndpoint implements ICommandClass {
      * @return the get track from queue command
      */
     public String getPlayTrackFromQueueCommand(int position) {
-        return "[{\"type\":\"wifi\",\"target\":\"sonos\",\"ip\":\"" + endpoint.getIp_address() + "\",\"function\":\"play_track_from_queue\",\"parameters\":{\"number\":" + position + "}}]";
+        return "{\"type\":\"wifi\",\"target\":\"sonos\",\"ip\":\"" + endpoint.getIp_address() + "\",\"function\":\"play_track_from_queue\",\"parameters\":{\"number\":" + position + "}}";
+    }
+
+    public String getShuffleRepeatCommand(String n_play_mode) {
+        return "{\"type\":\"wifi\",\"target\":\"sonos\",\"ip\":\"" + endpoint.getIp_address() + "\",\"function\":\"play_mode\",\"parameters\":{\"mode\":" + n_play_mode + "}}";
+    }
+
+    public MusicTrack getTrackFromQueue(int position) {
+        return queue.get(position);
     }
 
     public Command getStopCommand() {
@@ -307,5 +320,21 @@ public class SonosEndpoint implements ICommandClass {
     @Override
     public Command getTurnOffCommand() {
         return stop;
+    }
+
+    public MusicTrack getCurrent_track() {
+        return current_track;
+    }
+
+    public void setCurrent_track(MusicTrack current_track) {
+        this.current_track = current_track;
+    }
+
+    public String getPlay_mode() {
+        return play_mode;
+    }
+
+    public void setPlay_mode(String play_mode) {
+        this.play_mode = play_mode;
     }
 }

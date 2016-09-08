@@ -22,6 +22,8 @@ import co.ar_smart.www.helpers.Constants;
 import co.ar_smart.www.living.R;
 import co.ar_smart.www.pojos.hue.HueEndpoint;
 import co.ar_smart.www.pojos.hue.HueLight;
+import co.ar_smart.www.pojos.hue.HueLightGroup;
+import co.ar_smart.www.pojos.hue.IHueObject;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -36,7 +38,7 @@ public class ColorPickerFragment extends Fragment {
     private static final String ARG_PARAM2 = "param2";
 
     // TODO: Rename and change types of parameters
-    private HueLight hueLight;
+    private IHueObject hueLight;
     private HueEndpoint hueEndpoint;
     private HueColorControllerActivity parentActivity;
 
@@ -53,7 +55,7 @@ public class ColorPickerFragment extends Fragment {
      * @return A new instance of fragment ColorPickerFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static ColorPickerFragment newInstance(HueLight hueLight, HueEndpoint hueEndpoint) {
+    public static ColorPickerFragment newInstance(IHueObject hueLight, HueEndpoint hueEndpoint) {
         ColorPickerFragment fragment = new ColorPickerFragment();
         Bundle args = new Bundle();
         args.putParcelable(ARG_PARAM1, hueLight);
@@ -117,12 +119,19 @@ public class ColorPickerFragment extends Fragment {
     }
 
     private void changeColor(int color) {
-        int lid = hueLight.getLight_id();
+        int lid = hueLight.getId();
         int r = Color.red(color);
         int g = Color.green(color);
         int b = Color.blue(color);
+        String command = "{}";
+        if (hueLight instanceof HueLight) {
+            command = hueEndpoint.getSetRGBColorCommand(lid, r, g, b).toString();
+        } else if (hueLight instanceof HueLightGroup) {
+            command = hueEndpoint.getSetRGBColorGroupCommand(lid, r, g, b).toString();
+        }
+        Log.d("ENVIO", CommandManager.getFormattedCommand(command));
         CommandManager.sendCommandWithoutResult(parentActivity.getAPI_TOKEN(), parentActivity.getPREFERRED_HUB_ID(),
-                CommandManager.getFormattedCommand(hueEndpoint.getSetRGBColorCommand(lid, r, g, b).toString()), new CommandManager.ResponseCallbackInterface() {
+                CommandManager.getFormattedCommand(command), new CommandManager.ResponseCallbackInterface() {
             @Override
             public void onFailureCallback() {
                 Constants.showNoInternetMessage(getActivity().getApplicationContext());
@@ -140,7 +149,7 @@ public class ColorPickerFragment extends Fragment {
     }
 
     private void changeBrightness(int value) {
-        int lid = hueLight.getLight_id();
+        int lid = hueLight.getId();
         CommandManager.sendCommandWithoutResult(parentActivity.getAPI_TOKEN(), parentActivity.getPREFERRED_HUB_ID(),
                 CommandManager.getFormattedCommand(hueEndpoint.getBrightnessCommand(lid, value).toString()), new CommandManager.ResponseCallbackInterface() {
             @Override
@@ -160,7 +169,7 @@ public class ColorPickerFragment extends Fragment {
     }
 
     private void changeSaturation(int value) {
-        int lid = hueLight.getLight_id();
+        int lid = hueLight.getId();
         CommandManager.sendCommandWithoutResult(parentActivity.getAPI_TOKEN(), parentActivity.getPREFERRED_HUB_ID(),
                 CommandManager.getFormattedCommand(hueEndpoint.getSaturationCommand(lid, value).toString()), new CommandManager.ResponseCallbackInterface() {
             @Override

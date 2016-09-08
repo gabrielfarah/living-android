@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
@@ -107,6 +106,7 @@ public class EditDeviceActivity extends AppCompatActivity {
         }
         Button btnIcon=(Button) findViewById(R.id.btnEditIcon);
         Button btnRoom=(Button) findViewById(R.id.btnEditRoom);
+        Button saveButton = (Button) findViewById(R.id.save_device_button);
         txtName=(EditText) findViewById(R.id.txtNameDev);
 
         String act=myact.getIntent().getStringExtra(EXTRA_ACTION);
@@ -140,46 +140,57 @@ public class EditDeviceActivity extends AppCompatActivity {
                 startActivityForResult(i,2);
             }
         });
+        saveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                validateActions();
+            }
+        });
     }
 
-    @Override
+    private void validateActions() {
+        if (checkFields()) {
+            String act = myact.getIntent().getStringExtra(EXTRA_ACTION);
+            switch (act) {
+                case Constants.ACTION_EDIT:
+                    editDevice();
+                    break;
+                case ACTION_ADD:
+                    registerDevice();
+                    break;
+                default:
+            }
+        } else {
+            Toast.makeText(EditDeviceActivity.this, getResources().getString(R.string.warning_fields), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    /*@Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.edit_devices_menu, menu);
         btnPost=menu.findItem(R.id.btnpostdevices);
         btnPost.setEnabled(true);
         return true;
-    }
+    }*/
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.btnpostdevices:
-                if(checkFields())
-                {
-                    String act=myact.getIntent().getStringExtra(EXTRA_ACTION);
-                    switch (act)
-                    {
-                        case Constants.ACTION_EDIT:
-                            editDevice();
-                            break;
-                        case ACTION_ADD:
-                            registerDevice();
-                            break;
-                            default:
-                    }
-                }
-                else
-                {
-                    Toast.makeText(EditDeviceActivity.this, getResources().getString(R.string.warning_fields), Toast.LENGTH_SHORT).show();
-                }
+                validateActions();
                 return true;
             case android.R.id.home:
                 // app icon in action bar clicked; go home
-                this.finish();
+                validateActions();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        validateActions();
     }
 
     @Override
@@ -197,9 +208,10 @@ public class EditDeviceActivity extends AppCompatActivity {
         else if (requestCode == 2) {
             if(resultCode == Activity.RESULT_OK){
                 room=data.getStringExtra("result");
-                if(checkFields())
-                    btnPost.setIcon(ContextCompat.getDrawable(myact, R.drawable.new_cross_btn));
-            }else if (resultCode == Activity.RESULT_CANCELED) {
+                if (checkFields()) {
+                    //btnPost.setIcon(ContextCompat.getDrawable(myact, R.drawable.new_cross_btn));
+                }
+            } else if (resultCode == Activity.RESULT_CANCELED) {
 
             }
         }
@@ -226,9 +238,8 @@ public class EditDeviceActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<Endpoint> call, Response<Endpoint> response)
             {
-                String txtx=bodyToString(response.raw().request().body());
                 if (response.isSuccessful()) {
-                    Endpoint li=response.body();
+                    dev = response.body();
                     //devices.add(response.body());
                     showDialog();
                 }
@@ -266,9 +277,8 @@ public class EditDeviceActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<Endpoint> call, Response<Endpoint> response)
             {
-                String txtx=bodyToString(response.raw().request().body());
                 if (response.isSuccessful()) {
-                    Endpoint li=response.body();
+                    dev = response.body();
                     //devices.add(response.body());
                     showDialog();
                 }
@@ -300,6 +310,8 @@ public class EditDeviceActivity extends AppCompatActivity {
                 dialog.dismiss();
                 Intent i=new Intent(EditDeviceActivity.this,ManagementEndpointsActivity.class);
                 i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                i.putExtra(EXTRA_OBJECT, dev);
+                setResult(RESULT_OK, i);
                 startActivity(i);
             }
         });

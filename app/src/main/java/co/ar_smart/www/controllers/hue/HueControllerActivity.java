@@ -1,5 +1,6 @@
 package co.ar_smart.www.controllers.hue;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -12,6 +13,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.Window;
+import android.widget.Button;
+import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -33,6 +38,7 @@ import co.ar_smart.www.pojos.Endpoint;
 import co.ar_smart.www.pojos.hue.HueEndpoint;
 import co.ar_smart.www.pojos.hue.HueLight;
 import co.ar_smart.www.pojos.hue.HueLightGroup;
+import co.ar_smart.www.pojos.hue.IHueObject;
 
 import static co.ar_smart.www.helpers.Constants.EXTRA_MESSAGE;
 import static co.ar_smart.www.helpers.Constants.EXTRA_MESSAGE_PREF_HUB;
@@ -45,8 +51,8 @@ public class HueControllerActivity extends AppCompatActivity {
     private ViewPager viewPager;
     private String API_TOKEN;
     private int PREFERRED_HUB_ID;
-    private ArrayList<HueLight> bulbs = new java.util.ArrayList<>();
-    private ArrayList<HueLightGroup> light_groups = new java.util.ArrayList<>();
+    private ArrayList<IHueObject> bulbs = new java.util.ArrayList<>();
+    private ArrayList<IHueObject> light_groups = new java.util.ArrayList<>();
     private HueEndpoint hueEndpoint;
     private BulbsAdapter adapter;
     /**
@@ -111,7 +117,7 @@ public class HueControllerActivity extends AppCompatActivity {
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
         adapter.addFragment(HueBulbsFragment.newInstance(bulbs), "Bulbs");
-        adapter.addFragment(HueBulbsFragment.newInstance(bulbs), "Groups");
+        adapter.addFragment(HueBulbsFragment.newInstance(light_groups), "Groups");
         viewPager.setAdapter(adapter);
     }
 
@@ -148,7 +154,6 @@ public class HueControllerActivity extends AppCompatActivity {
 
             @Override
             public void onUnsuccessfulCallback() {
-                //TODO bad request?
             }
         });
     }
@@ -171,20 +176,30 @@ public class HueControllerActivity extends AppCompatActivity {
                         if (!jObject.getString("status").equalsIgnoreCase("processing")) {
                             stopHandlerFlag = true;
                             JSONObject ui = jObject.getJSONObject("response");
-                            JSONArray lights = ui.getJSONArray("lights");
-                            JSONArray groups = ui.getJSONArray("groups");
+                            if (ui.has("ERROR")) {
+                                showMessage(ui.getString("ERROR"));
+                            } else {
+                                JSONArray lights = ui.getJSONArray("lights");
+                                JSONArray groups = ui.getJSONArray("groups");
 
-                            Type listType = new TypeToken<List<HueLightGroup>>() {
-                            }.getType();
-                            light_groups = new Gson().fromJson(groups.toString(), listType);
-                            Log.d("GROUPS", light_groups.toString());
+                                Type listType = new TypeToken<ArrayList<HueLightGroup>>() {
+                                }.getType();
+                                light_groups = new Gson().fromJson(groups.toString(), listType);
+                                Log.d("GROUPS", light_groups.toString());
 
-                            Type listType2 = new TypeToken<List<HueLight>>() {
-                            }.getType();
-                            bulbs = new Gson().fromJson(lights.toString(), listType2);
-                            Log.d("BULBS", bulbs.toString());
+                                Type listType2 = new TypeToken<ArrayList<HueLight>>() {
+                                }.getType();
+                                bulbs = new Gson().fromJson(lights.toString(), listType2);
+                                Log.d("BULBS", bulbs.toString());
 
-                            addUIComponents();
+                                if (light_groups.get(0) instanceof HueLightGroup) {
+                                    Log.d("=------====--------", "Es grupo");
+                                } else if (light_groups.get(0) instanceof HueLight) {
+                                    Log.d("=------====--------", "Es luz sola");
+                                }
+
+                                addUIComponents();
+                            }
                         }
                     }
                 } catch (JSONException e) {
@@ -195,6 +210,34 @@ public class HueControllerActivity extends AppCompatActivity {
             @Override
             public void onUnsuccessfulCallback() {
                 stopHandlerFlag = true;
+            }
+        });
+    }
+
+    private void showMessage(final String message) {
+        HueControllerActivity.this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                final Dialog dialog = new Dialog(HueControllerActivity.this);
+                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                dialog.setContentView(R.layout.dialog_device_added);
+
+                TextView title = (TextView) dialog.findViewById(R.id.titleAddDevice);
+                title.setText(message);
+
+                TextView subtitle = (TextView) dialog.findViewById(R.id.subtitleAddDevice);
+                subtitle.setText("Please press it and try again.");
+
+                Button dialogButton = (Button) dialog.findViewById(R.id.btnDialogDevAdd);
+                dialogButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+                        finish();
+                    }
+                });
+
+                dialog.show();
             }
         });
     }

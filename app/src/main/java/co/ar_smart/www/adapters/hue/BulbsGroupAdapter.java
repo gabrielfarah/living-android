@@ -13,19 +13,19 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import co.ar_smart.www.living.R;
-import co.ar_smart.www.pojos.hue.IHueObject;
+import co.ar_smart.www.pojos.hue.HueLightGroup;
 
 /**
  * Created by Gabriel on 5/11/2016.
  */
-public class BulbsAdapter extends BaseAdapter {
+public class BulbsGroupAdapter extends BaseAdapter {
 
     private Context context;
     private LayoutInflater inflater;
 
-    private ArrayList<IHueObject> bulbs = new java.util.ArrayList<>();
+    private ArrayList<HueLightGroup> bulbs = new ArrayList<>();
 
-    public BulbsAdapter(Context applicationContext, ArrayList<IHueObject> bulbs) {
+    public BulbsGroupAdapter(Context applicationContext, ArrayList<HueLightGroup> bulbs) {
         context = applicationContext;
         this.bulbs = bulbs;
         inflater = (LayoutInflater.from(applicationContext));

@@ -30,9 +30,9 @@
         <activity
             android:name=".LoginActivity"
             android:label="@string/login_title"
+            android:screenOrientation="portrait"
             android:theme="@style/NewAdmin"
-            android:windowSoftInputMode="stateHidden"
-            android:screenOrientation="portrait"/>
+            android:windowSoftInputMode="stateHidden" />
         <activity android:name=".HomeActivity"
             android:screenOrientation="portrait"/>
         <activity android:name=".LoginRegisterActivity"
@@ -48,9 +48,9 @@
             android:screenOrientation="portrait"/>
         <activity
             android:name="co.ar_smart.www.register.NewAdminActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/NewAdmin"
-            android:windowSoftInputMode="stateHidden"
-            android:screenOrientation="portrait"/>
+            android:windowSoftInputMode="stateHidden" />
         <activity
             android:name="co.ar_smart.www.register.CreatedUserActivity"
             android:screenOrientation="portrait"
@@ -131,6 +131,9 @@
         <activity android:name="co.ar_smart.www.register.TurnAPOnInstructionActivity"
             android:screenOrientation="portrait"/>
         <activity android:name="co.ar_smart.www.settings.SettingsActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="co.ar_smart.www.controllers.ZwaveMeterController"
             android:screenOrientation="portrait"/>
     </application>
 

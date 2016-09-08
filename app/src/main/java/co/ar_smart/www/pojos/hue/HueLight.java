@@ -2,6 +2,7 @@ package co.ar_smart.www.pojos.hue;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import co.ar_smart.www.controllers.hue.PHUtils;
 
@@ -9,7 +10,7 @@ import co.ar_smart.www.controllers.hue.PHUtils;
  * This class models a light for a hue device. A device can have multiple lights associated to it.
  * Created by Gabriel on 5/4/2016.
  */
-public class HueLight implements Parcelable {
+public class HueLight implements Parcelable, IHueObject {
     /**
      * Parcelable creator implementation
      */
@@ -98,7 +99,7 @@ public class HueLight implements Parcelable {
      * returns the light id
      * @return the ID of this light
      */
-    public int getLight_id() {
+    public int getId() {
         return light_id;
     }
 
@@ -198,6 +199,7 @@ public class HueLight implements Parcelable {
         dest.writeString(effect);
         dest.writeString(modelid);
         dest.writeFloatArray(xy);
+        Log.d("XY:", xy.length + "");
         dest.writeString(name);
     }
 }

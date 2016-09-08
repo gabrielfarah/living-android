@@ -9,6 +9,7 @@
     tools:context="co.ar_smart.www.controllers.SonosControllerActivity">
 
     <TextView
+        android:id="@+id/sonos_current_track_name_text_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/default_sonos_music_title"

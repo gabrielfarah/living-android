@@ -12,11 +12,10 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import co.ar_smart.www.adapters.hue.BulbsAdapter;
 import co.ar_smart.www.living.R;
-import co.ar_smart.www.pojos.hue.HueLight;
+import co.ar_smart.www.pojos.hue.IHueObject;
 
 import static co.ar_smart.www.helpers.Constants.EXTRA_ADDITIONAL_OBJECT;
 import static co.ar_smart.www.helpers.Constants.EXTRA_MESSAGE;
@@ -33,7 +32,7 @@ public class HueBulbsFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM_HUE_LIGHTS = "huelightslist";
 
-    private List<HueLight> bulbs = new java.util.ArrayList<>();
+    private ArrayList<IHueObject> bulbs = new java.util.ArrayList<>();
     private HueControllerActivity parentActivity;
 
     public HueBulbsFragment() {
@@ -48,7 +47,7 @@ public class HueBulbsFragment extends Fragment {
      * @return A new instance of fragment ColorPickerFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static HueBulbsFragment newInstance(ArrayList<HueLight> param1) {
+    public static HueBulbsFragment newInstance(ArrayList<IHueObject> param1) {
         HueBulbsFragment fragment = new HueBulbsFragment();
         Bundle args = new Bundle();
         args.putParcelableArrayList(ARG_PARAM_HUE_LIGHTS, param1);
@@ -81,11 +80,10 @@ public class HueBulbsFragment extends Fragment {
                 openColorPickerActivity(bulbs.get(position));
             }
         });
-
         return rootView;
     }
 
-    private void openColorPickerActivity(HueLight hueLight) {
+    private void openColorPickerActivity(IHueObject hueLight) {
         Log.d("CHECK", hueLight.toString());
         Intent intent = new Intent(parentActivity, HueColorControllerActivity.class);
         intent.putExtra(EXTRA_MESSAGE, parentActivity.getAPI_TOKEN());

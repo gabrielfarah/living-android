@@ -32,6 +32,7 @@ import java.util.List;
 import co.ar_smart.www.helpers.CommandManager;
 import co.ar_smart.www.helpers.Constants;
 import co.ar_smart.www.helpers.EndpointManager;
+import co.ar_smart.www.living.HomeActivity;
 import co.ar_smart.www.living.R;
 import co.ar_smart.www.pojos.Category;
 import co.ar_smart.www.pojos.Endpoint;
@@ -137,7 +138,7 @@ public class NewDevicesActivity extends AppCompatActivity {
                 }
                 i.putExtra(EXTRA_MESSAGE, API_TOKEN);
                 i.putExtra(EXTRA_ACTION, ACTION_ADD);
-                startActivity(i);
+                startActivityForResult(i, HomeActivity.ACTIVITY_CODE_ENDPOINT);
             }
         });
 
@@ -192,9 +193,11 @@ public class NewDevicesActivity extends AppCompatActivity {
             @Override
             public void onUnsuccessfulCallback() {
                 Log.d("PASO", "-2");
+                Constants.showDialogMessage("Only the owner of this hub can add devices", "Please ask him to perform this action.", NewDevicesActivity.this);
             }
         });
     }
+
 
     private void loadAsyncEndpointAddDeviceResponse() {
         Log.d("PASO", "1.5" + " - " + !stopHandlerFlag + " " + addDeviceTimeoutDate.after(new Date()));

@@ -47,6 +47,7 @@ import co.ar_smart.www.analytics.AnalyticsApplication;
 import co.ar_smart.www.controllers.SonosControllerActivity;
 import co.ar_smart.www.controllers.TriggerMainController;
 import co.ar_smart.www.controllers.ZwaveLockControllerActivity;
+import co.ar_smart.www.controllers.ZwaveMeterController;
 import co.ar_smart.www.controllers.hue.HueControllerActivity;
 import co.ar_smart.www.endpoints.EditRoomActivity;
 import co.ar_smart.www.endpoints.ManagementEndpointsActivity;
@@ -961,7 +962,7 @@ public class HomeActivity extends AppCompatActivity {
                 }
             });
             //TODO Esto se va a seguir implementando???
-            homeMainGridView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            /*homeMainGridView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
                 @Override
                 public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
@@ -980,7 +981,7 @@ public class HomeActivity extends AppCompatActivity {
                     builder.create().show();
                     return true;
                 }
-            });
+            });*/
         }
     }
 
@@ -1046,7 +1047,6 @@ public class HomeActivity extends AppCompatActivity {
             case Constants.UI_CLASS_SONOS:
                 openSONOSController(endpoint);
                 break;
-            case Constants.UI_CLASS_ZWAVE_ENERGY_SENSOR:
             case Constants.UI_CLASS_ZWAVE_LEVEL_SENSOR:
             case Constants.UI_CLASS_ZWAVE_TEMPERATURE_SENSOR:
                 openZwaveLevelSensor(endpoint, false);
@@ -1055,6 +1055,9 @@ public class HomeActivity extends AppCompatActivity {
             case Constants.UI_CLASS_ZWAVE_MOTION_SENSOR:
             case Constants.UI_CLASS_ZWAVE_WATER_SENSOR:
                 openZwaveLevelSensor(endpoint, true);
+                break;
+            case Constants.UI_CLASS_ZWAVE_ENERGY_SENSOR:
+                openZwaveEnergyMeterSensor(endpoint);
                 break;
             case Constants.UI_CLASS_ZWAVE_LOCK:
                 openZwaveLockController(endpoint);
@@ -1084,6 +1087,15 @@ public class HomeActivity extends AppCompatActivity {
         i.putExtra(EXTRA_OBJECT, endpoint);
         i.putExtra(EXTRA_ADDITIONAL_OBJECT, modes);
         i.putExtra(EXTRA_BOOLEAN, isBinary);
+        startActivity(i);
+    }
+
+    private void openZwaveEnergyMeterSensor(Endpoint endpoint) {
+        Intent i = new Intent(this, ZwaveMeterController.class);
+        i.putExtra(EXTRA_MESSAGE, API_TOKEN);
+        i.putExtra(EXTRA_MESSAGE_PREF_HUB, PREFERRED_HUB_ID);
+        i.putExtra(EXTRA_OBJECT, endpoint);
+        i.putExtra(EXTRA_ADDITIONAL_OBJECT, modes);
         startActivity(i);
     }
 
@@ -1190,6 +1202,7 @@ public class HomeActivity extends AppCompatActivity {
         Intent intent = new Intent(this, ZwaveLockControllerActivity.class);
         intent.putExtra(EXTRA_MESSAGE, API_TOKEN);
         intent.putExtra(EXTRA_OBJECT, lock);
+        intent.putExtra(EXTRA_MESSAGE_PREF_HUB, PREFERRED_HUB_ID);
         startActivity(intent);
     }
 

@@ -134,6 +134,8 @@ public class HomeGridDevicesAdapter extends BaseAdapter {
                     return R.drawable.water_2_icon;
                 case "water3":
                     return R.drawable.water_3_icon;
+                default:
+                    return R.drawable.default_icon;
             }
         }
         return R.drawable.default_icon;

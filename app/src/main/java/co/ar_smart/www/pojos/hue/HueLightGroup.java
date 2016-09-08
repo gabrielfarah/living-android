@@ -9,7 +9,7 @@ import java.util.ArrayList;
  * This class represents a group of lights of a phillips hue
  * Created by Gabriel on 5/4/2016.
  */
-public class HueLightGroup implements Parcelable {
+public class HueLightGroup implements Parcelable, IHueObject {
     /**
      * the parcel creator
      */
@@ -61,8 +61,23 @@ public class HueLightGroup implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(name);
         dest.writeInt(group_id);
+        dest.writeString(name);
         dest.writeTypedList(lights);
+    }
+
+    @Override
+    public int getId() {
+        return group_id;
+    }
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public int getRGBfromXY() {
+        return lights.get(0).getRGBfromXY();
     }
 }

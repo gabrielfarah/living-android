@@ -10,6 +10,7 @@ import android.widget.ImageView;
 
 import java.util.ArrayList;
 
+import co.ar_smart.www.living.HomeActivity;
 import co.ar_smart.www.living.R;
 import co.ar_smart.www.pojos.Endpoint;
 
@@ -56,8 +57,7 @@ public class ManagementEndpointsActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case android.R.id.home:
                 // app icon in action bar clicked; go home
-                //TODO set result
-                this.finish();
+                setResponseAndClose();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -122,6 +122,32 @@ public class ManagementEndpointsActivity extends AppCompatActivity {
         Intent intent = new Intent(ManagementEndpointsActivity.this, DevicesActivity.class);
         intent.putExtra(EXTRA_MESSAGE, API_TOKEN);
         intent.putExtra(EXTRA_MESSAGE_PREF_HUB, PREFERRED_HUB_ID);
-        startActivity(intent);
+        intent.putParcelableArrayListExtra(EXTRA_OBJECT, endpoints);
+        startActivityForResult(intent, HomeActivity.ACTIVITY_CODE_ENDPOINT);
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // Check which request we're responding to
+        if (requestCode == HomeActivity.ACTIVITY_CODE_ENDPOINT) {
+            // Make sure the request was successful
+            if (resultCode == RESULT_OK) {
+                Endpoint endpoint = data.getExtras().getParcelable(EXTRA_OBJECT);
+                endpoints.add(endpoint);
+            }
+        }
+    }
+
+    private void setResponseAndClose() {
+        Intent output = new Intent();
+        output.putExtra(EXTRA_OBJECT, endpoints);
+        setResult(RESULT_OK, output);
+        finish();
+    }
+
+    @Override
+    public void onBackPressed() {
+        setResponseAndClose();
+    }
+
 }

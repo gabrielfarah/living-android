@@ -9,6 +9,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 
 import java.util.ArrayList;
@@ -17,7 +18,7 @@ import java.util.Map;
 
 import co.ar_smart.www.living.R;
 import co.ar_smart.www.pojos.hue.HueEndpoint;
-import co.ar_smart.www.pojos.hue.HueLight;
+import co.ar_smart.www.pojos.hue.IHueObject;
 
 import static co.ar_smart.www.helpers.Constants.EXTRA_ADDITIONAL_OBJECT;
 import static co.ar_smart.www.helpers.Constants.EXTRA_MESSAGE;
@@ -32,7 +33,7 @@ public class HueColorControllerActivity extends AppCompatActivity {
     private List<Map.Entry<String, String>> scenes = new java.util.ArrayList<>();
     private String API_TOKEN;
     private int PREFERRED_HUB_ID;
-    private HueLight hueLight;
+    private IHueObject hueLight;
     private HueEndpoint hueEndpoint;
 
     public String getAPI_TOKEN() {
@@ -43,7 +44,7 @@ public class HueColorControllerActivity extends AppCompatActivity {
         return PREFERRED_HUB_ID;
     }
 
-    public HueLight getHueLight() {
+    public IHueObject getHueLight() {
         return hueLight;
     }
 
@@ -59,6 +60,7 @@ public class HueColorControllerActivity extends AppCompatActivity {
         final Intent intent = getIntent();
         API_TOKEN = intent.getStringExtra(EXTRA_MESSAGE);
         PREFERRED_HUB_ID = intent.getIntExtra(EXTRA_MESSAGE_PREF_HUB, -1);
+        Log.d("PASO", "PASOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
         hueLight = intent.getParcelableExtra(EXTRA_OBJECT);
         hueEndpoint = intent.getParcelableExtra(EXTRA_ADDITIONAL_OBJECT);
 
