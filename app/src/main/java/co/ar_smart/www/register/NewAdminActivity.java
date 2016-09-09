@@ -1,6 +1,7 @@
 package co.ar_smart.www.register;
 
 import android.Manifest;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -9,7 +10,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -128,17 +131,17 @@ public class NewAdminActivity extends AppCompatActivity
         }
         //Initialize the variables
         edtName = (EditText) findViewById(R.id.edtName);
-        edtName.setTypeface(Typeface.SERIF);
+        edtName.setTypeface(Typeface.DEFAULT);
         edtLastname = (EditText) findViewById(R.id.edtLastname);
-        edtLastname.setTypeface(Typeface.SERIF);
+        edtLastname.setTypeface(Typeface.DEFAULT);
         edtEmail = (EditText) findViewById(R.id.edtEmail);
-        edtEmail.setTypeface(Typeface.SERIF);
+        edtEmail.setTypeface(Typeface.DEFAULT);
         edtConfEmail = (EditText) findViewById(R.id.edtConfEmail);
-        edtConfEmail.setTypeface(Typeface.SERIF);
+        edtConfEmail.setTypeface(Typeface.DEFAULT);
         edtPassword = (EditText) findViewById(R.id.edtPassword);
-        edtPassword.setTypeface(Typeface.SERIF);
+        edtPassword.setTypeface(Typeface.DEFAULT);
         edtConfPassword = (EditText) findViewById(R.id.edtConfPassword);
-        edtConfPassword.setTypeface(Typeface.SERIF);
+        edtConfPassword.setTypeface(Typeface.DEFAULT);
         edtConfPassword.setOnTouchListener(new View.OnTouchListener() {
             final int DRAWABLE_RIGHT = 2;
             @Override
@@ -185,9 +188,9 @@ public class NewAdminActivity extends AppCompatActivity
     {
         String name = edtName.getText().toString().trim();
         String lastName = edtLastname.getText().toString().trim();
-        final String email = edtEmail.getText().toString().trim();
+        email = edtEmail.getText().toString().trim();
         String confEmail = edtConfEmail.getText().toString().trim();
-        final String password = edtPassword.getText().toString().trim();
+        password = edtPassword.getText().toString().trim();
         String confPassword = edtConfPassword.getText().toString().trim();
         boolean filledFields = (!name.equals(""))
                 && (!lastName.equals(""))
@@ -221,79 +224,88 @@ public class NewAdminActivity extends AppCompatActivity
         }
         else
         {
-            JSONObject json = new JSONObject();
-            try
+            createdUser();
+        }
+    }
+
+    /**
+     * Method in charge of creating the user
+     */
+    private void createUser()
+    {
+        JSONObject json = new JSONObject();
+        try
+        {
+            json.put("password", password);
+            json.put("email", email);
+            json.put("first_name",edtName.getText().toString().trim());
+            json.put("last_name",edtLastname.getText().toString().trim());
+            OkHttpClient client = new OkHttpClient();
+            RequestBody body = RequestBody.create(JSON, json.toString());
+            Request request = new Request.Builder()
+                    .url(REGISTER_URL)
+                    .header("Accept", "application/json")
+                    .post(body)
+                    .build();
+            client.newCall(request).enqueue(new Callback()
             {
-                json.put("password", password);
-                json.put("email", email);
-                json.put("first_name",name);
-                json.put("last_name",lastName);
-                OkHttpClient client = new OkHttpClient();
-                RequestBody body = RequestBody.create(JSON, json.toString());
-                Request request = new Request.Builder()
-                        .url(REGISTER_URL)
-                        .header("Accept", "application/json")
-                        .post(body)
-                        .build();
-                client.newCall(request).enqueue(new Callback()
+                @Override
+                public void onFailure(Call call, IOException e)
                 {
-                    @Override
-                    public void onFailure(Call call, IOException e)
-                    {
-                        AnalyticsApplication.getInstance().trackException(e);
-                        displayMessage(getResources().getString(R.string.toast_login_failure));
-                    }
+                    AnalyticsApplication.getInstance().trackException(e);
+                    displayMessage(getResources().getString(R.string.toast_login_failure));
+                }
 
-                    @Override
-                    public void onResponse(Call call, Response response) throws IOException
+                @Override
+                public void onResponse(Call call, Response response) throws IOException
+                {
+                    String body = response.body().string();
+                    response.body().close();
+                    if (!response.isSuccessful())
                     {
-                        String body = response.body().string();
-                        response.body().close();
-                        if (!response.isSuccessful())
+                        String error = body.substring(body.lastIndexOf("[")+2,body.lastIndexOf("]")-1);
+                        displayMessage(error);
+                    }
+                    else
+                    {
+                        //Gets API_TOKEN
+                        JWTManager.getApiToken(email, password, new JWTManager.JWTCallbackInterface()
                         {
-                            String error = body.substring(body.lastIndexOf("[")+2,body.lastIndexOf("]")-1);
-                            displayMessage(error);
-                        }
-                        else
-                        {
-                            //Gets API_TOKEN
-                            JWTManager.getApiToken(email, password, new JWTManager.JWTCallbackInterface()
+                            @Override
+                            public void onFailureCallback()
                             {
-                                @Override
-                                public void onFailureCallback()
-                                {
-                                    displayMessage(getResources().getString(R.string.toast_login_failure));
-                                }
+                                displayMessage(getResources().getString(R.string.toast_login_failure));
+                            }
 
-                                @Override
-                                public void onSuccessCallback(String nToken)
-                                {
-                                    api_token = nToken;
-                                    savePreferences();
-                                }
+                            @Override
+                            public void onSuccessCallback(String nToken)
+                            {
+                                api_token = nToken;
+                                savePreferences();
+                                Intent intent = new Intent(mContext, CreatedUserActivity.class);
+                                mContext.startActivity(intent);
+                            }
 
-                                @Override
-                                public void onUnsuccessfulCallback()
-                                {
-                                    displayMessage(getResources().getString(R.string.toast_login_bad_credentials));
-                                }
+                            @Override
+                            public void onUnsuccessfulCallback()
+                            {
+                                displayMessage(getResources().getString(R.string.toast_login_bad_credentials));
+                            }
 
-                                @Override
-                                public void onExceptionCallback()
-                                {
-                                    displayMessage(getResources().getString(R.string.toast_login_server_error));
-                                }
-                            });
-                            //Change activity
-                            createdUser();
-                        }
+                            @Override
+                            public void onExceptionCallback()
+                            {
+                                displayMessage(getResources().getString(R.string.toast_login_server_error));
+                            }
+                        });
+
                     }
-                });
-            }
-            catch (Exception e)
-            {
-                displayMessage(getResources().getString(R.string.create_user_error));
-            }
+                }
+            });
+        }
+        catch (Exception e)
+        {
+            displayMessage(getResources().getString(R.string.create_user_error));
         }
     }
 
@@ -342,13 +354,13 @@ public class NewAdminActivity extends AppCompatActivity
         }
         else
         {
-            Intent intent = new Intent(this, CreatedUserActivity.class);
-            startActivity(intent);
+            createUser();
         }
 
     }
 
     @Override
+    @TargetApi(23)
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION) {
@@ -358,10 +370,20 @@ public class NewAdminActivity extends AppCompatActivity
 
                 if (permission.equals(Manifest.permission.ACCESS_FINE_LOCATION)) {
                     if (grantResult == PackageManager.PERMISSION_GRANTED) {
-                        Intent intent = new Intent(this, CreatedUserActivity.class);
-                        startActivity(intent);
+                        createUser();
+                    }
+                    else
+                    {
+                        boolean showRationale = shouldShowRequestPermissionRationale( permission );
+                        if (! showRationale) {
+                            Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                            Uri uri = Uri.fromParts("package", getPackageName(), null);
+                            intent.setData(uri);
+                            startActivityForResult(intent, 111);
+                        }
                     }
                 }
+
             }
         }
     }

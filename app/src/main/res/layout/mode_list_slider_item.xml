@@ -18,8 +18,9 @@
     <ImageView
         android:id="@+id/icon_endpoint_in_scene"
         android:layout_width="0dip"
-        android:layout_height="match_parent"
+        android:layout_height="50dp"
         android:layout_weight="0.2"
+        android:padding="7dp"
         android:adjustViewBounds="true"
         android:src="@drawable/default_icon"
         android:tint="@color/colorPrimaryDark" />

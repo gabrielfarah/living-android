@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/colorPrimaryDark"
-    android:orientation="vertical"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="co.ar_smart.www.controllers.SonosControllerActivity">
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@color/colorPrimaryDark"
+              android:orientation="vertical"
+              android:paddingTop="@dimen/activity_vertical_margin"
+              tools:context="co.ar_smart.www.controllers.SonosControllerActivity">
 
     <TextView
         android:id="@+id/sonos_current_track_name_text_view"
@@ -15,7 +15,7 @@
         android:text="@string/default_sonos_music_title"
         android:textAlignment="center"
         android:textColor="@color/blanco"
-        android:textSize="18sp" />
+        android:textSize="18sp"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -27,11 +27,12 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/sound_icon" />
-    <SeekBar
-        android:id="@+id/sonos_sound_seek_bar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+            android:src="@drawable/sound_icon"/>
+
+        <SeekBar
+            android:id="@+id/sonos_sound_seek_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
     </LinearLayout>
 
     <LinearLayout
@@ -44,60 +45,62 @@
         <Button
             android:id="@+id/sonos_repeat_button"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="36dp"
             android:layout_weight="1"
-            android:background="@drawable/repeat_icon"
-            android:gravity="center_horizontal|center_vertical" />
+            android:background="@drawable/repeat_release"
+            android:gravity="center_horizontal|center_vertical"/>
 
         <Space
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1" />
+            android:layout_weight="1"/>
 
         <Button
             android:id="@+id/sonos_back_button"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="36dp"
             android:layout_weight="1"
             android:background="@drawable/previous_icon"
-            android:gravity="center_horizontal|center_vertical" />
+            android:gravity="center_horizontal|center_vertical"/>
 
         <Space
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1" />
+            android:layout_weight="1"/>
+
         <Button
             android:id="@+id/sonos_play_pause_button"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="36dp"
             android:layout_weight="1"
             android:background="@drawable/play_icon"
-            android:gravity="center_horizontal|center_vertical" />
+            android:gravity="center_horizontal|center_vertical"/>
 
         <Space
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1" />
+            android:layout_weight="1"/>
+
         <Button
             android:id="@+id/sonos_next_button"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="36dp"
             android:layout_weight="1"
             android:background="@drawable/next_icon"
-            android:gravity="center_horizontal|center_vertical" />
+            android:gravity="center_horizontal|center_vertical"/>
 
         <Space
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1" />
+            android:layout_weight="1"/>
 
         <Button
             android:id="@+id/sonos_shuffle_button"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="36dp"
             android:layout_weight="1"
-            android:background="@drawable/shuffle_icon"
-            android:gravity="center_horizontal|center_vertical" />
+            android:background="@drawable/shuffle_pressed"
+            android:gravity="center_horizontal|center_vertical"/>
     </LinearLayout>
 
     <ListView
@@ -107,7 +110,7 @@
         android:background="@color/blanco"
         android:ellipsize="end"
         android:singleLine="true"
-        android:visibility="gone" />
+        android:visibility="gone"/>
 
     <RelativeLayout
         android:id="@+id/sonos_ui_loader"
@@ -121,6 +124,6 @@
             android:layout_height="match_parent"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
-            android:layout_gravity="center" />
+            android:layout_gravity="center"/>
     </RelativeLayout>
 </LinearLayout>

@@ -236,4 +236,5 @@
     <string name="add_manually">Add Manually</string>
     <string name="description_delete_zwave">To remove a Z-Wave device from this hub, please click on the pairing button on the device. If you areunsure what button to press, search for \"pairing options\" in the device manual.</string>
     <string name="default_sonos_music_title">Loading track info...</string>
+    <string name="not_correct_actual_password">La contraseña proporcionada no es tu contraseña actual</string>
 </resources>

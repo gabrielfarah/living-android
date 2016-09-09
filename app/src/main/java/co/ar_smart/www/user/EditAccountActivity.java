@@ -59,7 +59,12 @@ public class EditAccountActivity extends AppCompatActivity {
         String nEmail = email.getText().toString();
         if ((nFirst_name.isEmpty()) || (nLast_name.isEmpty()) || (nEmail.isEmpty())) {
             Constants.showCustomMessage(getApplicationContext(), getResources().getString(R.string.label_error_message_fill_fields));
-        } else {
+        }
+        else if(!android.util.Patterns.EMAIL_ADDRESS.matcher(nEmail).matches())
+        {
+            Constants.showCustomMessage(getApplicationContext(), getResources().getString(R.string.toast_email_format_error));
+        }
+        else {
             USER.setEmail(nEmail);
             USER.setFirst_name(nFirst_name);
             USER.setLast_name(nLast_name);

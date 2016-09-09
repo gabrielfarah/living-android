@@ -3,10 +3,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin">
+    android:paddingBottom="40dp"
+    android:paddingLeft="30dp"
+    android:paddingRight="30dp"
+    android:paddingTop="40dp">
 
     <TextView
         android:id="@+id/textView2"
@@ -31,6 +31,8 @@
         android:id="@+id/hub_list_picker_spinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="15dp"
+        android:layout_marginTop="15dp"
         android:layout_gravity="center_horizontal"
         android:visibility="gone" />
 
@@ -39,7 +41,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:layout_marginBottom="@dimen/activity_vertical_margin"
         android:gravity="center"
+        android:visibility="visible"
         android:text="@string/loading_text"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
@@ -62,6 +66,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:layout_marginBottom="@dimen/activity_vertical_margin"
         android:text="@string/description_text_change_hub_wifi_network"
         android:textAlignment="center"
         android:textAppearance="?android:attr/textAppearanceMedium" />

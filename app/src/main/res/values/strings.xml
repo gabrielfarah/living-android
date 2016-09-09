@@ -242,4 +242,5 @@
     <string name="description_delete_zwave">To remove a Z-Wave device from this hub, please click on the pairing button on the device. If you are unsure what button to press, search for \"pairing options\" in the device manual.</string>
     <string name="description_delete_wifi">To remove a WIFI device from this hub, please click on the trash bin button on the right of the listed devices.</string>
     <string name="default_sonos_music_title">Loading tracks info…</string>
+    <string name="not_correct_actual_password">The password given is not your actual password</string>
 </resources>

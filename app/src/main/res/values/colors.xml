@@ -16,4 +16,5 @@
     <color name="blanco">#FFFFFF</color>
     <color name="white_ctran">#CCFFFFFF</color>
     <color name="white_5tran">#55FFFFFF</color>
+    <color name="blackPrincipal">#33B1B0</color>
 </resources>

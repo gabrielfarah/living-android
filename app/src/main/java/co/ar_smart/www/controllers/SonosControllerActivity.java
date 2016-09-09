@@ -164,54 +164,66 @@ public class SonosControllerActivity extends AppCompatActivity {
             });
         }
         spinner = (RelativeLayout) findViewById(R.id.sonos_ui_loader);
-        Button repeatButton = (Button) findViewById(R.id.sonos_repeat_button);
-        repeatButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (repeatOn && !shuffleOn) {
-                    //NORMAL
-                    shuffleRepeatCommand(PLAY_MODE_NORMAL);
-                    repeatOn = false;
-                } else if (repeatOn && shuffleOn) {
-                    //SHUFFLE_NOREPEAT
-                    shuffleRepeatCommand(PLAY_MODE_SHUFFLE_NOREPEAT);
-                    repeatOn = false;
-                } else if (!repeatOn && !shuffleOn) {
-                    //REPEAT_ALL
-                    shuffleRepeatCommand(PLAY_MODE_REPEAT_ALL);
-                    repeatOn = true;
-                } else {
-                    //!repeatOn && shuffleOn
-                    //SHUFFLE
-                    shuffleRepeatCommand(PLAY_MODE_SHUFFLE);
-                    repeatOn = true;
+        final Button repeatButton = (Button) findViewById(R.id.sonos_repeat_button);
+        final Button shuffleButton = (Button) findViewById(R.id.sonos_shuffle_button);
+        if(repeatButton != null && shuffleButton != null)
+        {
+            repeatButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (repeatOn && !shuffleOn) {
+                        //NORMAL
+                        shuffleRepeatCommand(PLAY_MODE_NORMAL);
+                        repeatButton.setBackgroundResource(R.drawable.repeat_release);
+                        repeatOn = false;
+                    } else if (repeatOn && shuffleOn) {
+                        //SHUFFLE_NOREPEAT
+                        shuffleRepeatCommand(PLAY_MODE_SHUFFLE_NOREPEAT);
+                        repeatButton.setBackgroundResource(R.drawable.repeat_release);
+                        repeatOn = false;
+                    } else if (!repeatOn && !shuffleOn) {
+                        //REPEAT_ALL
+                        shuffleRepeatCommand(PLAY_MODE_REPEAT_ALL);
+                        repeatButton.setBackgroundResource(R.drawable.repeat_pressed);
+                        repeatOn = true;
+                    } else {
+                        //!repeatOn && shuffleOn
+                        //SHUFFLE
+                        shuffleRepeatCommand(PLAY_MODE_SHUFFLE);
+                        repeatButton.setBackgroundResource(R.drawable.repeat_pressed);
+                        repeatOn = true;
+                    }
                 }
-            }
-        });
-        Button shuffleButton = (Button) findViewById(R.id.sonos_shuffle_button);
-        shuffleButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (repeatOn && !shuffleOn) {
-                    //SHUFFLE
-                    shuffleRepeatCommand(PLAY_MODE_SHUFFLE);
-                    shuffleOn = true;
-                } else if (repeatOn && shuffleOn) {
-                    //REPEAT_ALL
-                    shuffleRepeatCommand(PLAY_MODE_REPEAT_ALL);
-                    shuffleOn = false;
-                } else if (!repeatOn && !shuffleOn) {
-                    //SHUFFLE_NOREPEAT
-                    shuffleRepeatCommand(PLAY_MODE_SHUFFLE_NOREPEAT);
-                    shuffleOn = true;
-                } else {
-                    //!repeatOn && shuffleOn
-                    //NORMAL
-                    shuffleRepeatCommand(PLAY_MODE_NORMAL);
-                    shuffleOn = false;
+            });
+            shuffleButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (repeatOn && !shuffleOn) {
+                        //SHUFFLE
+                        shuffleRepeatCommand(PLAY_MODE_SHUFFLE);
+                        shuffleButton.setBackgroundResource(R.drawable.shuffle_pressed);
+                        shuffleOn = true;
+                    } else if (repeatOn && shuffleOn) {
+                        //REPEAT_ALL
+                        shuffleRepeatCommand(PLAY_MODE_REPEAT_ALL);
+                        shuffleButton.setBackgroundResource(R.drawable.shuffle_released);
+                        shuffleOn = false;
+                    } else if (!repeatOn && !shuffleOn) {
+                        //SHUFFLE_NOREPEAT
+                        shuffleRepeatCommand(PLAY_MODE_SHUFFLE_NOREPEAT);
+                        shuffleButton.setBackgroundResource(R.drawable.shuffle_pressed);
+                        shuffleOn = true;
+                    } else {
+                        //!repeatOn && shuffleOn
+                        //NORMAL
+                        shuffleRepeatCommand(PLAY_MODE_NORMAL);
+                        shuffleButton.setBackgroundResource(R.drawable.shuffle_released);
+                        shuffleOn = false;
+                    }
                 }
-            }
-        });
+            });
+        }
+
     }
 
     private void shuffleRepeatCommand(String mode) {

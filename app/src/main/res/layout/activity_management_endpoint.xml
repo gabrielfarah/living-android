@@ -26,9 +26,9 @@
         android:layout_height="0dp"
         android:text="@string/editDevice_btntext"
         android:id="@+id/btnEditDevs"
-        android:background="@drawable/gradient_border_btn"
+        android:background="@color/colorPrimaryDark"
         android:layout_weight="1"
-        android:textColor="#000"
+        android:textColor="@color/blanco"
         android:textAllCaps="false"
         android:drawableEnd="@drawable/right_arrow_icon"
         android:onClick="editDevices"
@@ -38,9 +38,9 @@
         android:layout_height="0dp"
         android:text="@string/addwifi_btntext"
         android:id="@+id/btnAddWifi"
-        android:background="@drawable/gradient_border_btn"
+        android:background="@color/colorPrimaryDark"
         android:layout_weight="1"
-        android:textColor="#000"
+        android:textColor="@color/blanco"
         android:textAllCaps="false"
         android:drawableEnd="@drawable/right_arrow_icon"
         android:onClick="addWifi"/>
@@ -49,10 +49,10 @@
         android:layout_height="0dp"
         android:text="@string/delwifi_btntext"
         android:id="@+id/btnDelWifi"
-        android:background="@drawable/gradient_border_btn"
+        android:background="@color/colorPrimaryDark"
         android:layout_weight="1"
         android:onClick="delWifi"
-        android:textColor="#000"
+        android:textColor="@color/blanco"
         android:textAllCaps="false"
         android:drawableEnd="@drawable/right_arrow_icon" />
     <Button
@@ -60,10 +60,10 @@
         android:layout_height="0dp"
         android:text="@string/addwave_btntext"
         android:id="@+id/btnAddZwave"
-        android:background="@drawable/gradient_border_btn"
+        android:background="@color/colorPrimaryDark"
         android:layout_weight="1"
         android:onClick="addZWave"
-        android:textColor="#000"
+        android:textColor="@color/blanco"
         android:textAllCaps="false"
         android:drawableEnd="@drawable/right_arrow_icon" />
     <Button
@@ -71,10 +71,10 @@
         android:layout_height="0dp"
         android:text="@string/delzwave_btntext"
         android:id="@+id/btnDelZwave"
-        android:background="@drawable/gradient_border_btn"
+        android:background="@color/colorPrimaryDark"
         android:layout_weight="1"
         android:onClick="delZWave"
-        android:textColor="#000"
+        android:textColor="@color/blanco"
         android:textAllCaps="false"
         android:drawableEnd="@drawable/right_arrow_icon"/>
 

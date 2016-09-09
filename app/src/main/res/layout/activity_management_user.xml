@@ -16,7 +16,8 @@
         android:text="@string/label_manage_account_button"
         android:id="@+id/edit_profile_button"
         android:drawableEnd="@drawable/right_arrow_icon"
-        android:background="@color/subBarras"
+        android:background="@color/principal"
+        android:textColor="@color/blanco"
         android:layout_alignParentStart="true" />
 
     <Button
@@ -25,7 +26,8 @@
         android:text="@string/label_change_password_button"
         android:id="@+id/change_password_button"
         android:drawableEnd="@drawable/right_arrow_icon"
-        android:background="@color/subBarras"
+        android:background="@color/colorPrimaryDark"
+        android:textColor="@color/blanco"
         android:layout_below="@+id/edit_profile_button"
         android:layout_alignParentStart="true" />
 

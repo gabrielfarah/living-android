@@ -61,9 +61,9 @@ public class LoginActivity extends AppCompatActivity {
         Button loginButton = (Button) findViewById(R.id.loginButton);
         final EditText emailText = (EditText) findViewById(R.id.emailText);
         final EditText passwordText = (EditText) findViewById(R.id.passwordText);
-        emailText.setTypeface(Typeface.SERIF);
+        emailText.setTypeface(Typeface.DEFAULT);
         //emailText.setHintTextColor(ContextCompat.getColor(getApplicationContext(), R.color.blanco));
-        passwordText.setTypeface(Typeface.SERIF);
+        passwordText.setTypeface(Typeface.DEFAULT);
         //passwordText.setHintTextColor(ContextCompat.getColor(getApplicationContext(), R.color.blanco));
         setLastEmail(emailText);
         if (loginButton != null) {
