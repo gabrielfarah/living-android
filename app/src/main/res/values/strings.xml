@@ -13,7 +13,7 @@
     <string name="warning_fail_newdev2">warning 2</string>
     <string name="addDevice_success_dialog">The device was added successfully</string>
     <string name="lblnameroom_dialog">Room Name: </string>
-    <string name="lblnamedev">Device Name: </string>
+    <string name="lblnamedev">Set a name for this device: Ej. "Kitchen light"</string>
     <string name="acept">Acept</string>
     <string name="cancel">Cancel</string>
     <string name="btnEditMode">Edit Mode</string>

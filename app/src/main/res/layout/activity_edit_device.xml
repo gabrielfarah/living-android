@@ -13,62 +13,91 @@
         android:id="@+id/labelName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="5dp"
         android:gravity="bottom"
         android:text="@string/lblnamedev"
         android:textColor="#848484"
-        android:textSize="25sp" />
+        android:textSize="18sp" />
     <EditText
         android:id="@+id/txtNameDev"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginBottom="10dp"
-        android:layout_weight="1" />
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp" />
+
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:text="Select an icon for the new device:"
+        android:textColor="#848484"
+        android:textSize="18sp" />
+
     <Button
         android:id="@+id/btnEditIcon"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:layout_marginBottom="5dp"
-        android:layout_weight="1"
         android:background="@color/colorPrimaryDark"
         android:drawableEnd="@drawable/right_arrow_icon"
         android:text="@string/editicon_btntext"
         android:textColor="@color/blanco" />
+
+    <TextView
+        android:id="@+id/select_icon_text_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:text="The selected icon:"
+        android:textColor="#848484"
+        android:textSize="18sp"
+        android:visibility="visible" />
+
+    <ImageView
+        android:id="@+id/selected_icon_image_view"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:src="@drawable/default_icon"
+        android:tint="@android:color/darker_gray"
+        android:visibility="visible" />
+
+    <TextView
+        android:id="@+id/textView6"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:text="Select a room for the new device:"
+        android:textColor="#848484"
+        android:textSize="18sp" />
+
     <Button
         android:id="@+id/btnEditRoom"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:layout_marginBottom="5dp"
-        android:layout_weight="1"
         android:background="@color/colorPrimaryDark"
         android:drawableEnd="@drawable/right_arrow_icon"
         android:text="@string/editroom_btntext"
         android:textColor="@color/blanco" />
 
-    <RelativeLayout
+    <TextView
+        android:id="@+id/select_room_text_view"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginBottom="10dp"
-        android:layout_weight="1"
-        android:background="@color/colorPrimaryDark"
-        android:orientation="horizontal"
-        android:weightSum="10">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:layout_toStartOf="@+id/checkBox"
-            android:gravity="center"
-            android:text="@string/addfavorites_chktext"
-            android:textColor="@color/blanco" />
-        <CheckBox
-            android:id="@+id/checkBox"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentTop="true" />
-    </RelativeLayout>
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:text="The selected room:"
+        android:textColor="#848484"
+        android:textSize="18sp"
+        android:visibility="visible" />
+
+    <TextView
+        android:id="@+id/selected_room_text_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textColor="#848484"
+        android:textSize="18sp"
+        android:visibility="visible" />
 
     <Button
         android:id="@+id/save_device_button"

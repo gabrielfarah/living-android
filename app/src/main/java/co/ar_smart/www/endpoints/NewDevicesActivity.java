@@ -161,6 +161,7 @@ public class NewDevicesActivity extends AppCompatActivity {
             addManuallyButton.setVisibility(View.GONE);
         } else if (addType != null && addType.equalsIgnoreCase(TYPE_DEVICE_ZWAVE)) { // Then add a Z-Wave
             description.setText(getResources().getString(R.string.description_add_zwave));
+            addManuallyButton.setVisibility(View.GONE);
         }
 
         addDevice(addType);
@@ -216,6 +217,14 @@ public class NewDevicesActivity extends AppCompatActivity {
                     progress.setVisibility(View.GONE);
                     noDeviceMessage.setVisibility(View.VISIBLE);
                     list.setVisibility(View.GONE);
+                    Log.d("Inf", endpoints.toString());
+                    Log.d("Inf", tryCount + "");
+                    Log.d("Inf", addType + "");
+                    tryCount++;
+                    if (addType != null && addType.equalsIgnoreCase(TYPE_DEVICE_WIFI) && tryCount > 1) { // Then add a Z-Wave
+                        description.setText(getResources().getString(R.string.description_add_wifi));
+                        addManuallyButton.setVisibility(View.VISIBLE);
+                    }
                 }
             }
         };
@@ -245,12 +254,19 @@ public class NewDevicesActivity extends AppCompatActivity {
                                 Type listType = new TypeToken<List<Endpoint>>() {
                                 }.getType();
                                 ArrayList<Endpoint> endpointsResponse = new Gson().fromJson(endpointJsonArray.toString(), listType);
+                                for (int i = 0; i < endpointsResponse.size(); i++) {
+                                    if (!validateEndpoint(endpointsResponse.get(i))) {
+                                        endpointsResponse.remove(i);
+                                    }
+                                }
                                 endpoints.addAll(endpointsResponse);
                             } else if (response instanceof JSONObject) {
                                 // It's an object
                                 JSONObject endpointObject = (JSONObject) response;
                                 Endpoint endpointsResponse = new Gson().fromJson(endpointObject.toString(), Endpoint.class);
-                                endpoints.add(endpointsResponse);
+                                if (validateEndpoint(endpointsResponse)) {
+                                    endpoints.add(endpointsResponse);
+                                }
                             } else {
                                 // It's something else, like a string or number
                             }
@@ -270,6 +286,18 @@ public class NewDevicesActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * This function validates that an endpoint is valid
+     *
+     * @param endpointsResponse the endpoint to validate
+     * @return true if is not null, if either id or node are valid and if type is valid
+     */
+    private boolean validateEndpoint(Endpoint endpointsResponse) {
+        return endpointsResponse != null &&
+                (endpointsResponse.getId() > 0 || endpointsResponse.getNode() > 0) &&
+                endpointsResponse.getEndpoint_type() != null && !endpointsResponse.getEndpoint_type().isEmpty();
+    }
+
     private void updateUIWithResponse() {
         runOnUiThread(new Runnable() {
             @Override
@@ -281,7 +309,7 @@ public class NewDevicesActivity extends AppCompatActivity {
                     adapter.notifyDataSetChanged();
                 } else {
                     tryCount++;
-                    if (addType != null && addType.equalsIgnoreCase(TYPE_DEVICE_WIFI) && tryCount > 2) { // Then add a Z-Wave
+                    if (addType != null && addType.equalsIgnoreCase(TYPE_DEVICE_WIFI) && tryCount > 1) { // Then add a Z-Wave
                         description.setText(getResources().getString(R.string.description_add_wifi));
                         addManuallyButton.setVisibility(View.VISIBLE);
                     }

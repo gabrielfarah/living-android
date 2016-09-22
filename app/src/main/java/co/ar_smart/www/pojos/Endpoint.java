@@ -238,7 +238,7 @@ public class Endpoint implements Parcelable{
 
     @Override
     public String toString() {
-        return "(" + name + " - " + endpoint_type + " - " + ui_class_command + ")";
+        return "(" + name + " - " + id + ")";
     }
 
     @Override
@@ -276,5 +276,16 @@ public class Endpoint implements Parcelable{
         name = nName;
         image = nImage;
         room=nRoom;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        boolean isSame = false;
+
+        if (object != null && object instanceof Endpoint) {
+            isSame = this.id == ((Endpoint) object).id;
+        }
+
+        return isSame;
     }
 }

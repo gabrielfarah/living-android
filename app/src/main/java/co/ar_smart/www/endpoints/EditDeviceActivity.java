@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
@@ -14,11 +13,14 @@ import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
+import co.ar_smart.www.adapters.GridDevicesAdapter;
 import co.ar_smart.www.helpers.Constants;
 import co.ar_smart.www.helpers.RetrofitServiceGenerator;
 import co.ar_smart.www.living.R;
@@ -37,6 +39,7 @@ import static co.ar_smart.www.helpers.Constants.ACTION_ADD;
 import static co.ar_smart.www.helpers.Constants.ACTION_EDIT;
 import static co.ar_smart.www.helpers.Constants.DEFAULT_HUB;
 import static co.ar_smart.www.helpers.Constants.EXTRA_ACTION;
+import static co.ar_smart.www.helpers.Constants.EXTRA_LIST_PARCELABLE_FIRST;
 import static co.ar_smart.www.helpers.Constants.EXTRA_MESSAGE;
 import static co.ar_smart.www.helpers.Constants.EXTRA_MESSAGE_PREF_HUB;
 import static co.ar_smart.www.helpers.Constants.EXTRA_OBJECT;
@@ -76,6 +79,11 @@ public class EditDeviceActivity extends AppCompatActivity {
      */
     private Endpoint dev;
     private int PREFERRED_HUB_ID;
+    private TextView select_room;
+    private TextView selected_room;
+    private TextView select_icon;
+    private ImageView selected_icon;
+    private ArrayList<Endpoint> endpoint_devices = new ArrayList<>();
 
     public static String bodyToString(final RequestBody request) {
         try {
@@ -98,7 +106,9 @@ public class EditDeviceActivity extends AppCompatActivity {
         Intent intent = getIntent();
         dev = intent.getParcelableExtra(EXTRA_OBJECT);
         API_TOKEN = intent.getStringExtra(EXTRA_MESSAGE);
+        Log.d("SIGNATURE", API_TOKEN);
         PREFERRED_HUB_ID = intent.getIntExtra(EXTRA_MESSAGE_PREF_HUB, -1);
+        endpoint_devices = intent.getParcelableArrayListExtra(EXTRA_LIST_PARCELABLE_FIRST);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setHomeButtonEnabled(true);
@@ -111,15 +121,22 @@ public class EditDeviceActivity extends AppCompatActivity {
 
         String act=myact.getIntent().getStringExtra(EXTRA_ACTION);
 
-            room="";
-            icon="";
+        room = "";
+        icon = "";
+
+        select_room = (TextView) findViewById(R.id.select_room_text_view);
+        selected_room = (TextView) findViewById(R.id.selected_room_text_view);
+        select_icon = (TextView) findViewById(R.id.select_icon_text_view);
+        selected_icon = (ImageView) findViewById(R.id.selected_icon_image_view);
 
         if(act.equals(ACTION_EDIT))
         {
-            if(dev.getRoom()!=null)
-            room=dev.getRoom();
-            if(dev.getRoom()!=null)
-            icon=dev.getImage();
+            if (dev.getRoom() != null && !dev.getImage().isEmpty()) {
+                room = dev.getRoom();
+            }
+            if (dev.getImage() != null && !dev.getImage().isEmpty()) {
+                icon = dev.getImage();
+            }
             txtName.setText(dev.getName());
         }
 
@@ -199,8 +216,9 @@ public class EditDeviceActivity extends AppCompatActivity {
         if (requestCode == 1) {
             if(resultCode == Activity.RESULT_OK){
                 icon=data.getStringExtra("result");
-                if(checkFields())
-                btnPost.setIcon(ContextCompat.getDrawable(myact, R.drawable.new_cross_btn));
+                if (checkFields()) {
+                }
+                //btnPost.setIcon(ContextCompat.getDrawable(myact, R.drawable.new_cross_btn));
             }else if (resultCode == Activity.RESULT_CANCELED) {
 
             }
@@ -222,6 +240,18 @@ public class EditDeviceActivity extends AppCompatActivity {
      */
     private boolean checkFields()
     {
+        if (room != null && !room.isEmpty()) {
+            Log.d("ROOM", room);
+            select_room.setVisibility(View.VISIBLE);
+            selected_room.setVisibility(View.VISIBLE);
+            selected_room.setText(room);
+        }
+        if (icon != null && !icon.isEmpty()) {
+            Log.d("ICON RET", icon);
+            select_icon.setVisibility(View.VISIBLE);
+            selected_icon.setVisibility(View.VISIBLE);
+            selected_icon.setImageResource(GridDevicesAdapter.getDrawableFromString(icon));
+        }
         return !txtName.getText().toString().equals("") && !room.equals("") && !icon.equals("");
     }
 
@@ -308,9 +338,18 @@ public class EditDeviceActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
+                //Replace updated device in devices list
+                Log.d("SameSame", "" + dev.getId());
+                Log.d("Lista com", endpoint_devices.toString());
+                if (endpoint_devices.indexOf(dev) != -1) {
+                    endpoint_devices.set(endpoint_devices.indexOf(dev), dev);
+                }
                 Intent i=new Intent(EditDeviceActivity.this,ManagementEndpointsActivity.class);
                 i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 i.putExtra(EXTRA_OBJECT, dev);
+                i.putExtra(EXTRA_MESSAGE, API_TOKEN);
+                i.putExtra(EXTRA_MESSAGE_PREF_HUB, PREFERRED_HUB_ID);
+                i.putParcelableArrayListExtra(EXTRA_OBJECT, endpoint_devices);
                 setResult(RESULT_OK, i);
                 startActivity(i);
             }

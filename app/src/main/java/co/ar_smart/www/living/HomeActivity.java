@@ -151,6 +151,7 @@ public class HomeActivity extends AppCompatActivity {
      * The list of devices (endpoints) a particular hub has
      */
     private ArrayList<Endpoint> endpoint_devices = new ArrayList<>();
+    private IHomeClient livingIHomeClient;
     private boolean endpointsPolledsuccessfully = false;
     private boolean modesPolledSuccesfully = false;
     private boolean hubsPolledSuccesfully = false;
@@ -181,7 +182,9 @@ public class HomeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_home);
         final Intent intent = getIntent();
         API_TOKEN = intent.getStringExtra(EXTRA_MESSAGE);
+        livingIHomeClient = RetrofitServiceGenerator.createService(IHomeClient.class, API_TOKEN);
         mContext = this;
+        performPushNotificationRegistration();
         String backgrnd_path = getBackgroundPath();
         Drawable d;
         if(backgrnd_path.contains("drawable://"))
@@ -272,7 +275,6 @@ public class HomeActivity extends AppCompatActivity {
         setupDrawer();
 
         loadPreferredHub();
-        performPushNotificationRegistration();
         loadEndpointStates();
     }
 
@@ -296,6 +298,7 @@ public class HomeActivity extends AppCompatActivity {
                                 currentUSer = user;
                                 currentUSer.setPush_token(userId);
                                 Log.d("DEBUGGG", currentUSer.toString());
+                                updateUserPushToken();
                             }
 
                             @Override
@@ -306,6 +309,9 @@ public class HomeActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    private void updateUserPushToken() {
         if (currentUSer != null) {
             UserManager.updateUser(currentUSer, API_TOKEN, new UserManager.UserCallbackInterface() {
                 @Override
@@ -314,7 +320,7 @@ public class HomeActivity extends AppCompatActivity {
 
                 @Override
                 public void onSuccessCallback(User user) {
-                    //TODO el usuario se actualiza aca?
+                    currentUSer = user;
                 }
 
                 @Override
@@ -408,6 +414,7 @@ public class HomeActivity extends AppCompatActivity {
         Intent intent = new Intent(this, EditRoomActivity.class);
         intent.putExtra(EXTRA_MESSAGE, API_TOKEN);
         intent.putExtra(EXTRA_MESSAGE_PREF_HUB, PREFERRED_HUB_ID);
+        intent.putParcelableArrayListExtra(EXTRA_OBJECT, endpoint_devices);
         startActivity(intent);
     }
 
@@ -766,7 +773,6 @@ public class HomeActivity extends AppCompatActivity {
      * This method will try to obtain all the devices (endpoints) for a given hub of the user.
      */
     private void getEndpoints() {
-        IHomeClient livingIHomeClient = RetrofitServiceGenerator.createService(IHomeClient.class, API_TOKEN);
         Call<ArrayList<Endpoint>> call = livingIHomeClient.endpoints("" + PREFERRED_HUB_ID);
         //Log.d("OkHttp", String.format("Sending request %s ",call.request().toString()));
         call.enqueue(new Callback<ArrayList<Endpoint>>() {
@@ -812,7 +818,6 @@ public class HomeActivity extends AppCompatActivity {
      * This method will try to obtain all the devices (endpoints) for a given hub of the user.
      */
     private void getModes() {
-        IHomeClient livingIHomeClient = RetrofitServiceGenerator.createService(IHomeClient.class, API_TOKEN);
         Call<ArrayList<Mode>> call = livingIHomeClient.modes("" + PREFERRED_HUB_ID);
         //Log.d("OkHttp", String.format("Sending request %s ",call.request().toString()));
         call.enqueue(new Callback<ArrayList<Mode>>() {
@@ -866,7 +871,6 @@ public class HomeActivity extends AppCompatActivity {
      * This method will try to obtain all the Living hubs the user owns/is invited.
      */
     private void getHubs() {
-        IHomeClient livingIHomeClient = RetrofitServiceGenerator.createService(IHomeClient.class, API_TOKEN);
         // Create a call instance for looking up Retrofit contributors.
         Call<ArrayList<Hub>> call = livingIHomeClient.hubs();
         //Log.d("OkHttp", String.format("Sending request %s ",call.request().toString()));

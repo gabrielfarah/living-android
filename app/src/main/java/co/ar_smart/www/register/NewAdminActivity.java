@@ -30,11 +30,8 @@ import android.widget.Toast;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import co.ar_smart.www.analytics.AnalyticsApplication;
-import co.ar_smart.www.helpers.Constants;
 import co.ar_smart.www.helpers.JWTManager;
 import co.ar_smart.www.living.LoginActivity;
 import co.ar_smart.www.living.LoginRegisterActivity;
@@ -57,6 +54,10 @@ public class NewAdminActivity extends AppCompatActivity
 {
 
 
+    /**
+     * Constant used when the application verifies the permissions given by the user
+     */
+    private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 0;
     /**
      * The user email
      */
@@ -93,11 +94,6 @@ public class NewAdminActivity extends AppCompatActivity
      * EditText for user confirmation password
      */
     private EditText edtConfPassword;
-    /**
-     * Constant used when the application verifies the permissions given by the user
-     */
-    private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 0;
-
     /**
      * Actual context of application
      */
@@ -200,8 +196,8 @@ public class NewAdminActivity extends AppCompatActivity
                 && (!confPassword.equals(""));
         boolean emailsEqual = email.equals(confEmail);
         boolean passwordsEqual = password.equals(confPassword);
-        Pattern pattern = Pattern.compile(Constants.PASSWORD_REGEX);
-        Matcher matcher = pattern.matcher(password);
+        //Pattern pattern = Pattern.compile(Constants.PASSWORD_REGEX);
+        //Matcher matcher = pattern.matcher(password);
         if (!filledFields)
         {
             displayMessage(getResources().getString(R.string.toast_incomplete_form));
@@ -217,8 +213,7 @@ public class NewAdminActivity extends AppCompatActivity
         else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches())
         {
             displayMessage(getResources().getString(R.string.toast_email_format_error));
-        }
-        else if(!matcher.matches())
+        } else if (password.length() < 8)
         {
             displayMessage(getResources().getString(R.string.not_regex_password));
         }

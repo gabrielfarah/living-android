@@ -36,6 +36,7 @@ import static co.ar_smart.www.helpers.Constants.ACTION_EDIT;
 import static co.ar_smart.www.helpers.Constants.DEFAULT_HUB;
 import static co.ar_smart.www.helpers.Constants.EXTRA_ACTION;
 import static co.ar_smart.www.helpers.Constants.EXTRA_CATEGORY_DEVICE;
+import static co.ar_smart.www.helpers.Constants.EXTRA_LIST_PARCELABLE_FIRST;
 import static co.ar_smart.www.helpers.Constants.EXTRA_MESSAGE;
 import static co.ar_smart.www.helpers.Constants.EXTRA_OBJECT;
 import static co.ar_smart.www.helpers.Constants.EXTRA_UID;
@@ -117,6 +118,7 @@ public class DevicesActivity extends AppCompatActivity {
                 i.putExtra(EXTRA_CATEGORY_DEVICE, devices.get(position).getCategory());
                 i.putExtra(EXTRA_MESSAGE, API_TOKEN);
                 i.putExtra(EXTRA_ACTION, ACTION_EDIT);
+                i.putParcelableArrayListExtra(EXTRA_LIST_PARCELABLE_FIRST, devices);
                 i.putExtra(EXTRA_UID, String.valueOf(devices.get(position).getId()));
 
                 startActivity(i);
