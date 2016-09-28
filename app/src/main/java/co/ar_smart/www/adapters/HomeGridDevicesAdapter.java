@@ -15,6 +15,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import co.ar_smart.www.living.R;
@@ -205,5 +206,10 @@ public class HomeGridDevicesAdapter extends BaseAdapter {
             }
         }
         return gridView;
+    }
+
+    public void updateItems(ArrayList<Endpoint> endpoint_devices) {
+        endpoints = endpoint_devices;
+        notifyDataSetChanged();
     }
 }

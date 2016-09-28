@@ -5,9 +5,9 @@
     <string name="delzwave_btntext">Delete ZWave Device</string>
     <string name="editDevice_btntext">Edit Device</string>
     <string name="editicon_btntext">Select an icon for the device</string>
-    <string name="editroom_btntext">Select an room for the device</string>
+    <string name="editroom_btntext">Select a room for your devices</string>
     <string name="addfavorites_chktext">ADD THIS DEVICE TO FAVORITES</string>
-    <string name="newroom_btntext">New Room</string>
+    <string name="newroom_btntext">Add new room</string>
     <string name="warning_fields">Please fill in all required fields</string>
     <string name="warning_fail_newdev1">It was not possible to connect your device</string>
     <string name="warning_fail_newdev2">warning 2</string>
@@ -243,4 +243,10 @@
     <string name="description_delete_wifi">To remove a WIFI device from this hub, please click on the trash bin button on the right of the listed devices.</string>
     <string name="default_sonos_music_title">Loading tracks info…</string>
     <string name="not_correct_actual_password">The password given is not your actual password</string>
+    <string name="label_set_home_to_control_spinner">Select the home to control</string>
+    <string name="sonos_player">Sonos Player</string>
+    <string name="philips_hue">Philips Hue</string>
+    <string name="manually_message">Manually add a WIFI device</string>
+    <string name="enter_ip_address_message">Enter the IP address of the device in your home network:</string>
+    <string name="label_use_this_room">Use selected room</string>
 </resources>

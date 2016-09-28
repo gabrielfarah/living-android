@@ -67,7 +67,7 @@ public final class Constants {
     /**
      * The base URL of the api server
      */
-    public static final String BASE_URL = "http://living.ar-smart.co/v1/";
+    public static final String BASE_URL = "https://living.ar-smart.co/v1/";
     /**
      * The login URL
      */

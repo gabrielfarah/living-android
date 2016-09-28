@@ -114,7 +114,9 @@ public class EditRoomActivity extends AppCompatActivity {
         btnPick = (Button) findViewById(R.id.btnPickRoom);
         TextView textMessage = (TextView) findViewById(R.id.rooms_explanation_text_view);
         if (room != null) {
-            textMessage.setText(R.string.text_room_explanation_add_device);
+            textMessage.setText(R.string.text_room_explanation_edit);
+            btnPick.setVisibility(View.GONE);
+        } else {
             btnPick.setVisibility(View.VISIBLE);
             btnPick.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -122,9 +124,7 @@ public class EditRoomActivity extends AppCompatActivity {
                     finish();
                 }
             });
-        } else {
-            btnPick.setVisibility(View.GONE);
-            textMessage.setText(R.string.text_room_explanation_edit);
+            textMessage.setText(R.string.text_room_explanation_add_device);
         }
 
         btnaddnew.setOnClickListener(new View.OnClickListener() {

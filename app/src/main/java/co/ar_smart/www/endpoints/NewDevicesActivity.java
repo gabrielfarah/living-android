@@ -1,10 +1,14 @@
 package co.ar_smart.www.endpoints;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.text.InputType;
+import android.text.method.DigitsKeyListener;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -12,9 +16,12 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
@@ -28,6 +35,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import co.ar_smart.www.helpers.CommandManager;
 import co.ar_smart.www.helpers.Constants;
@@ -110,16 +118,16 @@ public class NewDevicesActivity extends AppCompatActivity {
                 View view = convertView;
                 if (view == null) {
                     view = getLayoutInflater().inflate(R.layout.row_list_devices, null);
-                    TextView lb = (TextView) view.findViewById(R.id.labelDevadd);
-                    lb.setText(endpoints.get(position).getName());
-                    lb = (TextView) view.findViewById(R.id.labelDevCategoryadd);
-                    Category cat = endpoints.get(position).getCategory();
-                    if (cat != null) {
-                        lb.setText(cat.getCat());
-                    }
-                    ImageView i = (ImageView) view.findViewById(R.id.iconlistad);
-                    i.setImageDrawable(ContextCompat.getDrawable(NewDevicesActivity.this, R.drawable.new_cross_btn));
                 }
+                TextView device_name = (TextView) view.findViewById(R.id.nameDeviceEdit);
+                TextView category_name = (TextView) view.findViewById(R.id.nameCategoryEdit);
+                ImageView i = (ImageView) view.findViewById(R.id.iconEdit);
+                device_name.setText(endpoints.get(position).getName());
+                Category cat = endpoints.get(position).getCategory();
+                if (cat != null) {
+                    category_name.setText(cat.getCat());
+                }
+                i.setImageDrawable(ContextCompat.getDrawable(NewDevicesActivity.this, R.drawable.new_cross_btn));
                 return view;
             }
         };
@@ -127,18 +135,7 @@ public class NewDevicesActivity extends AppCompatActivity {
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                Intent i = new Intent(NewDevicesActivity.this, EditDeviceActivity.class);
-                Bundle b = new Bundle();
-                b.putParcelable(EXTRA_OBJECT, endpoints.get(position));
-                i.putExtras(b);
-                Category cat = endpoints.get(position).getCategory();
-                if (cat != null) {
-                    i.putExtra(EXTRA_CATEGORY_DEVICE, cat.getCat());
-                }
-                i.putExtra(EXTRA_MESSAGE, API_TOKEN);
-                i.putExtra(EXTRA_ACTION, ACTION_ADD);
-                startActivityForResult(i, HomeActivity.ACTIVITY_CODE_ENDPOINT);
+                finishAddingProcess(endpoints.get(position), endpoints.get(position).getCategory());
             }
         });
 
@@ -150,6 +147,13 @@ public class NewDevicesActivity extends AppCompatActivity {
                 endpoints.clear();
                 adapter.notifyDataSetChanged();
                 addDevice(addType);
+            }
+        });
+
+        addManuallyButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                addWifiDeviceManually();
             }
         });
 
@@ -165,6 +169,70 @@ public class NewDevicesActivity extends AppCompatActivity {
         }
 
         addDevice(addType);
+    }
+
+    private void finishAddingProcess(Endpoint nEndpoint, Category nCategory) {
+        Intent i = new Intent(NewDevicesActivity.this, EditDeviceActivity.class);
+        Bundle b = new Bundle();
+        b.putParcelable(EXTRA_OBJECT, nEndpoint);
+        i.putExtras(b);
+        Category cat = nCategory;
+        if (cat != null) {
+            i.putExtra(EXTRA_CATEGORY_DEVICE, cat.getCat());
+        }
+        i.putExtra(EXTRA_MESSAGE, API_TOKEN);
+        i.putExtra(EXTRA_ACTION, ACTION_ADD);
+        startActivityForResult(i, HomeActivity.ACTIVITY_CODE_ENDPOINT);
+    }
+
+    private void addWifiDeviceManually() {
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        final EditText edittext = new EditText(NewDevicesActivity.this);
+        final Spinner spinner = new Spinner(NewDevicesActivity.this);
+
+        String options[] = {getResources().getString(R.string.sonos_player), getResources().getString(R.string.philips_hue)};
+        ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, options);
+        spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(spinnerArrayAdapter);
+
+        LinearLayout linearLayout = new LinearLayout(NewDevicesActivity.this);
+        linearLayout.setOrientation(LinearLayout.VERTICAL);
+        linearLayout.addView(edittext);
+        linearLayout.addView(spinner);
+
+        edittext.setInputType(InputType.TYPE_CLASS_NUMBER |
+                InputType.TYPE_NUMBER_FLAG_DECIMAL);
+        edittext.setKeyListener(DigitsKeyListener.getInstance("0123456789."));
+
+        alert.setMessage(getResources().getString(R.string.manually_message));
+        alert.setTitle(getResources().getString(R.string.enter_ip_address_message));
+        alert.setView(linearLayout);
+        alert.setPositiveButton(getResources().getString(R.string.accept), new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                String ipAddress = edittext.getText().toString();
+                String type = (String) spinner.getSelectedItem();
+                Category category;
+                Endpoint endpoint = new Endpoint();
+                endpoint.setIp_address(ipAddress);
+                endpoint.setEndpoint_type("wifi");
+                endpoint.setUid(UUID.randomUUID().toString());
+                if (type.equalsIgnoreCase(getResources().getString(R.string.sonos_player))) {
+                    category = new Category("Entertainment", "001");
+                    endpoint.setManufacturer_name("SONOS");
+                } else {
+                    category = new Category("Lighting", "002");
+                    endpoint.setManufacturer_name("Philips");
+                }
+                finishAddingProcess(endpoint, category);
+                //Log.d("Manual","IP: "+ipAddress+" Type: "+type+" Cat: "+category.toString());
+            }
+        });
+        alert.setNegativeButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                // what ever you want to do with No option.
+            }
+        });
+        alert.show();
     }
 
     private void addDevice(String type) {
@@ -302,17 +370,20 @@ public class NewDevicesActivity extends AppCompatActivity {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                progress.setVisibility(View.GONE);
-                list.setVisibility(View.VISIBLE);
-                noDeviceMessage.setVisibility(View.GONE);
                 if (!endpoints.isEmpty()) {
                     adapter.notifyDataSetChanged();
+                    progress.setVisibility(View.GONE);
+                    list.setVisibility(View.VISIBLE);
+                    noDeviceMessage.setVisibility(View.GONE);
                 } else {
                     tryCount++;
                     if (addType != null && addType.equalsIgnoreCase(TYPE_DEVICE_WIFI) && tryCount > 1) { // Then add a Z-Wave
                         description.setText(getResources().getString(R.string.description_add_wifi));
                         addManuallyButton.setVisibility(View.VISIBLE);
                     }
+                    progress.setVisibility(View.GONE);
+                    list.setVisibility(View.GONE);
+                    noDeviceMessage.setVisibility(View.VISIBLE);
                 }
             }
         });

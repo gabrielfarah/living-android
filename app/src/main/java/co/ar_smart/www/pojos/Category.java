@@ -41,6 +41,11 @@ public class Category implements Parcelable{
         code = in.readString();
     }
 
+    public Category(String nDescription, String nCode) {
+        description = nDescription;
+        code = nCode;
+    }
+
     @Override
     public String toString(){
         return "("+description+" - "+code+")";

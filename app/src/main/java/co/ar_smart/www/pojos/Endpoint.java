@@ -79,8 +79,10 @@ public class Endpoint implements Parcelable{
      * The category of the device (Lighting, entertainment, security, etc)
      */
     private Category category;
+
     public Endpoint() {
     }
+
     /**
      * This constructor method creates an Endpoint object from a Parcel
      * @param in The parcer to deserialize the object
@@ -119,12 +121,20 @@ public class Endpoint implements Parcelable{
         return node;
     }
 
+    public void setNode(int node) {
+        this.node = node;
+    }
+
     /**
      * Get the device ip address
      * @return the device ip address
      */
     public String getIp_address() {
         return ip_address;
+    }
+
+    public void setIp_address(String ip_address) {
+        this.ip_address = ip_address;
     }
 
     /**
@@ -152,6 +162,10 @@ public class Endpoint implements Parcelable{
         return endpoint_type;
     }
 
+    public void setEndpoint_type(String endpoint_type) {
+        this.endpoint_type = endpoint_type;
+    }
+
     /**
      * Get the state of the device
      *
@@ -177,6 +191,10 @@ public class Endpoint implements Parcelable{
      */
     public String getUid() {
         return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
     }
 
     /**
@@ -209,6 +227,10 @@ public class Endpoint implements Parcelable{
         return manufacturer_name;
     }
 
+    public void setManufacturer_name(String manufacturer_name) {
+        this.manufacturer_name = manufacturer_name;
+    }
+
     /**
      * Get the room name (if any)
      *
@@ -225,6 +247,10 @@ public class Endpoint implements Parcelable{
      */
     public Category getCategory() {
         return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
     }
 
     /**

@@ -115,17 +115,14 @@ public class DeleteZwaveActivity extends AppCompatActivity {
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
                 View view=convertView;
-                if(view==null)
-                {
+                if (view == null) {
 
-                    view=getLayoutInflater().inflate(R.layout.row_list_devices,null);
-                    TextView lb=(TextView)view.findViewById(R.id.labelDevadd);
-                    lb.setText(devices.get(position).getName());
-                    lb=(TextView)view.findViewById(R.id.labelDevCategoryadd);
-                    lb.setText(devices.get(position).getCategory().getCat());
-                    //ImageView i=(ImageView) view.findViewById(R.id.iconlistad);
-                    //i.setImageDrawable(ContextCompat.getDrawable(myact, R.drawable.delete_icon));
+                    view = getLayoutInflater().inflate(R.layout.row_list_devices, null);
                 }
+                TextView device_name = (TextView) view.findViewById(R.id.nameDeviceEdit);
+                TextView category_name = (TextView) view.findViewById(R.id.nameCategoryEdit);
+                device_name.setText(devices.get(position).getName());
+                category_name.setText(devices.get(position).getCategory().getCat());
                 //chk.setChecked(checked[position]);
                 return view;
             }

@@ -24,17 +24,21 @@ public class RoomManager {
         HashMap<String, ICommandClass> map = Constants.getUiMapClasses();
         ICommandClass te;
         for (Endpoint e : endpoint_devices) {
-            Triplet temp = new Triplet(new Room(hub_id, e.getRoom()));
-            if (!response.contains(temp)) {
-                te = map.get(e.getUi_class_command());
-                if (te != null) {
-                    te.setEndpoint(e);
-                    temp.addOffCommand(te.getTurnOffCommand());
-                    temp.addOnCommand(te.getTurnOnCommand());
+            te = map.get(e.getUi_class_command());
+            if (te != null) {
+                te.setEndpoint(e);
+                Triplet nTriplet = new Triplet(new Room(hub_id, e.getRoom()));
+                if (!response.contains(nTriplet)) {
+                    nTriplet.addOffCommand(te.getTurnOffCommand());
+                    nTriplet.addOnCommand(te.getTurnOnCommand());
+                    response.add(nTriplet);
                 } else {
-                    AnalyticsApplication.getInstance().trackEvent("Device UI Class", "DoNotExist", "The device in hub:" + e.getHub() + " named:" + e.getName() + " the ui class does not correspond. UI:" + e.getUi_class_command());
+                    Triplet triplet = response.get(response.indexOf(nTriplet));
+                    triplet.addOffCommand(te.getTurnOffCommand());
+                    triplet.addOnCommand(te.getTurnOnCommand());
                 }
-                response.add(temp);
+            } else {
+                AnalyticsApplication.getInstance().trackEvent("Device UI Class", "DoNotExist", "The device in hub:" + e.getHub() + " named:" + e.getName() + " the ui class does not correspond. UI:" + e.getUi_class_command());
             }
         }
         return response;
@@ -97,8 +101,8 @@ public class RoomManager {
             boolean same = false;
 
             if (object != null && object instanceof Triplet) {
-                if (room != null && ((Triplet) object).room != null) {
-                    same = this.room.getDescription() == ((Triplet) object).room.getDescription();
+                if (this.room != null && ((Triplet) object).room != null) {
+                    same = this.room.getDescription().equalsIgnoreCase(((Triplet) object).room.getDescription());
                 }
             }
             return same;

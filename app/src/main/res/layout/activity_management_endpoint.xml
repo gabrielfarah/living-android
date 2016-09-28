@@ -3,79 +3,94 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
-    android:orientation="vertical"
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="co.ar_smart.www.user.ManagementUserActivity">
+
+    <RelativeLayout
+        android:id="@+id/only_admins_can_edit_devices_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:gravity="center"
+            android:text="Only the administrator can add or modify devices in this home" />
+    </RelativeLayout>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
         android:layout_marginBottom="5dp"
-        android:layout_weight="4">
+        android:layout_weight="4"
+        android:gravity="center">
         <ImageView
+            android:id="@+id/imgAni"
             android:layout_width="100dp"
             android:layout_height="100dp"
-            android:id="@+id/imgAni"
             android:background="@drawable/basic_animation" />
     </LinearLayout>
     <Button
+        android:id="@+id/btnEditDevs"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:text="@string/editDevice_btntext"
-        android:id="@+id/btnEditDevs"
-        android:background="@color/colorPrimaryDark"
+        android:layout_marginBottom="10dp"
         android:layout_weight="1"
-        android:textColor="@color/blanco"
-        android:textAllCaps="false"
+        android:background="@color/colorPrimaryDark"
         android:drawableEnd="@drawable/right_arrow_icon"
         android:onClick="editDevices"
-        android:layout_marginBottom="10dp"/>
+        android:text="@string/editDevice_btntext"
+        android:textAllCaps="false"
+        android:textColor="@color/blanco" />
     <Button
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:text="@string/addwifi_btntext"
         android:id="@+id/btnAddWifi"
-        android:background="@color/colorPrimaryDark"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
         android:layout_weight="1"
-        android:textColor="@color/blanco"
-        android:textAllCaps="false"
+        android:background="@color/colorPrimaryDark"
         android:drawableEnd="@drawable/right_arrow_icon"
-        android:onClick="addWifi"/>
+        android:onClick="addWifi"
+        android:text="@string/addwifi_btntext"
+        android:textAllCaps="false"
+        android:textColor="@color/blanco" />
     <Button
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:text="@string/delwifi_btntext"
         android:id="@+id/btnDelWifi"
-        android:background="@color/colorPrimaryDark"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
         android:layout_weight="1"
+        android:background="@color/colorPrimaryDark"
+        android:drawableEnd="@drawable/right_arrow_icon"
         android:onClick="delWifi"
-        android:textColor="@color/blanco"
+        android:text="@string/delwifi_btntext"
         android:textAllCaps="false"
-        android:drawableEnd="@drawable/right_arrow_icon" />
+        android:textColor="@color/blanco" />
     <Button
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:text="@string/addwave_btntext"
         android:id="@+id/btnAddZwave"
-        android:background="@color/colorPrimaryDark"
-        android:layout_weight="1"
-        android:onClick="addZWave"
-        android:textColor="@color/blanco"
-        android:textAllCaps="false"
-        android:drawableEnd="@drawable/right_arrow_icon" />
-    <Button
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:text="@string/delzwave_btntext"
-        android:id="@+id/btnDelZwave"
-        android:background="@color/colorPrimaryDark"
         android:layout_weight="1"
-        android:onClick="delZWave"
-        android:textColor="@color/blanco"
+        android:background="@color/colorPrimaryDark"
+        android:drawableEnd="@drawable/right_arrow_icon"
+        android:onClick="addZWave"
+        android:text="@string/addwave_btntext"
         android:textAllCaps="false"
-        android:drawableEnd="@drawable/right_arrow_icon"/>
+        android:textColor="@color/blanco" />
+    <Button
+        android:id="@+id/btnDelZwave"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@color/colorPrimaryDark"
+        android:drawableEnd="@drawable/right_arrow_icon"
+        android:onClick="delZWave"
+        android:text="@string/delzwave_btntext"
+        android:textAllCaps="false"
+        android:textColor="@color/blanco" />
 
 </LinearLayout>

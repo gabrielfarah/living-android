@@ -104,17 +104,13 @@ public class DeleteDeviceActivity extends AppCompatActivity {
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
                 View view=convertView;
-                if(view==null)
-                {
-
-                    view=getLayoutInflater().inflate(R.layout.row_list_devices,null);
-                    TextView lb=(TextView)view.findViewById(R.id.labelDevadd);
-                    lb.setText(devices.get(position).getName());
-                    //lb=(TextView)view.findViewById(R.id.labelDevCategoryadd);
-                    //lb.setText(devices.get(position).getCategory().getCat());
-                    ImageView i=(ImageView) view.findViewById(R.id.iconlistad);
-                    i.setImageDrawable(ContextCompat.getDrawable(myact, R.drawable.delete_icon));
+                if (view == null) {
+                    view = getLayoutInflater().inflate(R.layout.row_list_devices, null);
                 }
+                TextView device_name = (TextView) view.findViewById(R.id.nameDeviceEdit);
+                device_name.setText(devices.get(position).getName());
+                ImageView i = (ImageView) view.findViewById(R.id.iconEdit);
+                i.setImageDrawable(ContextCompat.getDrawable(myact, R.drawable.delete_icon));
                 //chk.setChecked(checked[position]);
                 return view;
             }

@@ -109,6 +109,12 @@ public class SettingsActivity extends AppCompatActivity {
                 finish();
             }
         });
+
+        if (!hubs.isEmpty()) {
+            loading.setVisibility(View.GONE);
+            progressBar.setVisibility(View.GONE);
+            hub_picker.setVisibility(View.VISIBLE);
+        }
     }
 
     /**

@@ -49,8 +49,7 @@
             android:paddingEnd="10dp"
             android:paddingStart="10dp"
             android:text="@string/label_existing_guests"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textColor="@color/common_plus_signin_btn_text_light_focused" />
+            android:textAppearance="?android:attr/textAppearanceLarge" />
 
         <ListView
             android:id="@+id/guest_list_view"

@@ -686,7 +686,6 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void updateEndpointStates(ArrayList<EndpointState> endpointStates) {
-        Log.d("E-STATES:", endpointStates.toString());
         //TODO mejorar esto, el doble loop es horrible
         for (int i = 0; i < endpoint_devices.size(); i++) {
             for (int j = 0; j < endpointStates.size(); j++) {
@@ -703,7 +702,6 @@ public class HomeActivity extends AppCompatActivity {
                     e.setState(es.getState().get(0));
                 }
                 endpoint_devices.set(i, e);
-                Log.d("E-STATES", endpoint_devices.get(i).getState() + " - " + endpoint_devices.get(i).isActive());
                 updateUIWithStates();
             }
         }
@@ -779,20 +777,22 @@ public class HomeActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<ArrayList<Endpoint>> call, Response<ArrayList<Endpoint>> response) {
                 if (response.isSuccessful()) {
-                    for (Endpoint endpoint : response.body()) {
+                    ArrayList<Endpoint> responseEndpoints = response.body();
+                    for (Endpoint endpoint : responseEndpoints) {
                         if (!devices.contains(endpoint.getName())) {
                             devices.add(endpoint.getName());
                             endpoint_devices.add(endpoint);
                             Log.d("DEVICE:", endpoint.getName());
+
                         }
                         //Log.d("COMMAND:", endpoint.getEndpoint_classes().get(0).getCommands().get(0).toString());
                     }
                     getModes();
                     // If user got no endpoints redirect to management activity. set grid layout otherwise.
-                    if (response.body().isEmpty()) {
+                    if (responseEndpoints.isEmpty()) {
                         openManagementDevicesActivity();
                     } else {
-                        setGridLayout(response.body());
+                        setGridLayout(responseEndpoints);
                         endpointsPolledsuccessfully = true;
                         rooms = RoomManager.getDefaultRooms(endpoint_devices, PREFERRED_HUB_ID);
                         setRoomsGridLayout();
@@ -951,7 +951,7 @@ public class HomeActivity extends AppCompatActivity {
      * @param listaEndpoints The list of devices (endpoints) the user has access in this hub
      */
     private void setGridLayout(final List<Endpoint> listaEndpoints) {
-        for (Endpoint e : listaEndpoints) {
+        /*for (Endpoint e : listaEndpoints) {
             endpointIcons.add(new EndpointIcons(e.getImage()));
         }
         gridAdapter.notifyDataSetChanged();
@@ -966,7 +966,7 @@ public class HomeActivity extends AppCompatActivity {
                 }
             });
             //TODO Esto se va a seguir implementando???
-            /*homeMainGridView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            *//*homeMainGridView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
                 @Override
                 public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
@@ -985,7 +985,22 @@ public class HomeActivity extends AppCompatActivity {
                     builder.create().show();
                     return true;
                 }
-            });*/
+            });*//*
+        }*/
+        for (Endpoint e : listaEndpoints) {
+            endpointIcons.add(new EndpointIcons(e.getImage()));
+        }
+        gridAdapter.updateItems(endpoint_devices);
+        if (homeMainGridView != null) {
+            homeMainGridView.setAdapter(gridAdapter);
+            gridAdapter.notifyDataSetChanged();
+            homeMainGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
+                    Toast.makeText(HomeActivity.this, listaEndpoints.get(position).getName(),
+                            Toast.LENGTH_SHORT).show();
+                    processEndpointClick(listaEndpoints.get(position));
+                }
+            });
         }
     }
 

@@ -57,7 +57,7 @@ public class DevicesActivity extends AppCompatActivity {
     /**
      * Represent the list view where the devices will be shown
      */
-    private ListView list;
+    private ListView lista;
     /**
      * Represent the progress circle shown while the devices are been downloaded
      */
@@ -76,7 +76,7 @@ public class DevicesActivity extends AppCompatActivity {
         myact=this;
 
 
-        list = (ListView) findViewById(R.id.list_DevicesHub);
+        lista = (ListView) findViewById(R.id.list_DevicesHub);
         progress = (ProgressBar) findViewById(R.id.progressDevices);
 
 
@@ -88,26 +88,29 @@ public class DevicesActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         API_TOKEN = intent.getStringExtra(EXTRA_MESSAGE);
-        devices = getIntent().getParcelableArrayListExtra(EXTRA_OBJECT);
+        devices = intent.getParcelableArrayListExtra(EXTRA_OBJECT);
+        for (int i = 0; i < devices.size(); i++) {
+            Log.d("DISPOSITIVO", devices.get(i).toString());
+        }
 
-        list.setAdapter(new ArrayAdapter<Endpoint>(DevicesActivity.this, android.R.layout.simple_list_item_1, devices) {
+        lista.setAdapter(new ArrayAdapter<Endpoint>(DevicesActivity.this, android.R.layout.simple_list_item_1, devices) {
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
                 View view = convertView;
                 if (view == null) {
                     view = getLayoutInflater().inflate(R.layout.row_list_devices, null);
-                    TextView lb = (TextView) view.findViewById(R.id.labelDevadd);
-                    lb.setText(devices.get(position).getName());
-                    lb = (TextView) view.findViewById(R.id.labelDevCategoryadd);
-                    lb.setText(devices.get(position).getCategory().getCat());
-                    ImageView i = (ImageView) view.findViewById(R.id.iconlistad);
-                    i.setImageDrawable(ContextCompat.getDrawable(myact, R.drawable.edit_mode));
                 }
+                TextView device_name = (TextView) view.findViewById(R.id.nameDeviceEdit);
+                TextView category_name = (TextView) view.findViewById(R.id.nameCategoryEdit);
+                ImageView i = (ImageView) view.findViewById(R.id.iconEdit);
+                device_name.setText(devices.get(position).getName());
+                category_name.setText(devices.get(position).getCategory().getCat());
+                i.setImageDrawable(ContextCompat.getDrawable(myact, R.drawable.edit_mode));
                 //chk.setChecked(checked[position]);
                 return view;
             }
         });
-        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        lista.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
@@ -126,7 +129,7 @@ public class DevicesActivity extends AppCompatActivity {
         });
 
         progress.setVisibility(View.GONE);
-        list.setVisibility(View.VISIBLE);
+        lista.setVisibility(View.VISIBLE);
     }
 
     /**
@@ -152,26 +155,26 @@ public class DevicesActivity extends AppCompatActivity {
                             devices.add(endp);
                         }
 
-                        list.setAdapter(new ArrayAdapter<Endpoint>(DevicesActivity.this, android.R.layout.simple_list_item_1, devices)
+                        lista.setAdapter(new ArrayAdapter<Endpoint>(DevicesActivity.this, android.R.layout.simple_list_item_1, devices)
                         {
                             @Override
                             public View getView(int position, View convertView, ViewGroup parent) {
                                 View view=convertView;
                                 if(view==null)
                                 {
-                                    view=getLayoutInflater().inflate(R.layout.row_list_devices,null);
+                                    /*view=getLayoutInflater().inflate(R.layout.row_list_devices,null);
                                     TextView lb=(TextView)view.findViewById(R.id.labelDevadd);
                                     lb.setText(devices.get(position).getName());
                                     lb=(TextView)view.findViewById(R.id.labelDevCategoryadd);
                                     lb.setText(devices.get(position).getCategory().getCat());
                                     ImageView i=(ImageView) view.findViewById(R.id.iconlistad);
-                                    i.setImageDrawable(ContextCompat.getDrawable(myact, R.drawable.connect_btn));
+                                    i.setImageDrawable(ContextCompat.getDrawable(myact, R.drawable.connect_btn));*/
                                 }
                                 //chk.setChecked(checked[position]);
                                 return view;
                             }
                         });
-                        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        lista.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                             @Override
                             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
@@ -189,14 +192,14 @@ public class DevicesActivity extends AppCompatActivity {
                         });
 
                         progress.setVisibility(View.GONE);
-                        list.setVisibility(View.VISIBLE);
+                        lista.setVisibility(View.VISIBLE);
                     }
                     else
                     {
                         Toast.makeText(DevicesActivity.this, R.string.not_matching_devices,
                                 Toast.LENGTH_SHORT).show();
                         progress.setVisibility(View.GONE);
-                        list.setVisibility(View.VISIBLE);
+                        lista.setVisibility(View.VISIBLE);
                     }
 
                 }
@@ -209,7 +212,7 @@ public class DevicesActivity extends AppCompatActivity {
                     Toast.makeText(DevicesActivity.this, R.string.error_requesting_devices,
                             Toast.LENGTH_SHORT).show();
                     progress.setVisibility(View.GONE);
-                    list.setVisibility(View.VISIBLE);
+                    lista.setVisibility(View.VISIBLE);
                 }
             }
 
@@ -218,7 +221,7 @@ public class DevicesActivity extends AppCompatActivity {
                 Toast.makeText(DevicesActivity.this, R.string.error_requesting_devices,
                         Toast.LENGTH_SHORT).show();
                 progress.setVisibility(View.GONE);
-                list.setVisibility(View.VISIBLE);
+                lista.setVisibility(View.VISIBLE);
             }
         });
 

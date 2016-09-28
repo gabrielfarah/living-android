@@ -9,20 +9,20 @@
         android:layout_weight="9"
         android:orientation="vertical">
         <TextView
-            android:id="@+id/labelDevadd"
+            android:id="@+id/nameDeviceEdit"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:focusable="false"
             android:textSize="20sp" />
         <TextView
-            android:id="@+id/labelDevCategoryadd"
+            android:id="@+id/nameCategoryEdit"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:focusable="false"
             android:textSize="12sp" />
     </LinearLayout>
     <ImageView
-        android:id="@+id/iconlistad"
+        android:id="@+id/iconEdit"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"

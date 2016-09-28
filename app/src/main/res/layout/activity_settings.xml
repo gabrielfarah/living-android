@@ -31,21 +31,22 @@
         android:id="@+id/hub_list_picker_spinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
         android:layout_marginBottom="15dp"
         android:layout_marginTop="15dp"
-        android:layout_gravity="center_horizontal"
+        android:prompt="@string/label_set_home_to_control_spinner"
         android:visibility="gone" />
 
     <TextView
         android:id="@+id/loading_hub_switcher_text_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/activity_vertical_margin"
         android:layout_marginBottom="@dimen/activity_vertical_margin"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
         android:gravity="center"
-        android:visibility="visible"
         android:text="@string/loading_text"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:visibility="visible" />
 
     <Button
         android:id="@+id/change_prefered_hub"
@@ -65,8 +66,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="@dimen/activity_vertical_margin"
         android:layout_marginBottom="@dimen/activity_vertical_margin"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
         android:text="@string/description_text_change_hub_wifi_network"
         android:textAlignment="center"
         android:textAppearance="?android:attr/textAppearanceMedium" />

@@ -25,27 +25,27 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
-    compile 'com.android.support:support-v4:24.0.0'
-    compile 'com.android.support:appcompat-v7:24.0.0' // v7
-    compile 'com.android.support:appcompat-v7:24.0.0'
+    compile 'com.android.support:support-v4:24.2.1'
+    compile 'com.android.support:appcompat-v7:24.2.1' // v7
+    compile 'com.android.support:appcompat-v7:24.2.1'
     compile 'com.onesignal:OneSignal:2.+@aar'
     compile 'com.squareup.retrofit2:retrofit:2.0.1'
     compile 'com.squareup.retrofit2:converter-gson:2.0.1'
-    compile 'com.google.android.gms:play-services-analytics:9.2.0'
+    compile 'com.google.android.gms:play-services-analytics:9.6.1'
     compile 'com.github.QuadFlask:colorpicker:0.0.10'
-    compile 'com.android.support:support-v4:24.0.0'
-    compile 'com.google.android.gms:play-services-ads:9.2.0'
-    compile 'com.google.android.gms:play-services-auth:9.2.0'
-    compile 'com.google.android.gms:play-services-gcm:9.2.0'
-    compile 'com.google.android.gms:play-services-location:9.2.0'
-    compile 'com.google.android.gms:play-services-base:9.2.0'
-    compile 'com.google.android.gms:play-services-maps:9.2.0'
-    compile 'com.android.support:design:24.0.0'
-    compile 'com.android.support:recyclerview-v7:24.0.0'
-    compile 'com.android.support:support-v13:24.0.0'
+    compile 'com.android.support:support-v4:24.2.1'
+    compile 'com.google.android.gms:play-services-ads:9.6.1'
+    compile 'com.google.android.gms:play-services-auth:9.6.1'
+    compile 'com.google.android.gms:play-services-gcm:9.6.1'
+    compile 'com.google.android.gms:play-services-location:9.6.1'
+    compile 'com.google.android.gms:play-services-base:9.6.1'
+    compile 'com.google.android.gms:play-services-maps:9.6.1'
+    compile 'com.android.support:design:24.2.1'
+    compile 'com.android.support:recyclerview-v7:24.2.1'
+    compile 'com.android.support:support-v13:24.2.1'
     compile 'com.android.support:multidex:1.0.1'
     compile 'org.florescu.android.rangeseekbar:rangeseekbar-library:0.3.0'
-    compile "com.android.support:appcompat-v7:24.0"
+    compile "com.android.support:appcompat-v7:24.2.1"
     compile 'com.squareup.okhttp3:logging-interceptor:3.4.1'
     compile 'com.github.PhilJay:MPAndroidChart:v3.0.0-beta1'
 }
