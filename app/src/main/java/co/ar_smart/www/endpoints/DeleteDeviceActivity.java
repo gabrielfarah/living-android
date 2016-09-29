@@ -21,19 +21,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.List;
 
-import co.ar_smart.www.analytics.AnalyticsApplication;
-import co.ar_smart.www.helpers.Constants;
 import co.ar_smart.www.helpers.RetrofitServiceGenerator;
-import co.ar_smart.www.interfaces.IHomeClient;
 import co.ar_smart.www.living.R;
 import co.ar_smart.www.pojos.Endpoint;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.http.DELETE;
-import retrofit2.http.GET;
 import retrofit2.http.Path;
 
 import static co.ar_smart.www.helpers.Constants.EXTRA_MESSAGE;
@@ -67,6 +62,7 @@ public class DeleteDeviceActivity extends AppCompatActivity {
      */
     private Activity myact;
     private int PREFERRED_HUB_ID;
+    private ArrayList<Endpoint> response_devices;
 
 
     @Override
@@ -89,15 +85,16 @@ public class DeleteDeviceActivity extends AppCompatActivity {
         Intent intent = getIntent();
         API_TOKEN = intent.getStringExtra(EXTRA_MESSAGE);
         PREFERRED_HUB_ID = intent.getIntExtra(EXTRA_MESSAGE_PREF_HUB, -1);
-        devices = getIntent().getParcelableArrayListExtra(EXTRA_OBJECT);
+        devices = intent.getParcelableArrayListExtra(EXTRA_OBJECT);
+        response_devices = devices;
+        ArrayList<Endpoint> items_to_remove = new ArrayList<>();
         if (!devices.isEmpty()) {
-            for (int i = 0; i < devices.size(); i++) {
-                if (!devices.get(i).getEndpoint_type().equalsIgnoreCase("wifi")) {
-                    devices.remove(i);
+            for (Endpoint temp : devices) {
+                if (!temp.getEndpoint_type().equalsIgnoreCase("wifi")) {
+                    items_to_remove.add(temp);
                 }
             }
-        } else {
-            getDevices();
+            devices.removeAll(items_to_remove);
         }
         Log.d("DEVICES", devices.toString());
         adapter=new ArrayAdapter<Endpoint>(DeleteDeviceActivity.this, android.R.layout.simple_list_item_1, devices){
@@ -109,8 +106,8 @@ public class DeleteDeviceActivity extends AppCompatActivity {
                 }
                 TextView device_name = (TextView) view.findViewById(R.id.nameDeviceEdit);
                 device_name.setText(devices.get(position).getName());
-                ImageView i = (ImageView) view.findViewById(R.id.iconEdit);
-                i.setImageDrawable(ContextCompat.getDrawable(myact, R.drawable.delete_icon));
+                ImageView imageView = (ImageView) view.findViewById(R.id.iconEdit);
+                imageView.setImageDrawable(ContextCompat.getDrawable(myact, R.drawable.delete_icon));
                 //chk.setChecked(checked[position]);
                 return view;
             }
@@ -126,52 +123,7 @@ public class DeleteDeviceActivity extends AppCompatActivity {
 
         progress.setVisibility(View.GONE);
         list.setVisibility(View.VISIBLE);
-        //getDevices();
 
-
-
-    }
-
-    private void getDevices() {
-        IHomeClient livingIHomeClient = RetrofitServiceGenerator.createService(IHomeClient.class, API_TOKEN);
-        Call<ArrayList<Endpoint>> call = livingIHomeClient.endpoints("" + PREFERRED_HUB_ID);
-        //Log.d("OkHttp", String.format("Sending request %s ",call.request().toString()));
-        call.enqueue(new Callback<ArrayList<Endpoint>>() {
-            @Override
-            public void onResponse(Call<ArrayList<Endpoint>> call, Response<ArrayList<Endpoint>> response) {
-                if (response.isSuccessful()) {
-                    devices = response.body();
-                    updateUIWithResponse();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ArrayList<Endpoint>> call, Throwable t) {
-                // something went completely south (like no internet connection)
-                Constants.showNoInternetMessage(getApplicationContext());
-                t.printStackTrace();
-                AnalyticsApplication.getInstance().trackException(new Exception(t));
-            }
-        });
-
-    }
-
-    private void updateUIWithResponse() {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                progress.setVisibility(View.GONE);
-                list.setVisibility(View.VISIBLE);
-                list.setAdapter(adapter);
-                adapter.notifyDataSetChanged();
-                list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        showDialog(devices.get(position));
-                    }
-                });
-            }
-        });
     }
 
     public void showDialog(final Endpoint endpoint) {
@@ -200,7 +152,7 @@ public class DeleteDeviceActivity extends AppCompatActivity {
 
     private void deleteEndPoint(final Endpoint endpoint) {
         DevicesHubClient client = RetrofitServiceGenerator.createService(DevicesHubClient.class, API_TOKEN);
-        Call<Endpoint> call2 = client.delendpoint("" + PREFERRED_HUB_ID, "" + endpoint.getId());
+        Call<Endpoint> call2 = client.delendpoint(PREFERRED_HUB_ID, endpoint.getId());
 
         call2.enqueue(new Callback<Endpoint>()
         {
@@ -209,6 +161,7 @@ public class DeleteDeviceActivity extends AppCompatActivity {
             {
                 if (response.isSuccessful()) {
                     devices.remove(endpoint);
+                    response_devices.remove(endpoint);
                     adapter.notifyDataSetChanged();
                 }
             }
@@ -223,26 +176,35 @@ public class DeleteDeviceActivity extends AppCompatActivity {
         });
     }
 
+    private void finishActivity() {
+        Intent intent = new Intent();
+        intent.putExtra(EXTRA_OBJECT, response_devices);
+        setResult(RESULT_OK, intent);
+        finish();//finishing activity
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
                 // app icon in action bar clicked; go home
-                this.finish();
+                finishActivity();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        finishActivity();
+    }
+
     /**
      * This interface implements a Retrofit interface for the DeviceHubActivity
      */
     private interface DevicesHubClient {
-        @GET("hubs/{hub_id}/endpoints/")
-        Call<List<Endpoint>> getendpoints(@Path("hub_id") String hub_id);
-
         @DELETE("hubs/{hub_id}/endpoints/{endpoint_id}/")
-        Call<Endpoint> delendpoint(@Path("hub_id") String hub_id, @Path("endpoint_id") String endpoint_id);
+        Call<Endpoint> delendpoint(@Path("hub_id") int hub_id, @Path("endpoint_id") int endpoint_id);
     }
 }

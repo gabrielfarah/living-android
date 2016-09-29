@@ -48,6 +48,7 @@ import co.ar_smart.www.pojos.Endpoint;
 import static co.ar_smart.www.helpers.Constants.ACTION_ADD;
 import static co.ar_smart.www.helpers.Constants.EXTRA_ACTION;
 import static co.ar_smart.www.helpers.Constants.EXTRA_CATEGORY_DEVICE;
+import static co.ar_smart.www.helpers.Constants.EXTRA_LIST_PARCELABLE_FIRST;
 import static co.ar_smart.www.helpers.Constants.EXTRA_MESSAGE;
 import static co.ar_smart.www.helpers.Constants.EXTRA_MESSAGE_PREF_HUB;
 import static co.ar_smart.www.helpers.Constants.EXTRA_OBJECT;
@@ -90,6 +91,7 @@ public class NewDevicesActivity extends AppCompatActivity {
     private Button addManuallyButton;
     private TextView description;
     private TextView noDeviceMessage;
+    private ArrayList<Endpoint> endpoint_devices = new ArrayList<>();
 
 
     @Override
@@ -111,6 +113,7 @@ public class NewDevicesActivity extends AppCompatActivity {
         API_TOKEN = intent.getStringExtra(EXTRA_MESSAGE);
         PREFERRED_HUB_ID = intent.getIntExtra(EXTRA_MESSAGE_PREF_HUB, -1);
         addType = intent.getStringExtra(EXTRA_TYPE_DEVICE);
+        endpoint_devices = intent.getParcelableArrayListExtra(EXTRA_LIST_PARCELABLE_FIRST);
 
         adapter = new ArrayAdapter<Endpoint>(this, android.R.layout.simple_list_item_1, endpoints) {
             @Override
@@ -171,18 +174,33 @@ public class NewDevicesActivity extends AppCompatActivity {
         addDevice(addType);
     }
 
-    private void finishAddingProcess(Endpoint nEndpoint, Category nCategory) {
-        Intent i = new Intent(NewDevicesActivity.this, EditDeviceActivity.class);
-        Bundle b = new Bundle();
-        b.putParcelable(EXTRA_OBJECT, nEndpoint);
-        i.putExtras(b);
-        Category cat = nCategory;
-        if (cat != null) {
-            i.putExtra(EXTRA_CATEGORY_DEVICE, cat.getCat());
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // Check which request we're responding to
+        if (requestCode == HomeActivity.ACTIVITY_CODE_ENDPOINT) {
+            // Make sure the request was successful
+            if (resultCode == RESULT_OK) {
+                Intent intent = new Intent();
+                intent.putExtra(EXTRA_OBJECT, data.getExtras().getParcelable(EXTRA_OBJECT));
+                setResult(RESULT_OK, intent);
+                finish();//finishing activity
+            }
         }
-        i.putExtra(EXTRA_MESSAGE, API_TOKEN);
-        i.putExtra(EXTRA_ACTION, ACTION_ADD);
-        startActivityForResult(i, HomeActivity.ACTIVITY_CODE_ENDPOINT);
+    }
+
+    private void finishAddingProcess(Endpoint nEndpoint, Category nCategory) {
+        Intent intent = new Intent(NewDevicesActivity.this, EditDeviceActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(EXTRA_OBJECT, nEndpoint);
+        intent.putExtras(bundle);
+        if (nCategory != null) {
+            intent.putExtra(EXTRA_CATEGORY_DEVICE, nCategory.getCat());
+        }
+        intent.putExtra(EXTRA_MESSAGE_PREF_HUB, PREFERRED_HUB_ID);
+        intent.putExtra(EXTRA_MESSAGE, API_TOKEN);
+        intent.putExtra(EXTRA_ACTION, ACTION_ADD);
+        intent.putParcelableArrayListExtra(EXTRA_LIST_PARCELABLE_FIRST, endpoint_devices);
+        startActivityForResult(intent, HomeActivity.ACTIVITY_CODE_ENDPOINT);
     }
 
     private void addWifiDeviceManually() {
@@ -219,9 +237,13 @@ public class NewDevicesActivity extends AppCompatActivity {
                 if (type.equalsIgnoreCase(getResources().getString(R.string.sonos_player))) {
                     category = new Category("Entertainment", "001");
                     endpoint.setManufacturer_name("SONOS");
+                    endpoint.setUi_class_command("ui-sonos");
+                    endpoint.setCategory(category);
                 } else {
                     category = new Category("Lighting", "002");
                     endpoint.setManufacturer_name("Philips");
+                    endpoint.setUi_class_command("ui-hue");
+                    endpoint.setCategory(category);
                 }
                 finishAddingProcess(endpoint, category);
                 //Log.d("Manual","IP: "+ipAddress+" Type: "+type+" Cat: "+category.toString());

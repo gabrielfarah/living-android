@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -69,11 +70,11 @@ public class ManagementEndpointsActivity extends AppCompatActivity {
      */
     public void addWifi(View v)
     {
-        Intent i=new Intent(ManagementEndpointsActivity.this,NewDevicesActivity.class);
-        i.putExtra(EXTRA_TYPE_DEVICE,TYPE_DEVICE_WIFI);
-        i.putExtra(EXTRA_MESSAGE, API_TOKEN);
-        i.putExtra(EXTRA_MESSAGE_PREF_HUB, PREFERRED_HUB_ID);
-        startActivity(i);
+        Intent intent = new Intent(ManagementEndpointsActivity.this, NewDevicesActivity.class);
+        intent.putExtra(EXTRA_TYPE_DEVICE, TYPE_DEVICE_WIFI);
+        intent.putExtra(EXTRA_MESSAGE, API_TOKEN);
+        intent.putExtra(EXTRA_MESSAGE_PREF_HUB, PREFERRED_HUB_ID);
+        startActivityForResult(intent, HomeActivity.ACTIVITY_CODE_ENDPOINT);
     }
 
     /**
@@ -81,11 +82,11 @@ public class ManagementEndpointsActivity extends AppCompatActivity {
      */
     public void addZWave(View v)
     {
-        Intent i=new Intent(ManagementEndpointsActivity.this,NewDevicesActivity.class);
-        i.putExtra(EXTRA_TYPE_DEVICE,TYPE_DEVICE_ZWAVE);
-        i.putExtra(EXTRA_MESSAGE, API_TOKEN);
-        i.putExtra(EXTRA_MESSAGE_PREF_HUB, PREFERRED_HUB_ID);
-        startActivity(i);
+        Intent intent = new Intent(ManagementEndpointsActivity.this, NewDevicesActivity.class);
+        intent.putExtra(EXTRA_TYPE_DEVICE, TYPE_DEVICE_ZWAVE);
+        intent.putExtra(EXTRA_MESSAGE, API_TOKEN);
+        intent.putExtra(EXTRA_MESSAGE_PREF_HUB, PREFERRED_HUB_ID);
+        startActivityForResult(intent, HomeActivity.ACTIVITY_CODE_ENDPOINT);
     }
 
     /**
@@ -93,12 +94,12 @@ public class ManagementEndpointsActivity extends AppCompatActivity {
      */
     public void delWifi(View v)
     {
-        Intent i=new Intent(ManagementEndpointsActivity.this,DeleteDeviceActivity.class);
-        i.putExtra(EXTRA_TYPE_DEVICE,TYPE_DEVICE_WIFI);
-        i.putExtra(EXTRA_MESSAGE, API_TOKEN);
-        i.putExtra(EXTRA_MESSAGE_PREF_HUB, PREFERRED_HUB_ID);
-        i.putParcelableArrayListExtra(EXTRA_OBJECT, endpoints);
-        startActivity(i);
+        Intent intent = new Intent(ManagementEndpointsActivity.this, DeleteDeviceActivity.class);
+        intent.putExtra(EXTRA_TYPE_DEVICE, TYPE_DEVICE_WIFI);
+        intent.putExtra(EXTRA_MESSAGE, API_TOKEN);
+        intent.putExtra(EXTRA_MESSAGE_PREF_HUB, PREFERRED_HUB_ID);
+        intent.putParcelableArrayListExtra(EXTRA_OBJECT, endpoints);
+        startActivityForResult(intent, HomeActivity.ACTIVITY_CODE_ENDPOINT_DELETE);
     }
 
     /**
@@ -106,12 +107,12 @@ public class ManagementEndpointsActivity extends AppCompatActivity {
      */
     public void delZWave(View v)
     {
-        Intent i=new Intent(ManagementEndpointsActivity.this,DeleteZwaveActivity.class);
-        i.putExtra(EXTRA_TYPE_DEVICE,TYPE_DEVICE_ZWAVE);
-        i.putExtra(EXTRA_MESSAGE, API_TOKEN);
-        i.putExtra(EXTRA_MESSAGE_PREF_HUB, PREFERRED_HUB_ID);
-        i.putParcelableArrayListExtra(EXTRA_OBJECT, endpoints);
-        startActivity(i);
+        Intent intent = new Intent(ManagementEndpointsActivity.this, DeleteZwaveActivity.class);
+        intent.putExtra(EXTRA_TYPE_DEVICE, TYPE_DEVICE_ZWAVE);
+        intent.putExtra(EXTRA_MESSAGE, API_TOKEN);
+        intent.putExtra(EXTRA_MESSAGE_PREF_HUB, PREFERRED_HUB_ID);
+        intent.putParcelableArrayListExtra(EXTRA_OBJECT, endpoints);
+        startActivityForResult(intent, HomeActivity.ACTIVITY_CODE_ENDPOINT_DELETE);
     }
 
     /**
@@ -133,7 +134,18 @@ public class ManagementEndpointsActivity extends AppCompatActivity {
             // Make sure the request was successful
             if (resultCode == RESULT_OK) {
                 Endpoint endpoint = data.getExtras().getParcelable(EXTRA_OBJECT);
-                endpoints.add(endpoint);
+                int position = endpoints.indexOf(endpoint);
+                if (position != -1) {
+                    endpoints.set(position, endpoint);
+                } else {
+                    endpoints.add(endpoint);
+                }
+                Log.d("Lista com", endpoints.toString());
+            }
+        } else if (requestCode == HomeActivity.ACTIVITY_CODE_ENDPOINT_DELETE) {
+            // Make sure the request was successful
+            if (resultCode == RESULT_OK) {
+                endpoints = data.getParcelableArrayListExtra(EXTRA_OBJECT);
             }
         }
     }
@@ -142,7 +154,7 @@ public class ManagementEndpointsActivity extends AppCompatActivity {
         Intent output = new Intent();
         output.putExtra(EXTRA_OBJECT, endpoints);
         setResult(RESULT_OK, output);
-        finish();
+        finish();//finishing activity
     }
 
     @Override

@@ -76,6 +76,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static co.ar_smart.www.helpers.Constants.ACTION_ADD;
 import static co.ar_smart.www.helpers.Constants.DEFAULT_BACKGROUND_PATH;
 import static co.ar_smart.www.helpers.Constants.DEFAULT_EMAIL;
 import static co.ar_smart.www.helpers.Constants.DEFAULT_HUB;
@@ -102,6 +103,7 @@ public class HomeActivity extends AppCompatActivity {
     public static final int ACTIVITY_CODE_ENDPOINT = 2;
     public static final int ACTIVITY_CODE_HUB_CHANGE = 3;
     public static final int ACTIVITY_CODE_USER_UPDATE = 4;
+    public static final int ACTIVITY_CODE_ENDPOINT_DELETE = 5;
 
     /**
      * This handler will be used to update the states of all the devices every 5 seconds
@@ -415,6 +417,7 @@ public class HomeActivity extends AppCompatActivity {
         intent.putExtra(EXTRA_MESSAGE, API_TOKEN);
         intent.putExtra(EXTRA_MESSAGE_PREF_HUB, PREFERRED_HUB_ID);
         intent.putParcelableArrayListExtra(EXTRA_OBJECT, endpoint_devices);
+        intent.putExtra(ACTION_ADD, true);
         startActivity(intent);
     }
 

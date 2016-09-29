@@ -145,6 +145,10 @@ public class Endpoint implements Parcelable{
         return ui_class_command;
     }
 
+    public void setUi_class_command(String ui_class_command) {
+        this.ui_class_command = ui_class_command;
+    }
+
     /**
      * Get the hub ID
      * @return the hub ID
@@ -299,9 +303,9 @@ public class Endpoint implements Parcelable{
      * @param nRoom  the new room name
      */
     public void setAtributes(String nName, String nImage, String nRoom) {
-        name = nName;
-        image = nImage;
-        room=nRoom;
+        this.name = nName;
+        this.image = nImage;
+        this.room = nRoom;
     }
 
     @Override

@@ -2,9 +2,7 @@ package co.ar_smart.www.endpoints;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -18,15 +16,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 import co.ar_smart.www.adapters.GridDevicesAdapter;
 import co.ar_smart.www.helpers.Constants;
 import co.ar_smart.www.helpers.RetrofitServiceGenerator;
 import co.ar_smart.www.living.R;
 import co.ar_smart.www.pojos.Endpoint;
-import okhttp3.RequestBody;
-import okio.Buffer;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -37,23 +32,14 @@ import retrofit2.http.Path;
 
 import static co.ar_smart.www.helpers.Constants.ACTION_ADD;
 import static co.ar_smart.www.helpers.Constants.ACTION_EDIT;
-import static co.ar_smart.www.helpers.Constants.DEFAULT_HUB;
 import static co.ar_smart.www.helpers.Constants.EXTRA_ACTION;
-import static co.ar_smart.www.helpers.Constants.EXTRA_LIST_PARCELABLE_FIRST;
 import static co.ar_smart.www.helpers.Constants.EXTRA_MESSAGE;
 import static co.ar_smart.www.helpers.Constants.EXTRA_MESSAGE_PREF_HUB;
 import static co.ar_smart.www.helpers.Constants.EXTRA_OBJECT;
 import static co.ar_smart.www.helpers.Constants.EXTRA_ROOM;
-import static co.ar_smart.www.helpers.Constants.EXTRA_UID;
-import static co.ar_smart.www.helpers.Constants.PREFS_NAME;
-import static co.ar_smart.www.helpers.Constants.PREF_HUB;
 
 public class EditDeviceActivity extends AppCompatActivity {
 
-    /**
-     * New device or edit device button
-     */
-    private MenuItem btnPost;
     /**
      * Icon device
      */
@@ -67,59 +53,40 @@ public class EditDeviceActivity extends AppCompatActivity {
      */
     private String API_TOKEN;
     /**
-     * Represent the current instance
-     */
-    private Activity myact;
-    /**
      * Name Device
      */
     private EditText txtName;
     /**
      * Current device
      */
-    private Endpoint dev;
+    private Endpoint device;
     private int PREFERRED_HUB_ID;
     private TextView select_room;
     private TextView selected_room;
     private TextView select_icon;
     private ImageView selected_icon;
-    private ArrayList<Endpoint> endpoint_devices = new ArrayList<>();
+    private String activity_action;
 
-    public static String bodyToString(final RequestBody request) {
-        try {
-            final Buffer buffer = new Buffer();
-            if (request != null)
-                request.writeTo(buffer);
-            else
-                return "";
-            return buffer.readUtf8();
-        } catch (final IOException e) {
-            return "did not work";
-        }
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_device);
-        myact=this;
         Intent intent = getIntent();
-        dev = intent.getParcelableExtra(EXTRA_OBJECT);
+        device = intent.getParcelableExtra(EXTRA_OBJECT);
         API_TOKEN = intent.getStringExtra(EXTRA_MESSAGE);
-        Log.d("SIGNATURE", API_TOKEN);
         PREFERRED_HUB_ID = intent.getIntExtra(EXTRA_MESSAGE_PREF_HUB, -1);
-        endpoint_devices = intent.getParcelableArrayListExtra(EXTRA_LIST_PARCELABLE_FIRST);
+        Log.d("PREF", "-[][][][][] " + PREFERRED_HUB_ID + "");
+        activity_action = intent.getStringExtra(EXTRA_ACTION);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setHomeButtonEnabled(true);
-            getSupportActionBar().setTitle(dev.getName());
+            getSupportActionBar().setTitle(device.getName());
         }
         Button btnIcon=(Button) findViewById(R.id.btnEditIcon);
         Button btnRoom=(Button) findViewById(R.id.btnEditRoom);
         Button saveButton = (Button) findViewById(R.id.save_device_button);
         txtName=(EditText) findViewById(R.id.txtNameDev);
-
-        String act=myact.getIntent().getStringExtra(EXTRA_ACTION);
 
         room = "";
         icon = "";
@@ -129,32 +96,35 @@ public class EditDeviceActivity extends AppCompatActivity {
         select_icon = (TextView) findViewById(R.id.select_icon_text_view);
         selected_icon = (ImageView) findViewById(R.id.selected_icon_image_view);
 
-        if(act.equals(ACTION_EDIT))
+        if (activity_action.equals(ACTION_EDIT))
         {
-            if (dev.getRoom() != null && !dev.getImage().isEmpty()) {
-                room = dev.getRoom();
+            if (device.getRoom() != null && !device.getRoom().isEmpty()) {
+                room = device.getRoom();
+                selected_room.setText(room);
             }
-            if (dev.getImage() != null && !dev.getImage().isEmpty()) {
-                icon = dev.getImage();
+            if (device.getImage() != null && !device.getImage().isEmpty()) {
+                icon = device.getImage();
+                selected_icon.setImageResource(GridDevicesAdapter.getDrawableFromString(icon));
             }
-            txtName.setText(dev.getName());
+            txtName.setText(device.getName());
         }
 
         btnIcon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i=new Intent(EditDeviceActivity.this,EditIconActivity.class);
-                i.putExtra(EXTRA_ROOM,dev.getRoom());
-                startActivityForResult(i,1);
+                Intent intent = new Intent(EditDeviceActivity.this, EditIconActivity.class);
+                intent.putExtra(EXTRA_ROOM, device.getRoom());
+                startActivityForResult(intent, 1);
             }
         });
         btnRoom.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i=new Intent(EditDeviceActivity.this,EditRoomActivity.class);
-                i.putExtra(EXTRA_MESSAGE,API_TOKEN);
-                i.putExtra(EXTRA_ROOM,dev.getRoom());
-                startActivityForResult(i,2);
+                Intent intent = new Intent(EditDeviceActivity.this, EditRoomActivity.class);
+                intent.putExtra(EXTRA_MESSAGE, API_TOKEN);
+                intent.putExtra(EXTRA_ROOM, device.getRoom());
+                intent.putExtra(EXTRA_MESSAGE_PREF_HUB, PREFERRED_HUB_ID);
+                startActivityForResult(intent, 2);
             }
         });
         saveButton.setOnClickListener(new View.OnClickListener() {
@@ -167,8 +137,7 @@ public class EditDeviceActivity extends AppCompatActivity {
 
     private void validateActions() {
         if (checkFields()) {
-            String act = myact.getIntent().getStringExtra(EXTRA_ACTION);
-            switch (act) {
+            switch (activity_action) {
                 case Constants.ACTION_EDIT:
                     editDevice();
                     break;
@@ -241,13 +210,11 @@ public class EditDeviceActivity extends AppCompatActivity {
     private boolean checkFields()
     {
         if (room != null && !room.isEmpty()) {
-            Log.d("ROOM", room);
             select_room.setVisibility(View.VISIBLE);
             selected_room.setVisibility(View.VISIBLE);
             selected_room.setText(room);
         }
         if (icon != null && !icon.isEmpty()) {
-            Log.d("ICON RET", icon);
             select_icon.setVisibility(View.VISIBLE);
             selected_icon.setVisibility(View.VISIBLE);
             selected_icon.setImageResource(GridDevicesAdapter.getDrawableFromString(icon));
@@ -260,16 +227,16 @@ public class EditDeviceActivity extends AppCompatActivity {
      */
     public void registerDevice()
     {
-        dev.setAtributes(txtName.getText().toString(),icon,room);
+        device.setAtributes(txtName.getText().toString(), icon, room);
         RegDeviceClient client = RetrofitServiceGenerator.createService(RegDeviceClient.class, API_TOKEN);
-        Call<Endpoint> call = client.regDevice(getPreferredHub(), dev);
+        Call<Endpoint> call = client.regDevice("" + PREFERRED_HUB_ID, device);
         call.enqueue(new Callback<Endpoint>()
         {
             @Override
             public void onResponse(Call<Endpoint> call, Response<Endpoint> response)
             {
                 if (response.isSuccessful()) {
-                    dev = response.body();
+                    device = response.body();
                     //devices.add(response.body());
                     showDialog();
                 }
@@ -296,20 +263,16 @@ public class EditDeviceActivity extends AppCompatActivity {
      */
     public void editDevice()
     {
-        dev.setAtributes(txtName.getText().toString(),icon,room);
-
-        String uid=getIntent().getStringExtra(EXTRA_UID);
+        device.setAtributes(txtName.getText().toString(), icon, room);
 
         RegDeviceClient client = RetrofitServiceGenerator.createService(RegDeviceClient.class, API_TOKEN);
-        Call<Endpoint> call = client.editDev(getPreferredHub(), uid,dev);
+        Call<Endpoint> call = client.editDev("" + PREFERRED_HUB_ID, device.getId(), device);
         call.enqueue(new Callback<Endpoint>()
         {
             @Override
             public void onResponse(Call<Endpoint> call, Response<Endpoint> response)
             {
                 if (response.isSuccessful()) {
-                    dev = response.body();
-                    //devices.add(response.body());
                     showDialog();
                 }
             }
@@ -331,38 +294,22 @@ public class EditDeviceActivity extends AppCompatActivity {
         dialog.setContentView(R.layout.dialog_device_added);
 
         TextView t=(TextView) dialog.findViewById(R.id.titleAddDevice) ;
-        t.setText(dev.getName());
+        t.setText(device.getName());
 
         Button dialogButton = (Button) dialog.findViewById(R.id.btnDialogDevAdd);
         dialogButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
-                //Replace updated device in devices list
-                Log.d("SameSame", "" + dev.getId());
-                Log.d("Lista com", endpoint_devices.toString());
-                if (endpoint_devices.indexOf(dev) != -1) {
-                    endpoint_devices.set(endpoint_devices.indexOf(dev), dev);
-                }
-                Intent i=new Intent(EditDeviceActivity.this,ManagementEndpointsActivity.class);
-                i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                i.putExtra(EXTRA_OBJECT, dev);
-                i.putExtra(EXTRA_MESSAGE, API_TOKEN);
-                i.putExtra(EXTRA_MESSAGE_PREF_HUB, PREFERRED_HUB_ID);
-                i.putParcelableArrayListExtra(EXTRA_OBJECT, endpoint_devices);
-                setResult(RESULT_OK, i);
-                startActivity(i);
+                // Finish this activity and return to parent
+                Intent intent = new Intent();
+                intent.putExtra(EXTRA_OBJECT, device);
+                setResult(RESULT_OK, intent);
+                finish();//finishing activity
             }
         });
 
         dialog.show();
-    }
-
-    private String getPreferredHub() {
-        SharedPreferences settings = getSharedPreferences(PREFS_NAME,
-                Context.MODE_PRIVATE);
-        // Get values using keys
-        return settings.getString(PREF_HUB, DEFAULT_HUB);
     }
 
     /**
@@ -373,6 +320,6 @@ public class EditDeviceActivity extends AppCompatActivity {
         Call<Endpoint> regDevice(@Path("hub_id") String hub_id,@Body Endpoint en );
 
         @PATCH("hubs/{hub_id}/endpoints/{endp_id}/")
-        Call<Endpoint> editDev(@Path("hub_id") String hub_id,@Path("endp_id") String endp_id,@Body Endpoint en);
+        Call<Endpoint> editDev(@Path("hub_id") String hub_id, @Path("endp_id") int endp_id, @Body Endpoint en);
     }
 }

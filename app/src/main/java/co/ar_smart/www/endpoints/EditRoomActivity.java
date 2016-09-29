@@ -2,10 +2,8 @@ package co.ar_smart.www.endpoints;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -18,7 +16,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -42,11 +39,10 @@ import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 
-import static co.ar_smart.www.helpers.Constants.DEFAULT_HUB;
+import static co.ar_smart.www.helpers.Constants.ACTION_ADD;
 import static co.ar_smart.www.helpers.Constants.EXTRA_MESSAGE;
+import static co.ar_smart.www.helpers.Constants.EXTRA_MESSAGE_PREF_HUB;
 import static co.ar_smart.www.helpers.Constants.EXTRA_ROOM;
-import static co.ar_smart.www.helpers.Constants.PREFS_NAME;
-import static co.ar_smart.www.helpers.Constants.PREF_HUB;
 
 public class EditRoomActivity extends AppCompatActivity {
 
@@ -87,10 +83,9 @@ public class EditRoomActivity extends AppCompatActivity {
     private String room;
     private Button btRemove;
     private RoomClient client;
-    private String PREFERED_HUB_ID = "";
+    private int PREFERRED_HUB_ID = -1;
     private ArrayList<Room> rooms_list = new ArrayList<>();
     private Button btnPick;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,11 +96,13 @@ public class EditRoomActivity extends AppCompatActivity {
             getSupportActionBar().setHomeButtonEnabled(true);
             getSupportActionBar().setTitle(getString(R.string.editroom_btntext));
         }
-        API_TOKEN = getIntent().getStringExtra(EXTRA_MESSAGE);
+        Intent intent = getIntent();
+        API_TOKEN = intent.getStringExtra(EXTRA_MESSAGE);
         client = RetrofitServiceGenerator.createService(RoomClient.class, API_TOKEN);
-        PREFERED_HUB_ID = getPreferredHub();
+        PREFERRED_HUB_ID = intent.getIntExtra(EXTRA_MESSAGE_PREF_HUB, -1);
+        boolean edit_action_flag = intent.getBooleanExtra(ACTION_ADD, false);
 
-        room=getIntent().getStringExtra(EXTRA_ROOM);
+        room = intent.getStringExtra(EXTRA_ROOM);
         checks=new HashMap<>();
 
         list=(ListView) findViewById(R.id.listRooms);
@@ -113,10 +110,7 @@ public class EditRoomActivity extends AppCompatActivity {
         btRemove = (Button) findViewById(R.id.btnRemoveRoom);
         btnPick = (Button) findViewById(R.id.btnPickRoom);
         TextView textMessage = (TextView) findViewById(R.id.rooms_explanation_text_view);
-        if (room != null) {
-            textMessage.setText(R.string.text_room_explanation_edit);
-            btnPick.setVisibility(View.GONE);
-        } else {
+        if (!edit_action_flag) {
             btnPick.setVisibility(View.VISIBLE);
             btnPick.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -124,6 +118,12 @@ public class EditRoomActivity extends AppCompatActivity {
                     finish();
                 }
             });
+        } else {
+            btnPick.setVisibility(View.GONE);
+        }
+        if (room != null) {
+            textMessage.setText(R.string.text_room_explanation_edit);
+        } else {
             textMessage.setText(R.string.text_room_explanation_add_device);
         }
 
@@ -143,32 +143,34 @@ public class EditRoomActivity extends AppCompatActivity {
         adapter = new ArrayAdapter<Room>(EditRoomActivity.this, android.R.layout.simple_list_item_1, rooms_list) {
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
-                LinearLayout view;
-                view=(LinearLayout)getLayoutInflater().inflate(R.layout.row_add_room,null);
-                TextView lb=(TextView)view.findViewById(R.id.labelRoom);
-                lb.setText(rooms_list.get(position).getDescription());
-                CheckBox ch=(CheckBox)view.findViewById(R.id.chkRoom);
+                ViewHolder mViewHolder;
+                View vi = convertView;
+                if (convertView == null) {
+                    vi = getLayoutInflater().inflate(R.layout.row_add_room, null);
+                    mViewHolder = new ViewHolder();
+                    mViewHolder.room_name = (TextView) vi.findViewById(R.id.labelRoom);
+                    mViewHolder.room_checkbox = (CheckBox) vi.findViewById(R.id.chkRoom);
+                    vi.setTag(mViewHolder);
+                } else {
+                    mViewHolder = (ViewHolder) vi.getTag();
+                }
+                mViewHolder.room_name.setText(rooms_list.get(position).getDescription());
                 if (room != null) {
                     if (room.equals(rooms_list.get(position).getDescription())) {
-                        ch.setChecked(true);
-                        last=ch;
+                        mViewHolder.room_checkbox.setChecked(true);
+                        last = mViewHolder.room_checkbox;
                     }
                 }
-                checks.put(position,ch);
-                return view;
+                checks.put(position, mViewHolder.room_checkbox);
+                return vi;
 
             }
         };
-
-
         list.setAdapter(adapter);
-
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                if(last!=null)
-                {
+                if (last != null) {
                     last.setChecked(false);
                 }
                 last=checks.get(position);
@@ -178,9 +180,7 @@ public class EditRoomActivity extends AppCompatActivity {
                 setResult(Activity.RESULT_OK,returnIntent);
             }
         });
-
         rooms_list = getRooms();
-        Log.d("R_LIST", rooms_list.toString());
         adapter.notifyDataSetChanged();
     }
 
@@ -216,7 +216,7 @@ public class EditRoomActivity extends AppCompatActivity {
      * @return Rooms list
      */
     public ArrayList<Room> getRooms() {
-        Call<List<Room>> call2 = client.getrooms(PREFERED_HUB_ID);
+        Call<List<Room>> call2 = client.getrooms(PREFERRED_HUB_ID);
         call2.enqueue(new Callback<List<Room>>() {
             @Override
             public void onResponse(Call<List<Room>> call, Response<List<Room>> response) {
@@ -247,7 +247,7 @@ public class EditRoomActivity extends AppCompatActivity {
         if (rooms_list.contains(r)) {
             Log.d("LO TIENE", r.toString());
         }
-        Call<ResponseBody> call = client.deleteRoom(PREFERED_HUB_ID, r.getId());
+        Call<ResponseBody> call = client.deleteRoom(PREFERRED_HUB_ID, r.getId());
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -290,7 +290,7 @@ public class EditRoomActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if(!txtname.getText().equals(""))
                 {
-                    Room temp = new Room(Integer.parseInt(PREFERED_HUB_ID), String.valueOf(txtname.getText()));
+                    Room temp = new Room(PREFERRED_HUB_ID, String.valueOf(txtname.getText()));
                     if (!rooms_list.contains(temp)) {
                         addRoom(temp);
                         adapter.notifyDataSetChanged();
@@ -320,7 +320,7 @@ public class EditRoomActivity extends AppCompatActivity {
      */
     public void addRoom(final Room room)
     {
-        Call<Room> call = client.addroom(PREFERED_HUB_ID, room);
+        Call<Room> call = client.addroom(PREFERRED_HUB_ID, room);
 
         call.enqueue(new Callback<Room>() {
             @Override
@@ -365,36 +365,24 @@ public class EditRoomActivity extends AppCompatActivity {
     }
 
     /**
-     * This method get the preferred hub from the prefereces
-     */
-    public String getHub() {
-        SharedPreferences settings = getSharedPreferences(Constants.PREFS_NAME,
-                Context.MODE_PRIVATE);
-        return settings.getString(Constants.PREF_HUB, Constants.DEFAULT_HUB);
-    }
-
-    /**
-     * This method will load the preferred hub the user selected the last time (if any).
-     */
-    private String getPreferredHub() {
-        SharedPreferences settings = getSharedPreferences(PREFS_NAME,
-                Context.MODE_PRIVATE);
-        // Get values using keys
-        return settings.getString(PREF_HUB, DEFAULT_HUB);
-    }
-
-    /**
      * This interface implements a Retrofit interface for the RoomClient
      */
 
     private interface RoomClient {
         @GET("hubs/{hub_id}/rooms/")
-        Call<List<Room>> getrooms(@Path("hub_id") String hub_id);
+        Call<List<Room>> getrooms(@Path("hub_id") int hub_id);
 
         @POST("hubs/{hub_id}/rooms/")
-        Call<Room> addroom(@Path("hub_id") String hub_id, @Body Room r);
+        Call<Room> addroom(@Path("hub_id") int hub_id, @Body Room r);
 
         @DELETE("hubs/{hub_id}/rooms/{room_id}/")
-        Call<ResponseBody> deleteRoom(@Path("hub_id") String hub_id, @Path("room_id") int room_id);
+        Call<ResponseBody> deleteRoom(@Path("hub_id") int hub_id, @Path("room_id") int room_id);
+    }
+
+    public class ViewHolder {
+
+        public TextView room_name;
+        public CheckBox room_checkbox;
+
     }
 }

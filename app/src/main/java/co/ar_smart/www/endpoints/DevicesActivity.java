@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import co.ar_smart.www.helpers.RetrofitServiceGenerator;
+import co.ar_smart.www.living.HomeActivity;
 import co.ar_smart.www.living.R;
 import co.ar_smart.www.pojos.Endpoint;
 import retrofit2.Call;
@@ -38,6 +39,7 @@ import static co.ar_smart.www.helpers.Constants.EXTRA_ACTION;
 import static co.ar_smart.www.helpers.Constants.EXTRA_CATEGORY_DEVICE;
 import static co.ar_smart.www.helpers.Constants.EXTRA_LIST_PARCELABLE_FIRST;
 import static co.ar_smart.www.helpers.Constants.EXTRA_MESSAGE;
+import static co.ar_smart.www.helpers.Constants.EXTRA_MESSAGE_PREF_HUB;
 import static co.ar_smart.www.helpers.Constants.EXTRA_OBJECT;
 import static co.ar_smart.www.helpers.Constants.EXTRA_UID;
 import static co.ar_smart.www.helpers.Constants.PREFS_NAME;
@@ -66,6 +68,7 @@ public class DevicesActivity extends AppCompatActivity {
      * Represent the current instance
      */
     private Activity myact;
+    private int PREFERRED_HUB_ID;
 
 
     @Override
@@ -89,6 +92,7 @@ public class DevicesActivity extends AppCompatActivity {
         Intent intent = getIntent();
         API_TOKEN = intent.getStringExtra(EXTRA_MESSAGE);
         devices = intent.getParcelableArrayListExtra(EXTRA_OBJECT);
+        PREFERRED_HUB_ID = intent.getIntExtra(EXTRA_MESSAGE_PREF_HUB, -1);
         for (int i = 0; i < devices.size(); i++) {
             Log.d("DISPOSITIVO", devices.get(i).toString());
         }
@@ -114,17 +118,17 @@ public class DevicesActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                Intent i = new Intent(DevicesActivity.this, EditDeviceActivity.class);
-                Bundle b = new Bundle();
-                b.putParcelable(EXTRA_OBJECT, devices.get(position));
-                i.putExtras(b);
-                i.putExtra(EXTRA_CATEGORY_DEVICE, devices.get(position).getCategory());
-                i.putExtra(EXTRA_MESSAGE, API_TOKEN);
-                i.putExtra(EXTRA_ACTION, ACTION_EDIT);
-                i.putParcelableArrayListExtra(EXTRA_LIST_PARCELABLE_FIRST, devices);
-                i.putExtra(EXTRA_UID, String.valueOf(devices.get(position).getId()));
-
-                startActivity(i);
+                Intent intent = new Intent(DevicesActivity.this, EditDeviceActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putParcelable(EXTRA_OBJECT, devices.get(position));
+                intent.putExtras(bundle);
+                intent.putExtra(EXTRA_CATEGORY_DEVICE, devices.get(position).getCategory());
+                intent.putExtra(EXTRA_MESSAGE, API_TOKEN);
+                intent.putExtra(EXTRA_ACTION, ACTION_EDIT);
+                intent.putParcelableArrayListExtra(EXTRA_LIST_PARCELABLE_FIRST, devices);
+                intent.putExtra(EXTRA_UID, String.valueOf(devices.get(position).getId()));
+                intent.putExtra(EXTRA_MESSAGE_PREF_HUB, PREFERRED_HUB_ID);
+                startActivityForResult(intent, HomeActivity.ACTIVITY_CODE_ENDPOINT);
             }
         });
 
@@ -246,6 +250,20 @@ public class DevicesActivity extends AppCompatActivity {
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // Check which request we're responding to
+        if (requestCode == HomeActivity.ACTIVITY_CODE_ENDPOINT) {
+            // Make sure the request was successful
+            if (resultCode == RESULT_OK) {
+                Intent intent = new Intent();
+                intent.putExtra(EXTRA_OBJECT, data.getExtras().getParcelable(EXTRA_OBJECT));
+                setResult(RESULT_OK, intent);
+                finish();//finishing activity
+            }
         }
     }
 

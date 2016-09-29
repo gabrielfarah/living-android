@@ -5,7 +5,7 @@
     <string name="delzwave_btntext">Delete ZWave Device</string>
     <string name="editDevice_btntext">Edit Device</string>
     <string name="editicon_btntext">Select an icon for the device</string>
-    <string name="editroom_btntext">Select a room for your devices</string>
+    <string name="editroom_btntext">House Rooms</string>
     <string name="addfavorites_chktext">ADD THIS DEVICE TO FAVORITES</string>
     <string name="newroom_btntext">Add new room</string>
     <string name="warning_fields">Please fill in all required fields</string>
@@ -231,8 +231,8 @@
     <string name="successfully_added_trigger">Trigger successfully created</string>
     <string name="delete_room_label">Delete selected rooms</string>
     <string name="label_confirmation_remove_room">Are you sure you want to remove the selected room?</string>
-    <string name="text_room_explanation_add_device">Pick a room from your home in which the device will be located. Once you have selected it press \"Continue\". In case the room does not exist yet, create it using the \"Add Room\" button. </string>
-    <string name="text_room_explanation_edit">You can customize you home by selecting in which room each of you devices are, this way you can control the entire room with one click. To create new rooms press the \"Add Room\" button. </string>
+    <string name="text_room_explanation_edit">Pick a room from your home in which the device will be located. Once you have selected it press \"Continue\". In case the room does not exist yet, create it using the \"Add New Room\" button. </string>
+    <string name="text_room_explanation_add_device">You can customize you home by selecting in which room each of you devices are, this way you can control the entire room with one click. To create new rooms press the \"Add New Room\" button. </string>
     <string name="change_selected_hub_button_label">Control the selected home</string>
     <string name="description_add_zwave">Please, to include a new Z-Wave device into the network, press the button on the device you wish to include. In case you are unsure what button to press, search in the device manual the manufacturer included in the product package.</string>
     <string name="description_add_wifi_initial">Please make sure the WIFI device is connected to the internet using your WIFI home network. If the device is not yet connected, please connect it and click the “try again” button.</string>
