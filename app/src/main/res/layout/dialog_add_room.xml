@@ -1,52 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_marginRight="10dp"
-    android:layout_marginLeft="10dp"
     android:layout_height="match_parent"
-    android:background="#fff">
+    android:layout_marginLeft="10dp"
+    android:layout_marginRight="10dp"
+    android:background="#fff"
+    android:orientation="vertical">
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="start"
         android:layout_marginTop="10dp"
-        android:textSize="15sp"
-        android:text="@string/lblnameroom_dialog"
+        android:gravity="start"
         android:labelFor="@+id/txtNameNewRoom"
-        android:textColor="#848484"/>
+        android:text="@string/lblnameroom_dialog"
+        android:textColor="#848484"
+        android:textSize="15sp" />
     <EditText
         android:id="@+id/txtNameNewRoom"
-        android:textSize="20sp"
-        android:inputType="text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"/>
+        android:layout_marginBottom="10dp"
+        android:inputType="text"
+        android:textSize="20sp" />
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
         android:orientation="horizontal"
-        android:layout_marginBottom="20dp">
+        android:weightSum="1">
         <Button
             android:id="@+id/btnCancelNewRoom"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="@string/cancel"
-            android:textColor="#fff"
-            android:background="@drawable/dark_color_btn"
             android:layout_gravity="start"
             android:layout_marginEnd="5dp"
             android:layout_marginStart="50dp"
-            android:layout_weight="1"/>
+            android:layout_weight="0.5"
+            android:background="@drawable/dark_color_btn"
+            android:text="@string/cancel"
+            android:textColor="#fff" />
         <Button
             android:id="@+id/btnAddNewRoom"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="@string/accept"
-            android:textColor="#fff"
-            android:background="@drawable/dark_color_btn"
             android:layout_gravity="end"
             android:layout_marginEnd="50dp"
-            android:layout_weight="1"/>
+            android:layout_weight="0.5"
+            android:background="@drawable/dark_color_btn"
+            android:text="@string/accept"
+            android:textColor="#fff" />
     </LinearLayout>
 </LinearLayout>

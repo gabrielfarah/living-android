@@ -795,7 +795,7 @@ public class HomeActivity extends AppCompatActivity {
                     if (responseEndpoints.isEmpty()) {
                         openManagementDevicesActivity();
                     } else {
-                        setGridLayout(responseEndpoints);
+                        setGridLayout(endpoint_devices);
                         endpointsPolledsuccessfully = true;
                         rooms = RoomManager.getDefaultRooms(endpoint_devices, PREFERRED_HUB_ID);
                         setRoomsGridLayout();
@@ -990,7 +990,7 @@ public class HomeActivity extends AppCompatActivity {
                 }
             });*//*
         }*/
-        for (Endpoint e : listaEndpoints) {
+        for (Endpoint e : endpoint_devices) {
             endpointIcons.add(new EndpointIcons(e.getImage()));
         }
         gridAdapter.updateItems(endpoint_devices);
@@ -999,9 +999,9 @@ public class HomeActivity extends AppCompatActivity {
             gridAdapter.notifyDataSetChanged();
             homeMainGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-                    Toast.makeText(HomeActivity.this, listaEndpoints.get(position).getName(),
+                    Toast.makeText(HomeActivity.this, endpoint_devices.get(position).getName(),
                             Toast.LENGTH_SHORT).show();
-                    processEndpointClick(listaEndpoints.get(position));
+                    processEndpointClick(endpoint_devices.get(position));
                 }
             });
         }
@@ -1265,13 +1265,19 @@ public class HomeActivity extends AppCompatActivity {
             if (resultCode == RESULT_OK) {
                 modes = data.getExtras().getParcelableArrayList(EXTRA_OBJECT);
                 gridScenesAdapter.updateDataItems(modes);
+                gridScenesAdapter.notifyDataSetChanged();
             }
         } else if (requestCode == ACTIVITY_CODE_ENDPOINT) {
             // Make sure the request was successful
             if (resultCode == RESULT_OK) {
+                // Update the adapter of the devices
                 endpoint_devices = data.getExtras().getParcelableArrayList(EXTRA_OBJECT);
-                //setGridLayout(endpoint_devices);
+                gridAdapter.updateItems(endpoint_devices);
                 gridAdapter.notifyDataSetChanged();
+                // Reconstruct the adapter of the rooms
+                rooms = RoomManager.getDefaultRooms(endpoint_devices, PREFERRED_HUB_ID);
+                gridRoomsAdapter.updateDataItems(rooms);
+                gridRoomsAdapter.notifyDataSetChanged();
             }
         } else if (requestCode == ACTIVITY_CODE_USER_UPDATE) {
             // Make sure the request was successful

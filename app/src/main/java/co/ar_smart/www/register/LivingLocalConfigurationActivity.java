@@ -1,6 +1,7 @@
 package co.ar_smart.www.register;
 
 import android.Manifest;
+import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -19,9 +20,9 @@ import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -35,6 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.TimeZone;
 
+import co.ar_smart.www.analytics.AnalyticsApplication;
 import co.ar_smart.www.living.R;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -120,20 +122,15 @@ public class LivingLocalConfigurationActivity extends AppCompatActivity {
                  */
                 @Override
                 public void onAvailable(final Network network) {
-                    if (client == null) {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                            client = new OkHttpClient.Builder().socketFactory(network.getSocketFactory()).build();
-                        }
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        client = new OkHttpClient.Builder().socketFactory(network.getSocketFactory()).build();
                     }
-                    getFromHub();
-                    sendPost(json, userWifiSSID);
                 }
             });
         } else {
             client = new OkHttpClient();
-            getFromHub();
-            sendPost(json, userWifiSSID);
         }
+        testConnectionWithHub(json, userWifiSSID);
     }
 
     /**
@@ -149,27 +146,20 @@ public class LivingLocalConfigurationActivity extends AppCompatActivity {
                 .url(LIVING_URL)
                 .post(body)
                 .build();
-        if (getWorked) {
-            try {
-                Response response = client.newCall(request).execute();
-                String resp = response.body().string();
-                if (resp.contains("ssid not found")) {
-                    Toast.makeText(mContext, String.format(getResources().getString(R.string.welcome_messages), userWifiSSID), Toast.LENGTH_LONG).show();
-                    finished = false;
-                }
-                if (finished) {
-                    disconnectFromLivingWifi();
-                    Intent i = new Intent(mContext, VerifyConfigurationCompleteActivity.class);
-                    startActivity(i);
-                }
-                Log.d("FUNCIONO", resp);
-            } catch (IOException e) {
-                e.printStackTrace();
+        try {
+            Response response = client.newCall(request).execute();
+            String resp = response.body().string();
+            if (response.isSuccessful() && resp.contains("ssid not found")) {
+                Toast.makeText(mContext, String.format(getResources().getString(R.string.welcome_messages), userWifiSSID), Toast.LENGTH_LONG).show();
+                finished = false;
             }
-        } else {
-            if (counter > 1) {
-                Toast.makeText(mContext, getResources().getString(R.string.toast_error_connecting_to_local_webserver), Toast.LENGTH_LONG).show();
-            }
+        } catch (IOException e) {
+            AnalyticsApplication.getInstance().trackException(e);
+        }
+        if (finished) {
+            disconnectFromLivingWifi();
+            Intent i = new Intent(mContext, VerifyConfigurationCompleteActivity.class);
+            startActivity(i);
         }
     }
 
@@ -187,8 +177,10 @@ public class LivingLocalConfigurationActivity extends AppCompatActivity {
 
     /**
      * This method validates if the webserver running in the hub is accesible to the phone doing a GET request
+     * @param json
+     * @param userWifiSSID
      */
-    public void getFromHub() {
+    public void testConnectionWithHub(String json, String userWifiSSID) {
         Request request = new Request.Builder()
                 .url(LIVING_URL)
                 .get()
@@ -198,11 +190,13 @@ public class LivingLocalConfigurationActivity extends AppCompatActivity {
             String resp = response.body().string();
             if (resp.contains("connected")) {
                 getWorked = true;
+                sendPost(json, userWifiSSID);
             } else {
                 counter += 1;
+                showDialog();
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            AnalyticsApplication.getInstance().trackException(e);
         }
     }
 
@@ -443,5 +437,22 @@ public class LivingLocalConfigurationActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         unregisterReceiver(broadcastReceiver);
+    }
+
+    /**
+     * This method shows a dialog informing the user of a possible error and how to approach it.
+     */
+    public void showDialog() {
+        final Dialog dialog = new Dialog(this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.dialog_local_configuration_wifi);
+        Button dialogButton = (Button) dialog.findViewById(R.id.local_configuration_button_accept);
+        dialogButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+        dialog.show();
     }
 }

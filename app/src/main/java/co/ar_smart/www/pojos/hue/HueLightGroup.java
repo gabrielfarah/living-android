@@ -49,6 +49,22 @@ public class HueLightGroup implements Parcelable, IHueObject {
 
     }
 
+    public ArrayList<HueLight> getLights() {
+        return lights;
+    }
+
+    public void setLights(ArrayList<HueLight> lights) {
+        this.lights = lights;
+    }
+
+    public int getGroup_id() {
+        return group_id;
+    }
+
+    public void setGroup_id(int group_id) {
+        this.group_id = group_id;
+    }
+
     @Override
     public String toString() {
         return "(" + group_id + " - " + name + " - " + lights + ")";
@@ -74,6 +90,10 @@ public class HueLightGroup implements Parcelable, IHueObject {
     @Override
     public String getName() {
         return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     @Override

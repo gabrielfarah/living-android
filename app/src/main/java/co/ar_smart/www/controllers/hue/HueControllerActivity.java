@@ -194,6 +194,15 @@ public class HueControllerActivity extends AppCompatActivity {
 
                                 if (light_groups.get(0) instanceof HueLightGroup) {
                                     Log.d("=------====--------", "Es grupo");
+                                    for (int i = 0; i < light_groups.size(); i++) {
+                                        for (IHueObject temp : light_groups.get(i).getLights()) {
+                                            Log.d("1", bulbs.toString());
+                                            Log.d("2", temp.toString());
+                                            if (!bulbs.contains(temp)) {
+                                                bulbs.add(temp);
+                                            }
+                                        }
+                                    }
                                 } else if (light_groups.get(0) instanceof HueLight) {
                                     Log.d("=------====--------", "Es luz sola");
                                 }

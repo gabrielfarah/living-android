@@ -23,10 +23,10 @@
         android:layout_marginRight="50dp"
         android:gravity="center"
         android:text="@string/it_was_successfully_added"
-        android:textColor="#000"/>
+        android:textColor="@color/secundario" />
     <Button
         android:id="@+id/btnDialogDevAdd"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginBottom="20dp"

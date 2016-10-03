@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -62,7 +61,7 @@ public class DeleteDeviceActivity extends AppCompatActivity {
      */
     private Activity myact;
     private int PREFERRED_HUB_ID;
-    private ArrayList<Endpoint> response_devices;
+    private ArrayList<Endpoint> response_devices = new ArrayList<>();
 
 
     @Override
@@ -86,17 +85,16 @@ public class DeleteDeviceActivity extends AppCompatActivity {
         API_TOKEN = intent.getStringExtra(EXTRA_MESSAGE);
         PREFERRED_HUB_ID = intent.getIntExtra(EXTRA_MESSAGE_PREF_HUB, -1);
         devices = intent.getParcelableArrayListExtra(EXTRA_OBJECT);
-        response_devices = devices;
         ArrayList<Endpoint> items_to_remove = new ArrayList<>();
         if (!devices.isEmpty()) {
             for (Endpoint temp : devices) {
+                response_devices.add(temp);
                 if (!temp.getEndpoint_type().equalsIgnoreCase("wifi")) {
                     items_to_remove.add(temp);
                 }
             }
             devices.removeAll(items_to_remove);
         }
-        Log.d("DEVICES", devices.toString());
         adapter=new ArrayAdapter<Endpoint>(DeleteDeviceActivity.this, android.R.layout.simple_list_item_1, devices){
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
@@ -107,7 +105,7 @@ public class DeleteDeviceActivity extends AppCompatActivity {
                 TextView device_name = (TextView) view.findViewById(R.id.nameDeviceEdit);
                 device_name.setText(devices.get(position).getName());
                 ImageView imageView = (ImageView) view.findViewById(R.id.iconEdit);
-                imageView.setImageDrawable(ContextCompat.getDrawable(myact, R.drawable.delete_icon));
+                imageView.setImageDrawable(ContextCompat.getDrawable(DeleteDeviceActivity.this, R.drawable.delete_icon));
                 //chk.setChecked(checked[position]);
                 return view;
             }
@@ -123,7 +121,6 @@ public class DeleteDeviceActivity extends AppCompatActivity {
 
         progress.setVisibility(View.GONE);
         list.setVisibility(View.VISIBLE);
-
     }
 
     public void showDialog(final Endpoint endpoint) {

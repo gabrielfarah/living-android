@@ -146,6 +146,7 @@ public class ManagementEndpointsActivity extends AppCompatActivity {
             // Make sure the request was successful
             if (resultCode == RESULT_OK) {
                 endpoints = data.getParcelableArrayListExtra(EXTRA_OBJECT);
+                Log.d("ELRES2", endpoints.toString());
             }
         }
     }

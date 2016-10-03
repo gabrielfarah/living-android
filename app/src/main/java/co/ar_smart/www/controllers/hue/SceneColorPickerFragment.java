@@ -79,9 +79,9 @@ public class SceneColorPickerFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.scene_color_picker_fragment_list, container, false);
         // Inflate the layout for this fragment
         parentActivity = (HueColorControllerActivity) getActivity();
-        scenes.add(new java.util.AbstractMap.SimpleEntry<>("Claridad", "connect_btn"));
-        scenes.add(new java.util.AbstractMap.SimpleEntry<>("Test 1", "hue_icon1"));
-        scenes.add(new java.util.AbstractMap.SimpleEntry<>("Test 3", "right_arrow_icon"));
+        scenes.add(new java.util.AbstractMap.SimpleEntry<>("Positive", "lamp_icon"));
+        scenes.add(new java.util.AbstractMap.SimpleEntry<>("Harmonious", "lamp_icon"));
+        scenes.add(new java.util.AbstractMap.SimpleEntry<>("Peaceful", "lamp_icon"));
 
         ListView sceneListView = (ListView) rootView.findViewById(R.id.scene_color_picker_list_view);
         SceneColorPickerAdapter customAdapter = new SceneColorPickerAdapter(getActivity().getApplicationContext(), scenes);
@@ -106,13 +106,13 @@ public class SceneColorPickerFragment extends Fragment {
          */
         switch (position) {
             case 0:
-                return Color.parseColor("lime");
-            case 1:
-                return Color.parseColor("darkgray");
-            case 2:
                 return Color.parseColor("yellow");
+            case 1:
+                return Color.parseColor("lime");
+            case 2:
+                return Color.parseColor("navy");
         }
-        return Color.parseColor("black");
+        return Color.parseColor("gray");
     }
 
     private void changeColor(int value) {

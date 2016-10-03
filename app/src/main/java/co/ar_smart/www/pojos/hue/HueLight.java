@@ -4,6 +4,8 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
 
+import java.util.ArrayList;
+
 import co.ar_smart.www.controllers.hue.PHUtils;
 
 /**
@@ -182,6 +184,11 @@ public class HueLight implements Parcelable, IHueObject {
     }
 
     @Override
+    public ArrayList<? extends IHueObject> getLights() {
+        return null;
+    }
+
+    @Override
     public int describeContents() {
         return 0;
     }
@@ -201,5 +208,14 @@ public class HueLight implements Parcelable, IHueObject {
         dest.writeFloatArray(xy);
         Log.d("XY:", xy.length + "");
         dest.writeString(name);
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        boolean isSame = false;
+        if (object != null && object instanceof HueLight) {
+            isSame = this.light_id == ((HueLight) object).light_id;
+        }
+        return isSame;
     }
 }
