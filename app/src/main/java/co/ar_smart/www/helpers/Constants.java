@@ -121,15 +121,15 @@ public final class Constants {
     /**
      * Default latitude for map-like activities
      */
-    public static final double DEFAULT_LATITUDE = 4;
+    public static final double DEFAULT_LATITUDE = 4.676623;
     /**
      * Default latitude for map-like activities
      */
-    public static final double DEFAULT_LONGITUDE = -72;
+    public static final double DEFAULT_LONGITUDE = -74.048305;
     /**
      * Default radius for map-like activities
      */
-    public static final double DEFAULT_RADIUS = 1000;
+    public static final double DEFAULT_RADIUS = 100;
     /**
      * Default background image path
      */

@@ -19,7 +19,6 @@ import co.ar_smart.www.adapters.SceneListAdapter;
 import co.ar_smart.www.helpers.Constants;
 import co.ar_smart.www.helpers.ModeManager;
 import co.ar_smart.www.living.R;
-import co.ar_smart.www.pojos.Command;
 import co.ar_smart.www.pojos.Endpoint;
 import co.ar_smart.www.pojos.Mode;
 
@@ -46,13 +45,7 @@ public class ModeActivity extends AppCompatActivity {
      * This var will be filled with a user promted email
      */
     private ArrayList<Endpoint> endpoint_devices;
-    private ArrayList<Triplet> sent_endpoints = new ArrayList<>();
     private TextView sceneName;
-
-    private ArrayList<Command> payload;
-
-    private String modename;
-    private int modeid;
     private SceneListAdapter adapter;
 
 

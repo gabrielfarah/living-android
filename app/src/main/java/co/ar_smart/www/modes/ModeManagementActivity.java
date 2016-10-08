@@ -34,11 +34,11 @@ import static co.ar_smart.www.helpers.Constants.EXTRA_OBJECT;
 public class ModeManagementActivity extends AppCompatActivity {
 
     /**
-     * The user api token to perform requets
+     * The user api token to perform requests
      */
     private String API_TOKEN;
     /**
-     * The id of the hub to perform requets with
+     * The id of the hub to perform requests with
      */
     private int PREFERRED_HUB_ID;
     /**
@@ -157,14 +157,11 @@ public class ModeManagementActivity extends AppCompatActivity {
             // Make sure the request was successful
             if (resultCode == RESULT_OK) {
                 Mode resultingMode = data.getExtras().getParcelable(EXTRA_OBJECT);
-                Log.d("El modo", resultingMode.toString());
                 if (resultingMode != null) {
                     if (!modes.contains(resultingMode)) {
                         modes.add(resultingMode);
-                        Log.d("MODES - 1", modes.toString());
                     } else {
                         modes.set(modes.indexOf(resultingMode), resultingMode);
-                        Log.d("MODES - 2", modes.toString());
                     }
                     adapter.notifyDataSetChanged();
                 }
@@ -185,7 +182,7 @@ public class ModeManagementActivity extends AppCompatActivity {
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.dialog_warning_delete);
         TextView txtname = (TextView) dialog.findViewById(R.id.lbl_warning_del_device);
-        txtname.setText(this.getResources().getString(R.string.label_warning_delete_device) + " " + elimMode.getName() + "?");
+        txtname.setText(this.getResources().getString(R.string.label_warning_delete_scene) + " " + elimMode.getName() + "?");
         Button dialogButton = (Button) dialog.findViewById(R.id.btnDel);
         dialogButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -221,12 +218,12 @@ public class ModeManagementActivity extends AppCompatActivity {
         ModeManager.removeMode(PREFERRED_HUB_ID, guest.getId(), API_TOKEN, new ModeManager.ModeCallbackInterfaceDelete() {
             @Override
             public void onFailureCallback() {
-                failedToRemoveMode();
+                failedToAddMode();
             }
 
             @Override
             public void onSuccessCallback() {
-                Toast.makeText(getApplicationContext(), getResources().getString(R.string.label_guest_removed_message), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), getResources().getString(R.string.label_remove_escene_success), Toast.LENGTH_SHORT).show();
                 modes.remove(guest);
                 adapter.notifyDataSetChanged();
             }
@@ -242,14 +239,14 @@ public class ModeManagementActivity extends AppCompatActivity {
      * This method displays a message when the the removing a guest fails
      */
     private void failedToRemoveMode() {
-        Toast.makeText(getApplicationContext(), getResources().getString(R.string.label_failed_remove_guest), Toast.LENGTH_LONG).show();
+        Toast.makeText(getApplicationContext(), getResources().getString(R.string.label_delete_mode_failed), Toast.LENGTH_LONG).show();
     }
 
     /**
      * This method shows a message to the user when the email entered is not yet registered
      */
     private void failedToAddMode() {
-        Toast.makeText(getApplicationContext(), getResources().getString(R.string.label_only_failed_add_guest), Toast.LENGTH_LONG).show();
+        Toast.makeText(getApplicationContext(), getResources().getString(R.string.toast_missing_internet), Toast.LENGTH_LONG).show();
     }
 
 }

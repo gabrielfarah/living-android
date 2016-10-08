@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -68,6 +67,7 @@ public class RegisterHubActivity extends AppCompatActivity
      * Current Context
      */
     private Context mContext;
+    private OkHttpClient client = new OkHttpClient();
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -92,12 +92,9 @@ public class RegisterHubActivity extends AppCompatActivity
                 @Override
                 public void onClick(View v)
                 {
-                    if (edtHubSerial.getText().toString().equals(""))
-                    {
+                    if (edtHubSerial.getText().toString().equals("")) {
                         Toast.makeText(mContext, R.string.error_hub_serial_empty, Toast.LENGTH_SHORT).show();
-                    }
-                    else
-                    {
+                    } else {
                         hubSerial = edtHubSerial.getText().toString().trim();
                         getToken();
                     }
@@ -119,8 +116,7 @@ public class RegisterHubActivity extends AppCompatActivity
         JWTManager.getApiToken(EMAIL, PASSWORD, new JWTManager.JWTCallbackInterface()
         {
             @Override
-            public void onFailureCallback()
-            {
+            public void onFailureCallback() {
                 Constants.showNoInternetMessage(getApplicationContext());
             }
 
@@ -150,8 +146,7 @@ public class RegisterHubActivity extends AppCompatActivity
      */
     private void registerHub(String nToken)
     {
-        try
-        {
+        try {
             final String token = "JWT  " + nToken;
             JSONObject json = new JSONObject();
             json.put("custom_name", hubName);
@@ -159,7 +154,7 @@ public class RegisterHubActivity extends AppCompatActivity
             json.put("latitude", hubLatitude);
             json.put("longitude", hubLongitude);
             json.put("radius", hubRadius);
-            OkHttpClient client = new OkHttpClient();
+
             RequestBody body = RequestBody.create(JSON, json.toString());
             Request request = new Request.Builder()
                     .url(HUB_REGISTER_URL)
@@ -167,8 +162,7 @@ public class RegisterHubActivity extends AppCompatActivity
                     .header("Authorization", token)
                     .post(body)
                     .build();
-            client.newCall(request).enqueue(new Callback()
-            {
+            client.newCall(request).enqueue(new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e)
                 {
@@ -183,8 +177,7 @@ public class RegisterHubActivity extends AppCompatActivity
                     response.body().close();
                     if (!response.isSuccessful())
                     {
-                        Log.d("DEBUG","response body"+body);
-                        displayMessage(body.substring(body.lastIndexOf("\":")+3,body.length()-2));
+                        displayMessage(getResources().getString(R.string.toast_hub_registration_failure));
                     }
                     else
                     {

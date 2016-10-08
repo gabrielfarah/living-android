@@ -16,17 +16,20 @@
     <string name="lblnamedev">Set a name for this device: Ej. "Kitchen light"</string>
     <string name="acept">Acept</string>
     <string name="cancel">Cancel</string>
-    <string name="btnEditMode">Edit Mode</string>
-    <string name="btnDeLMode">Delete Mode</string>
-    <string name="btnAddMode">Add Mode</string>
+    <string name="btnEditScene">Edit Scene</string>
+    <string name="btnDeLScene">Delete Scene</string>
+    <string name="btnAddScene">Add Scene</string>
     <string name="label_deletedev_activity_title">Delete Device</string>
     <string name="label_devices_activity_title">Devices</string>
     <string name="label_newdev_activity_title">New Devices</string>
     <string name="label_warning_delete_device">Are you sure you want to delete this device</string>
-    <string name="label_deletemode_activity_title">Delete Modes</string>
-    <string name="label_editmode_activity_title">Select Mode</string>
+    <string name="label_warning_delete_scene">Are you sure you want to delete this scene</string>
+    <string name="label_deletescene_activity_title">Delete Modes</string>
+    <string name="label_delete_scene_failed">Only the person who created an scene can remove it</string>
+    <string name="label_editscene_activity_title">Select Mode</string>
+    <string name="label_remove_escene_success">Scene deleted!</string>
     <string name="label_listcommands_activity_title">Edit Commands</string>
-    <string name="label_selectmodedevice_activity_title">Select Device</string>
+    <string name="label_selectscenedevice_activity_title">Select Device</string>
     <string name="btn_addcommand">Add Command</string>
     <string name="app_name">Domu</string>
     <string name="login_title">Login to your account</string>
@@ -34,6 +37,7 @@
     <string name="logout_text">Logout</string>
     <string name="register_text">Register</string>
     <string name="toast_login_failure">There was a problem logging into Domu. Are you connected to the internet?</string>
+    <string name="toast_hub_registration_failure">The serial you registered is not valid, please verify and try again.</string>
     <string name="toast_login_bad_credentials">We were unable to login with provided credentials. Did you forgot your password?</string>
     <string name="toast_login_server_error">We were unable to log into Domu. Are you using the latest version of the app?</string>
     <string name="toast_missing_fields">You must fill all the required fields</string>
@@ -116,7 +120,7 @@
     <string name="label_registered_hub_message">You had correctly connected \nyour station.\n \nStart now to automate your \nhome y live more comfortable \nand safer with Domu.</string>
     <string name="btn_registered_hub">END</string>
     <string name="title_activity_new_devices">NewDevicesActivity</string>
-    <string name="label_manage_modes">Manage Scenes</string>
+    <string name="label_manage_scenes">Manage Scenes</string>
 
     <string name="label_select_devices_endpoint_activity">Select the devices you want</string>
     <string name="label_add_scene_activity">Add a new scene</string>
@@ -140,7 +144,7 @@
     <string name="label_down">%1$s (DOWN)</string>
     <string name="label_selected">%1$s (SELECTED)</string>
     <string name="label_unselected">%1$s (UNSELECTED)</string>
-    <string name="label_number_of_elements_mode">Actions in scene: %1$s</string>
+    <string name="label_number_of_elements_scene">Actions in scene: %1$s</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
@@ -154,8 +158,7 @@
     <string name="btn_trigger_on_negative_binary">When it is turned off</string>
     <string name="btn_trigger_on_positive_range">When it is inside range</string>
     <string name="btn_trigger_on_negative_range">When it is outside range</string>
-    <string name="not_regex_password">The password must contain at least one capital letter,
-        and a number and its length must be at least 8.</string>
+    <string name="not_regex_password">The password length must be at least 8 characters.</string>
     <string name="toast_error_connecting_to_local_webserver">Please make sure your phone WIFI is active and connected to the \"Domu-AP\" network. Also make sure to momentarily deactivate the mobile data in your phone</string>
     <string name="welcome_messages">The WIFI network: %1$s does not exist.</string>
     <string name="nav_label_devices">Devices</string>
@@ -189,7 +192,7 @@
     <string name="default_background_title">Moving on</string>
     <string name="default_backgroung_message">Are you sure you want to use default background image?</string>
     <string name="yes">Yes</string>
-    <string name="no" translatable="false">No</string>
+    <string name="no">No</string>
     <string name="permission_images_message">The application will ask you permission to read your external storage, it allows it to offer you some features, please accept them.</string>
     <string name="permission_location_message">The application will ask you permission to access to your location via gps and wifi, it allows it to offer you some features, please accept them.</string>
     <string name="home_menu_devices">DEVICES</string>
@@ -219,7 +222,7 @@
     <string name="zwave_level_command">Please select your desired brightness</string>
     <string name="press_back_logout">Please click BACK again to Log out</string>
     <string name="please_login">Please login</string>
-    <string name="error_removing_command">Error al eliminar el comandos</string>
+    <string name="error_removing_command">Error removing the command</string>
     <string name="select_at_least_action">Please select at least one action</string>
     <string name="error_scene_name_empty">Please input a name for the scene</string>
     <string name="error_doing_request">There was a problem doing the request please try again</string>
