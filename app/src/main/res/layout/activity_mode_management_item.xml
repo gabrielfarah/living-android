@@ -18,7 +18,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:background="@color/blanco"
-            android:singleLine="true"
+            android:maxLines="1"
             android:textSize="18sp" />
 
         <TextView
@@ -26,8 +26,8 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:background="@color/blanco"
-            android:singleLine="true"
-            android:text="@string/label_number_of_elements_mode"
+            android:maxLines="1"
+            android:text="@string/label_number_of_elements_scene"
             android:textSize="12sp" />
     </LinearLayout>
 

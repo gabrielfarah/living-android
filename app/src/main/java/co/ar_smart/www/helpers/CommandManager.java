@@ -140,7 +140,7 @@ public class CommandManager {
                 String jsonData = response.body().string();
                 response.body().close();
                 if (!response.isSuccessful()) {
-                    Log.d("unsuccessful", jsonData.toString());
+                    Log.d("unsuccessful", jsonData);
                     callback.onUnsuccessfulCallback();
                 } else {
                     try {

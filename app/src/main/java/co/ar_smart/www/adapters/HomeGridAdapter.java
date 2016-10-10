@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -22,6 +23,7 @@ import co.ar_smart.www.living.R;
 
 /**
  * Created by Gabriel on 5/3/2016.
+ * Last revision 5/3/2016
  */
 public class HomeGridAdapter<T extends co.ar_smart.www.interfaces.IGridItem> extends BaseAdapter {
 
@@ -56,10 +58,15 @@ public class HomeGridAdapter<T extends co.ar_smart.www.interfaces.IGridItem> ext
         return R.drawable.default_icon;
     }
 
-    public Drawable setTint(int dr, int color) {
+    private Drawable setTint(int dr, int color) {
         Drawable d = ResourcesCompat.getDrawable(context.getResources(), dr, null);
-        Drawable wrappedDrawable = DrawableCompat.wrap(d);
-        DrawableCompat.setTint(wrappedDrawable, color);
+        Drawable wrappedDrawable = null;
+        if (d != null) {
+            wrappedDrawable = DrawableCompat.wrap(d);
+        }
+        if (wrappedDrawable != null) {
+            DrawableCompat.setTint(wrappedDrawable, color);
+        }
         return wrappedDrawable;
     }
 
@@ -80,34 +87,38 @@ public class HomeGridAdapter<T extends co.ar_smart.www.interfaces.IGridItem> ext
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        View gridView;
+        ViewHolder holder;
         LayoutInflater inflater = (LayoutInflater) context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         if (convertView == null) {
-            // get layout from mobile.xml
-            gridView = inflater.inflate(R.layout.home_grid_view_item, null);
-            //params.setLayoutDirection(1);
-            DisplayMetrics metrics = context.getResources().getDisplayMetrics();
-            int screenHeight = metrics.heightPixels;
-            AbsListView.LayoutParams params = new AbsListView.LayoutParams(
-                    AbsListView.LayoutParams.MATCH_PARENT,
-                    screenHeight / 4);
-            gridView.setLayoutParams(params);
-            //imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-
-            gridView.setPadding(4, 4, 4, 4);
-            gridView.setBackgroundColor(ContextCompat.getColor(context, R.color.white_ctran));
-            if (items.get(position) != null) {
-                int temp = getDrawableFromString(items.get(position).getImage());
-                ImageView imageView = (ImageView) gridView.findViewById(R.id.endpointImage);
-                TextView textView = (TextView) gridView.findViewById(R.id.endpointTitle);
-                textView.setText(items.get(position).getName());
-                //imageView.setAlpha((float) 1.0);
-                imageView.setImageDrawable(setTint(temp, Color.rgb(44, 194, 190)));
-            }
-            return gridView;
+            holder = new ViewHolder();
+            convertView = inflater.inflate(R.layout.home_grid_view_item, null);
+            holder.gridView = (LinearLayout) convertView;
+            holder.imageView = (ImageView) convertView.findViewById(R.id.endpointImage);
+            holder.textView = (TextView) convertView.findViewById(R.id.endpointTitle);
+            convertView.setTag(holder);
         } else {
-            return convertView;
+            holder = (ViewHolder) convertView.getTag();
         }
+        DisplayMetrics metrics = context.getResources().getDisplayMetrics();
+        int screenHeight = metrics.heightPixels;
+        AbsListView.LayoutParams params = new AbsListView.LayoutParams(
+                AbsListView.LayoutParams.MATCH_PARENT,
+                screenHeight / 4);
+        holder.gridView.setLayoutParams(params);
+        holder.gridView.setPadding(4, 4, 4, 4);
+        holder.gridView.setBackgroundColor(ContextCompat.getColor(context, R.color.white_ctran));
+        if (items.get(position) != null) {
+            int temp = getDrawableFromString(items.get(position).getImage());
+            holder.textView.setText(items.get(position).getName());
+            holder.imageView.setImageDrawable(setTint(temp, Color.rgb(44, 194, 190)));
+        }
+        return convertView;
+    }
+
+    public static class ViewHolder {
+        LinearLayout gridView;
+        ImageView imageView;
+        TextView textView;
     }
 }

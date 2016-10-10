@@ -33,11 +33,11 @@
                     android:textSize="17sp" />
 
                 <EditText
+                    android:id="@+id/edit_text_hub_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     android:hint="@string/edit_text_prop_req_hub_name_hint"
-                    android:id="@+id/edit_text_hub_name"
                     android:textSize="17sp" />
             </LinearLayout>
 
@@ -55,42 +55,42 @@
                 android:weightSum="1">
 
                 <ImageView
+                    android:id="@+id/selectedImage"
                     android:layout_width="80dp"
-                    android:layout_height="70dp"
-                    android:id="@+id/selectedImage"/>
+                    android:layout_height="70dp" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:gravity="center"
-                    android:layout_marginRight="10dp"
                     android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:gravity="center"
                     android:text="@string/label_prop_req_hub_image"
                     android:textSize="17sp" />
 
                 <LinearLayout
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:orientation="vertical"
+                    android:layout_marginEnd="10dp"
                     android:layout_weight="0.4"
-                    android:layout_marginEnd="10dp">
+                    android:orientation="vertical">
 
                     <Button
                         android:id="@+id/btnCapture"
                         android:layout_width="wrap_content"
                         android:layout_height="30dp"
                         android:layout_marginBottom="10dp"
-                        android:textColor="@color/blanco"
+                        android:background="@color/activar"
                         android:text="@string/capture"
-                        android:background="@color/activar"/>
+                        android:textColor="@color/blanco" />
 
                     <Button
                         android:id="@+id/btnGallery"
                         android:layout_width="wrap_content"
                         android:layout_height="30dp"
-                        android:textColor="@color/blanco"
+                        android:background="@color/activar"
                         android:text="@string/select"
-                        android:background="@color/activar"/>
+                        android:textColor="@color/blanco" />
 
                 </LinearLayout>
 

@@ -28,7 +28,7 @@
             android:id="@+id/valueCurrentDescription"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Current energy cost (aproximate):"
+            android:text="@string/current_energy_cost_aproximate"
             android:textAlignment="center"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 

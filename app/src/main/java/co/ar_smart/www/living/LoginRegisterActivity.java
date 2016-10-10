@@ -39,7 +39,6 @@ public class LoginRegisterActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        return;
     }
 
     /**

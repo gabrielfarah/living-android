@@ -37,10 +37,6 @@ public class PropertiesRegisterHubActivity extends AppCompatActivity
 {
 
     /**
-     * Constant used when the application verifies the permissions given by the user
-     */
-    private static final int PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 0;
-    /**
      * Constant for capture image event
      */
     public final static int CAPTURE_IMAGE_RC = 1888;
@@ -52,6 +48,41 @@ public class PropertiesRegisterHubActivity extends AppCompatActivity
      * Constant for click on static map event
      */
     public final static int MAP_RC = 1890;
+    /**
+     * Constant used when the application verifies the permissions given by the user
+     */
+    private static final int PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 0;
+    /**
+     * Listener to capture a photo
+     */
+    View.OnClickListener listenerCapture = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            try {
+                Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+                startActivityForResult(cameraIntent, CAPTURE_IMAGE_RC);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    };
+    /**
+     * Listener for select image
+     */
+    View.OnClickListener listenerSelection = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            try {
+                Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+                photoPickerIntent.setType("image/*");
+                startActivityForResult(photoPickerIntent, SELECT_IMAGE);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    };
     /**
      * Longitude given by last location registered
      */
@@ -89,14 +120,66 @@ public class PropertiesRegisterHubActivity extends AppCompatActivity
      */
     private Context mContext;
     /**
+     * Listener for clic on static map
+     */
+    View.OnClickListener listenerMap = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            try {
+                Intent i = new Intent(mContext, MapRegisterHubActivity.class);
+                i.putExtra("lat", lastLat);
+                i.putExtra("long", lastLong);
+                i.putExtra("radius", radius);
+                startActivityForResult(i, MAP_RC);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    };
+    /**
+     * Listener for end of properties assign process
+     */
+    View.OnClickListener listenerProperties = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            try {
+
+                EditText hub_name = (EditText) findViewById(R.id.edit_text_hub_name);
+                if (hub_name != null) {
+                    hubName = hub_name.getText().toString();
+                    if (hubName.equals("")) {
+                        displayMessage(getString(R.string.empty_hub_name));
+                    } else if ((finalLong == 0) || (finalLat == 0) || (radius == 0)) {
+                        displayMessage(getString(R.string.not_selected_location));
+                    } else if (imagePath.equals(Constants.DEFAULT_BACKGROUND_PATH)) {
+                        new AlertDialog.Builder(mContext)
+                                .setIcon(android.R.drawable.ic_dialog_alert)
+                                .setTitle(R.string.default_background_title)
+                                .setMessage(R.string.default_backgroung_message)
+                                .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        registerHub();
+                                    }
+
+                                })
+                                .setNegativeButton(R.string.no, null)
+                                .show();
+                    } else {
+                        registerHub();
+                    }
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    };
+    /**
      * ImageView that shows static map
      */
     private ImageView staticMap;
-    /**
-     * Boolean that represent if the user give the required permissions
-     */
-    private boolean permissionCheck = false;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -218,7 +301,10 @@ public class PropertiesRegisterHubActivity extends AppCompatActivity
     public String getOriginalImagePath()
     {
         //verifies if the user have given the required permissions
-        permissionCheck = (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != -1);
+        /*
+      Boolean that represent if the user give the required permissions
+     */
+        boolean permissionCheck = (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != -1);
         // in the positive case creates and initialize the atributes for getting the static map image
         if (permissionCheck)
         {
@@ -315,127 +401,6 @@ public class PropertiesRegisterHubActivity extends AppCompatActivity
         }
 
     }
-
-    /**
-     * Listener to capture a photo
-     */
-    View.OnClickListener listenerCapture = new View.OnClickListener()
-    {
-        @Override
-        public void onClick(View v)
-        {
-            try
-            {
-                Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-                startActivityForResult(cameraIntent, CAPTURE_IMAGE_RC);
-
-            }
-            catch (Exception e)
-            {
-                e.printStackTrace();
-            }
-        }
-    };
-
-    /**
-     * Listener for select image
-     */
-    View.OnClickListener listenerSelection = new View.OnClickListener()
-    {
-        @Override
-        public void onClick(View v)
-        {
-            try
-            {
-                Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
-                photoPickerIntent.setType("image/*");
-                startActivityForResult(photoPickerIntent, SELECT_IMAGE);
-
-            }
-            catch (Exception e)
-            {
-                e.printStackTrace();
-            }
-        }
-    };
-
-    /**
-     * Listener for clic on static map
-     */
-    View.OnClickListener listenerMap = new View.OnClickListener()
-    {
-        @Override
-        public void onClick(View v)
-        {
-            try
-            {
-                Intent i = new Intent(mContext, MapRegisterHubActivity.class);
-                i.putExtra("lat", lastLat);
-                i.putExtra("long", lastLong);
-                i.putExtra("radius", radius);
-                startActivityForResult(i, MAP_RC);
-
-            }
-            catch (Exception e)
-            {
-                e.printStackTrace();
-            }
-        }
-    };
-    /**
-     * Listener for end of properties assign process
-     */
-    View.OnClickListener listenerProperties = new View.OnClickListener()
-    {
-        @Override
-        public void onClick(View v)
-        {
-            try
-            {
-
-                EditText hub_name = (EditText) findViewById(R.id.edit_text_hub_name);
-                if (hub_name != null)
-                {
-                    hubName = hub_name.getText().toString();
-                    if (hubName.equals(""))
-                    {
-                        displayMessage(getString(R.string.empty_hub_name));
-                    }
-                    else if ((finalLong == 0) || (finalLat == 0) || (radius == 0))
-                    {
-                        displayMessage(getString(R.string.not_selected_location));
-                    }
-                    else if (imagePath.equals(Constants.DEFAULT_BACKGROUND_PATH))
-                    {
-                        new AlertDialog.Builder(mContext)
-                                .setIcon(android.R.drawable.ic_dialog_alert)
-                                .setTitle(R.string.default_background_title)
-                                .setMessage(R.string.default_backgroung_message)
-                                .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener()
-                                {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which)
-                                    {
-                                        registerHub();
-                                    }
-
-                                })
-                                .setNegativeButton(R.string.no, null)
-                                .show();
-                    }
-                    else
-                    {
-                        registerHub();
-                    }
-                }
-
-            }
-            catch (Exception e)
-            {
-                e.printStackTrace();
-            }
-        }
-    };
 
     /**
      * Method for advance to next activity

@@ -4,10 +4,10 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.GridLayout;
 import android.widget.GridView;
 import android.widget.ImageView;
 
@@ -85,8 +85,13 @@ public class GridDevicesAdapter<T extends co.ar_smart.www.interfaces.IDrawable> 
 
     public Drawable setTint(int dr, int color) {
         Drawable d = ResourcesCompat.getDrawable(context.getResources(), dr, null);
-        Drawable wrappedDrawable = DrawableCompat.wrap(d);
-        DrawableCompat.setTint(wrappedDrawable, color);
+        Drawable wrappedDrawable = null;
+        if (d != null) {
+            wrappedDrawable = DrawableCompat.wrap(d);
+        }
+        if (wrappedDrawable != null) {
+            DrawableCompat.setTint(wrappedDrawable, color);
+        }
         return wrappedDrawable;
     }
 
@@ -111,9 +116,11 @@ public class GridDevicesAdapter<T extends co.ar_smart.www.interfaces.IDrawable> 
         if (convertView == null) {
             // if it's not recycled, initialize some attributes
             imageView = new ImageView(context);
-            imageView.setLayoutParams(new GridView.LayoutParams(250, 250));
-            imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-            imageView.setPadding(2, 2, 2, 2);
+            int icon = (int) context.getResources().getDimension(R.dimen.icon_size);
+            imageView.setLayoutParams(new GridView.LayoutParams(GridLayout.LayoutParams.MATCH_PARENT, icon));
+            //imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            imageView.setPadding(5, 2, 5, 2);
+            imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
             //imageView.setBackgroundColor(ContextCompat.getColor(context, R.color.subBarras));//R.color.subBarras);
         } else
         {
@@ -124,10 +131,8 @@ public class GridDevicesAdapter<T extends co.ar_smart.www.interfaces.IDrawable> 
             int temp = getDrawableFromString(endpoints[position].getImage());
             if (!endpoints[position].isActive()) {
                 imageView.setImageDrawable(setTint(temp, R.color.elementos));
-                Log.d("color", "GRIS");
             } else {
                 imageView.setImageResource(temp);
-                Log.d("color", "ORIGINAL");
             }
         }
         return imageView;

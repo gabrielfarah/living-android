@@ -27,9 +27,6 @@ import static co.ar_smart.www.helpers.Constants.EXTRA_OBJECT;
 
 public class HueColorControllerActivity extends AppCompatActivity {
 
-    private Toolbar toolbar;
-    private TabLayout tabLayout;
-    private ViewPager viewPager;
     private List<Map.Entry<String, String>> scenes = new java.util.ArrayList<>();
     private String API_TOKEN;
     private int PREFERRED_HUB_ID;
@@ -66,7 +63,7 @@ public class HueColorControllerActivity extends AppCompatActivity {
 
         setTitle(hueEndpoint.getEndpoint().getName());
 
-        toolbar = (Toolbar) findViewById(R.id.hue_color_toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.hue_color_toolbar);
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -74,10 +71,10 @@ public class HueColorControllerActivity extends AppCompatActivity {
         }
 
 
-        viewPager = (ViewPager) findViewById(R.id.hue_color_viewpager);
+        ViewPager viewPager = (ViewPager) findViewById(R.id.hue_color_viewpager);
         setupViewPager(viewPager);
 
-        tabLayout = (TabLayout) findViewById(R.id.hue_color_tabs);
+        TabLayout tabLayout = (TabLayout) findViewById(R.id.hue_color_tabs);
         if (tabLayout != null) {
             tabLayout.setupWithViewPager(viewPager);
         }

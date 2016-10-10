@@ -14,19 +14,15 @@ import co.ar_smart.www.pojos.music_player.MusicTrack;
 
 /**
  * Created by Gabriel on 5/13/2016.
+ * Last revision 5/13/2016
  */
 public class TrackAdapter extends BaseAdapter {
 
-    private Context context;
     private List<MusicTrack> tracks;
     private LayoutInflater inflater;
 
-    private static class ViewHolder {
-        TextView trackName;
-    }
-
     public TrackAdapter(Context c, List<MusicTrack> nMusicTracks) {
-        context = c;
+        Context context = c;
         tracks = nMusicTracks;
         inflater = (LayoutInflater.from(c));
     }
@@ -59,5 +55,9 @@ public class TrackAdapter extends BaseAdapter {
         }
         viewHolder.trackName.setText(tracks.get(position).getTitle());
         return convertView;
+    }
+
+    private static class ViewHolder {
+        TextView trackName;
     }
 }

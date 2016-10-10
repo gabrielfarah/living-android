@@ -14,14 +14,19 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="30dp"
-        android:background="@drawable/gradient_border_btn"
-        android:text="@string/icons" />
+        android:text="@string/pick_an_icon_message"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
     <GridView
         android:id="@+id/gridIcons"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_gravity="center_horizontal"
         android:layout_weight="8"
-        android:numColumns="3"
-        android:padding="0.5dp">
+        android:columnWidth="90dp"
+        android:gravity="center"
+        android:horizontalSpacing="0dp"
+        android:numColumns="auto_fit"
+        android:stretchMode="columnWidth"
+        android:verticalSpacing="0dp">
     </GridView>
 </LinearLayout>

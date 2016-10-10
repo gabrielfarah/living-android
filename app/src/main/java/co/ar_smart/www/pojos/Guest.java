@@ -104,6 +104,6 @@ public class Guest implements Parcelable {
         if (!(obj instanceof Guest))
             return false;
         Guest other = (Guest) obj;
-        return getEmail() == null ? false : getEmail().equalsIgnoreCase(other.getEmail());//Compare email if null false
+        return getEmail() != null && getEmail().equalsIgnoreCase(other.getEmail());//Compare email if null false
     }
 }

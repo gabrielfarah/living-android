@@ -17,16 +17,10 @@ import co.ar_smart.www.pojos.Guest;
  */
 public class GuestAdapter extends BaseAdapter {
 
-    private Context context;
     private List<Guest> guests;
     private LayoutInflater inflater;
 
-    private static class ViewHolder {
-        TextView guestEmail;
-    }
-
     public GuestAdapter(Context c, List<Guest> nGuests) {
-        context = c;
         guests = nGuests;
         inflater = (LayoutInflater.from(c));
     }
@@ -59,5 +53,9 @@ public class GuestAdapter extends BaseAdapter {
         }
         viewHolder.guestEmail.setText(guests.get(position).getEmail());
         return convertView;
+    }
+
+    private static class ViewHolder {
+        TextView guestEmail;
     }
 }

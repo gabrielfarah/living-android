@@ -59,7 +59,7 @@ public class ModeAdapter extends BaseAdapter {
             viewHolder = (ViewHolder) convertView.getTag();
         }
         viewHolder.modeName.setText(modes.get(position).getName());
-        viewHolder.number_elements.setText(String.format(context.getResources().getString(R.string.label_number_of_elements_mode), modes.get(position).getPayload().size()));
+        viewHolder.number_elements.setText(String.format(context.getResources().getString(R.string.label_number_of_elements_scene), modes.get(position).getPayload().size()));
         viewHolder.btn_edit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

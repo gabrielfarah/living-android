@@ -91,7 +91,6 @@ public class TriggerMainController extends AppCompatActivity {
      * Current context
      */
     private Context mContext;
-    private TextView trigger_text_view_state;
     private int img_drawable;
     private ImageView imv_state;
 
@@ -126,7 +125,7 @@ public class TriggerMainController extends AppCompatActivity {
         }
         //Get the API token to make the requests to the server
         //getApiToken();
-        trigger_text_view_state = (TextView) findViewById(R.id.trigger_text_view_state);
+        TextView trigger_text_view_state = (TextView) findViewById(R.id.trigger_text_view_state);
         trigger_text_view_state.setText(getFormattedTextFromEndpointState(endpoint));
         imv_state = (ImageView) findViewById(R.id.imv_state);
         img_drawable = HomeGridDevicesAdapter.getDrawableFromString(endpoint.getImage());
@@ -251,7 +250,6 @@ public class TriggerMainController extends AppCompatActivity {
                             if (!triggers.contains(trigger)) {
                                 trigger.setMode(getModefromTrigger(trigger.getPayload()));
                                 triggers.add(trigger);
-                                Log.d("DEVICE:", trigger.getMode() + "_" + trigger.getMinute_of_day() + "_" + trigger.getDays_of_the_week());
                             }
                         }
                     }
@@ -374,7 +372,8 @@ public class TriggerMainController extends AppCompatActivity {
      * @return AlertDialog that shows the triggers for the endpoint
      */
     private AlertDialog getOptionsDialog(final String[] stateTriggers, final boolean action) {
-        AlertDialog alertD = new AlertDialog.Builder(mContext)
+
+        return new AlertDialog.Builder(mContext)
                 .setMessage(R.string.dialog_already_have_triggers)
                 .setCancelable(false)
                 .setPositiveButton(R.string.dialog_create_trigger, new DialogInterface.OnClickListener() {
@@ -396,8 +395,6 @@ public class TriggerMainController extends AppCompatActivity {
                     }
                 })
                 .create();
-
-        return alertD;
 
     }
 

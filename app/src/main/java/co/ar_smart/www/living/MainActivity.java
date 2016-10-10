@@ -42,14 +42,6 @@ import static co.ar_smart.www.helpers.Constants.PREF_PASSWORD;
  */
 public class MainActivity extends Activity {
     /**
-     * The user email
-     */
-    private String EMAIL = "";
-    /**
-     * The user password
-     */
-    private String PASSWORD = "";
-    /**
      * The backend auth token
      */
     private String API_TOKEN = "";
@@ -71,8 +63,14 @@ public class MainActivity extends Activity {
         SharedPreferences settings = getSharedPreferences(PREFS_NAME,
                 Context.MODE_PRIVATE);
         // Get values using keys
-        EMAIL = settings.getString(PREF_EMAIL, DEFAULT_EMAIL);
-        PASSWORD = settings.getString(PREF_PASSWORD, DEFAULT_PASSWORD);
+        /*
+      The user email
+     */
+        String EMAIL = settings.getString(PREF_EMAIL, DEFAULT_EMAIL);
+        /*
+      The user password
+     */
+        String PASSWORD = settings.getString(PREF_PASSWORD, DEFAULT_PASSWORD);
         API_TOKEN = settings.getString(PREF_JWT, DEFAULT_JWT);
         if (JWTManager.validateJWT(API_TOKEN)) {
             openHomeActivity();

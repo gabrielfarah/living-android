@@ -1,150 +1,152 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/MainActivity"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#ffffc32f"
+    android:focusableInTouchMode="false"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    android:paddingBottom="@dimen/activity_vertical_margin" tools:context=".MainActivity"
-    android:background="#ffffc32f"
-    android:id="@+id/MainActivity"
-    android:focusableInTouchMode="false">
+    tools:context=".MainActivity">
 
     <TextView
+        android:id="@+id/temperatureLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="100"
-        android:id="@+id/temperatureLabel"
-        android:textSize="130sp"
-        android:textIsSelectable="true"
+        android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true" />
+        android:text="100"
+        android:textIsSelectable="true"
+        android:textSize="130sp" />
 
     <ImageView
+        android:id="@+id/degree"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/degree"
         android:layout_alignTop="@+id/temperatureLabel"
-        android:layout_toRightOf="@+id/temperatureLabel"
         android:layout_toEndOf="@+id/temperatureLabel"
+        android:layout_toRightOf="@+id/temperatureLabel"
          />
 
     <TextView
+        android:id="@+id/timelabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Temperature at 5 pm"
-        android:id="@+id/timelabel"
-        android:textColor="#80ffffff"
-        android:textSize="20sp"
         android:layout_above="@+id/temperatureLabel"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="42dp" />
+        android:layout_marginBottom="42dp"
+        android:text="Temperature at 5 pm"
+        android:textColor="#80ffffff"
+        android:textSize="20sp" />
 
     <TextView
+        android:id="@+id/tagline"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Durgapur West Bengal"
-        android:id="@+id/tagline"
-        android:textColor="@android:color/white"
-        android:textSize="18sp"
-        android:layout_alignParentTop="true"
         android:layout_alignLeft="@+id/timelabel"
+        android:layout_alignParentTop="true"
         android:layout_alignStart="@+id/timelabel"
-        android:layout_marginTop="58dp" />
+        android:layout_marginTop="58dp"
+        android:text="Durgapur West Bengal"
+        android:textColor="@android:color/white"
+        android:textSize="18sp" />
 
     <ImageView
+        android:id="@+id/iconImageView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/iconImageView"
 
-        android:cropToPadding="false"
         android:layout_alignBottom="@+id/tagline"
         android:layout_toLeftOf="@+id/temperatureLabel"
-        android:layout_toStartOf="@+id/temperatureLabel" />
+        android:layout_toStartOf="@+id/temperatureLabel"
+        android:cropToPadding="false" />
 
     <LinearLayout
-        android:orientation="horizontal"
+        android:id="@+id/linearLayout"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/temperatureLabel"
-        android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
-        android:weightSum="100"
-        android:id="@+id/linearLayout">
+        android:layout_below="@+id/temperatureLabel"
+        android:orientation="horizontal"
+        android:weightSum="100">
 
         <LinearLayout
-            android:orientation="vertical"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_weight="50">
+            android:layout_weight="50"
+            android:orientation="vertical">
 
             <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="HUMIDITY"
                 android:id="@+id/humidity"
-                android:textColor="#80ffffff"
-                android:textSize="20sp"
-                android:gravity="center_horizontal" />
-
-            <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="0.98"
+                android:gravity="center_horizontal"
+                android:text="HUMIDITY"
+                android:textColor="#80ffffff"
+                android:textSize="20sp" />
+
+            <TextView
                 android:id="@+id/humidityValue"
-                android:textSize="32sp"
-                android:gravity="center_horizontal" />
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:text="0.98"
+                android:textSize="32sp" />
 
         </LinearLayout>
 
         <LinearLayout
-            android:orientation="vertical"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_weight="50">
+            android:layout_weight="50"
+            android:orientation="vertical">
 
             <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Precepitation"
                 android:id="@+id/precipitaion"
-                android:textSize="20sp"
-                android:textColor="#80ffffff"
-                android:gravity="center_horizontal" />
-
-            <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="100%"
+                android:gravity="center_horizontal"
+                android:text="Precepitation"
+                android:textColor="#80ffffff"
+                android:textSize="20sp" />
+
+            <TextView
                 android:id="@+id/precipValue"
-                android:textSize="30sp"
-                android:gravity="center_horizontal" />
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:text="100%"
+                android:textSize="30sp" />
         </LinearLayout>
     </LinearLayout>
 
     <TextView
+        android:id="@+id/summaryLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="the day is stromy"
-        android:id="@+id/summaryLabel"
-        android:textColor="#80ffffff"
-        android:textSize="25sp"
-        android:layout_below="@+id/linearLayout"
         android:layout_alignLeft="@+id/timelabel"
         android:layout_alignStart="@+id/timelabel"
-        android:layout_marginTop="44dp" />
+        android:layout_below="@+id/linearLayout"
+        android:layout_marginTop="44dp"
+        android:text="the day is stromy"
+        android:textColor="#80ffffff"
+        android:textSize="25sp" />
 
     <ImageView
+        android:id="@+id/refresh"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/refresh"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
          />
 
     <ProgressBar
+        android:id="@+id/progress"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/progress"
         android:layout_below="@+id/refresh"
         android:layout_centerHorizontal="true" />
 

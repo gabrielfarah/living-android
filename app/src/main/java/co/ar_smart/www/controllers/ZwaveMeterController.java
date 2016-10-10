@@ -1,9 +1,16 @@
 package co.ar_smart.www.controllers;
 
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.text.InputType;
 import android.view.MenuItem;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.LineChart;
@@ -48,8 +55,21 @@ public class ZwaveMeterController extends AppCompatActivity {
     private int PREFERRED_HUB_ID = -1;
     private ArrayList<MeterData> measurements = new ArrayList<>();
     private LineChart mChart;
-    private double ENERGY_COST = 452.81; //TODO validar si este es el precio que es
+    private String ENERGY_PREF = "energy_cost_preference_key";
+    private float ENERGY_COST = -1;
     private ArrayList<Float> labels = new ArrayList<>();
+
+    public static void putPref(String key, float value, Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putFloat(key, value);
+        editor.apply();
+    }
+
+    public static float getPref(String key, Context context) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        return preferences.getFloat(key, 0);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,9 +83,39 @@ public class ZwaveMeterController extends AppCompatActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setTitle(endpoint.getName());
         }
+        ENERGY_COST = getPref(ENERGY_PREF, this);
+        if (ENERGY_COST == 0) {
+            showDialogEnergyCost();
+        }
         mChart = (LineChart) findViewById(R.id.meterChart);
         //Get the endpoint data of the last month
         getEndpointData(30);
+    }
+
+    private void showDialogEnergyCost() {
+        final EditText edittext = new EditText(this);
+        edittext.setInputType(InputType.TYPE_NUMBER_FLAG_DECIMAL);
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setMessage(R.string.enter_your_energy_cost_per_kwh_message);
+        alert.setTitle(R.string.enter_your_energy_cost_per_kwh_title);
+        alert.setView(edittext);
+        alert.setPositiveButton(R.string.accept, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                try {
+                    ENERGY_COST = Float.parseFloat(edittext.getText().toString());
+                    putPref(ENERGY_PREF, ENERGY_COST, ZwaveMeterController.this);
+                } catch (NumberFormatException ignored) {
+                }
+            }
+        });
+
+        alert.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                // what ever you want to do with No option.
+            }
+        });
+
+        alert.show();
     }
 
     @Override
@@ -114,50 +164,64 @@ public class ZwaveMeterController extends AppCompatActivity {
         this.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                List<Entry> entries = new ArrayList<>();
-                double sum = 0;
-                long min = measurements.get(0).getCreated_at().getTime();
-                for (MeterData dp : measurements) {
-                    // turn your data into Entry objects
-                    Entry e = new Entry((float) (dp.getCreated_at().getTime() - min), (int) dp.getMeasurement());
-                    entries.add(e);
-                    labels.add((float) dp.getCreated_at().getTime());
-                    sum += dp.getMeasurement();
+                if (measurements.size() > 0) {
+                    List<Entry> entries = new ArrayList<>();
+                    double sum = 0;
+                    long min = measurements.get(0).getCreated_at().getTime();
+                    for (MeterData dp : measurements) {
+                        // turn your data into Entry objects
+                        Entry e = new Entry((float) (dp.getCreated_at().getTime() - min), (int) dp.getMeasurement());
+                        entries.add(e);
+                        labels.add((float) dp.getCreated_at().getTime());
+                        sum += dp.getMeasurement();
+                    }
+
+                    LineDataSet dataSet = new LineDataSet(entries, "Label"); // add entries to dataset
+                    dataSet.setColor(R.color.activar);
+                    dataSet.setLineWidth(3);
+                    dataSet.setColor(R.color.principal);
+                    dataSet.setValueTextSize(11);
+                    //dataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
+                    dataSet.setValueTextColor(R.color.alertasCerrar); // styling, ...
+
+                    //Delete the "description" from the chart
+                    mChart.setDescription("");
+
+                    LineData lineData = new LineData(dataSet);
+                    mChart.setData(lineData);
+
+                    //Format the labels of the X Axis
+                    HourAxisValueFormatter formatter = new HourAxisValueFormatter(min);
+                    XAxis xAxis = mChart.getXAxis();
+                    xAxis.setValueFormatter(formatter);
+
+                    //Format the labels of the Y Axis
+                    YAxis yAxis = mChart.getAxisLeft();
+                    YAxis yAxis2 = mChart.getAxisRight();
+                    yAxis.setValueFormatter(new CustomYAxisValueFormatter());
+                    yAxis2.setDrawLabels(false);
+
+                    mChart.invalidate(); // refresh
+
+                    // setting energy cost
+                    sum = sum * ENERGY_COST;
+                    TextView cost = (TextView) findViewById(R.id.valueCurrent);
+                    cost.setText(String.format("%s%s %s", getString(R.string.energy_cost_test_value), sum, getEnergyCurrency()));
+                } else {
+                    TextView cost = (TextView) findViewById(R.id.valueCurrent);
+                    cost.setText(R.string.no_data_available_message);
                 }
-
-                LineDataSet dataSet = new LineDataSet(entries, "Label"); // add entries to dataset
-                dataSet.setColor(R.color.activar);
-                dataSet.setLineWidth(3);
-                dataSet.setColor(R.color.principal);
-                dataSet.setValueTextSize(11);
-                //dataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
-                dataSet.setValueTextColor(R.color.alertasCerrar); // styling, ...
-
-                //Delete the "description" from the chart
-                mChart.setDescription("");
-
-                LineData lineData = new LineData(dataSet);
-                mChart.setData(lineData);
-
-                //Format the labels of the X Axis
-                HourAxisValueFormatter formatter = new HourAxisValueFormatter(min);
-                XAxis xAxis = mChart.getXAxis();
-                xAxis.setValueFormatter(formatter);
-
-                //Format the labels of the Y Axis
-                YAxis yAxis = mChart.getAxisLeft();
-                YAxis yAxis2 = mChart.getAxisRight();
-                yAxis.setValueFormatter(new CustomYAxisValueFormatter());
-                yAxis2.setDrawLabels(false);
-
-                mChart.invalidate(); // refresh
-
-                // setting energy cost
-                sum = sum * ENERGY_COST;
-                TextView cost = (TextView) findViewById(R.id.valueCurrent);
-                cost.setText("$ " + sum);
             }
         });
+    }
+
+    private String getEnergyCurrency() {
+        String locale = this.getResources().getConfiguration().locale.getCountry();
+        if (locale.equals("CO")) {
+            return "COP";
+        } else {
+            return "USD";
+        }
     }
 
     private class HourAxisValueFormatter implements AxisValueFormatter {

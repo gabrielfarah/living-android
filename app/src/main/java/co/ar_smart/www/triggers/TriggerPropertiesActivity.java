@@ -315,10 +315,8 @@ public class TriggerPropertiesActivity extends AppCompatActivity
                 if (lyo_day.getVisibility() == LinearLayout.VISIBLE)
                 {
                     int amountDays = 0;
-                    for (int i = 0; i < selected.length; i++)
-                    {
-                        if (selected[i])
-                        {
+                    for (boolean aSelected : selected) {
+                        if (aSelected) {
                             amountDays++;
                         }
                     }

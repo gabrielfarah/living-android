@@ -1,6 +1,5 @@
 package co.ar_smart.www.endpoints;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -56,10 +55,6 @@ public class DeleteDeviceActivity extends AppCompatActivity {
      * Adapter for the list view
      */
     private ArrayAdapter<Endpoint> adapter;
-    /**
-     * Represent the current instance
-     */
-    private Activity myact;
     private int PREFERRED_HUB_ID;
     private ArrayList<Endpoint> response_devices = new ArrayList<>();
 
@@ -68,7 +63,6 @@ public class DeleteDeviceActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_delete_device);
-        myact=this;
 
         list = (ListView) findViewById(R.id.list_DelDevicesHub);
         progress = (ProgressBar) findViewById(R.id.progressDelDevices);

@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
@@ -74,14 +75,15 @@ public class DeleteModesActivity extends AppCompatActivity {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setHomeButtonEnabled(true);
-            getSupportActionBar().setTitle(getString(R.string.label_deletemode_activity_title));
+            getSupportActionBar().setTitle(getString(R.string.label_delete_scene_activity_title));
         }
 
         Intent intent = getIntent();
         API_TOKEN = intent.getStringExtra(EXTRA_MESSAGE);
         adapter=new ArrayAdapter<Mode>(DeleteModesActivity.this, android.R.layout.simple_list_item_1, modes){
+            @NonNull
             @Override
-            public View getView(int position, View convertView, ViewGroup parent) {
+            public View getView(int position, View convertView, @NonNull ViewGroup parent) {
                 View view=convertView;
                 if(view==null)
                 {
@@ -90,7 +92,7 @@ public class DeleteModesActivity extends AppCompatActivity {
                     TextView lb=(TextView)view.findViewById(R.id.label_item_stand);
                     lb.setText(modes.get(position).getName());
                     ImageView i=(ImageView) view.findViewById(R.id.icon_list_stand);
-                    i.setImageDrawable(ContextCompat.getDrawable(myact, R.drawable.delete_btn));
+                    i.setImageDrawable(ContextCompat.getDrawable(myact, R.drawable.delete_icon));
                 }
                 //chk.setChecked(checked[position]);
                 return view;

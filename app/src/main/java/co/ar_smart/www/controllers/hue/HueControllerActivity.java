@@ -46,7 +46,6 @@ import static co.ar_smart.www.helpers.Constants.EXTRA_OBJECT;
 
 public class HueControllerActivity extends AppCompatActivity {
 
-    private Toolbar toolbar;
     private TabLayout tabLayout;
     private ViewPager viewPager;
     private String API_TOKEN;
@@ -101,7 +100,7 @@ public class HueControllerActivity extends AppCompatActivity {
         hueEndpoint = new HueEndpoint(endpoint);
         //setTitle(endpoint.getName());
 
-        toolbar = (Toolbar) findViewById(R.id.hue_toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.hue_toolbar);
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);

@@ -37,7 +37,6 @@ import static co.ar_smart.www.helpers.Constants.PREF_HUB;
 public class SettingsActivity extends AppCompatActivity {
 
     private String API_TOKEN;
-    private int PREFERRED_HUB_ID = -1;
     private ArrayList<Hub> hubs;
     private Spinner hub_picker;
     private ArrayAdapter<Hub> dataAdapter;
@@ -50,7 +49,7 @@ public class SettingsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_settings);
         final Intent intent = getIntent();
         API_TOKEN = intent.getStringExtra(EXTRA_MESSAGE);
-        PREFERRED_HUB_ID = intent.getIntExtra(EXTRA_MESSAGE_PREF_HUB, -1);
+        int PREFERRED_HUB_ID = intent.getIntExtra(EXTRA_MESSAGE_PREF_HUB, -1);
         hubs = intent.getParcelableArrayListExtra(EXTRA_OBJECT);
         if (hubs.isEmpty()) {
             getHubs();

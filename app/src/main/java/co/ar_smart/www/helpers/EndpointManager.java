@@ -45,7 +45,7 @@ public class EndpointManager {
                 if (!response.isSuccessful()) {
                     //for (int i = 0; i <jsonData.toString().length(); i++){}
                     Log.d("UNSUCCESS", call.request().toString());
-                    Log.d("UNSUCCESS:", jsonData.toString());
+                    Log.d("UNSUCCESS:", jsonData);
                     callback.onUnsuccessfulCallback();
                 } else {
                     try {
@@ -84,7 +84,7 @@ public class EndpointManager {
                 if (!response.isSuccessful()) {
                     //for (int i = 0; i <jsonData.toString().length(); i++){}
                     Log.d("UNSUCCESS", call.request().toString());
-                    Log.d("UNSUCCESS:", jsonData.toString());
+                    Log.d("UNSUCCESS:", jsonData);
                     callback.onUnsuccessfulCallback();
                 } else {
                     try {

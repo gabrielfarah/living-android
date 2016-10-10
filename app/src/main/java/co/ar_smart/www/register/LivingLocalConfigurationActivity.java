@@ -38,12 +38,14 @@ import java.util.TimeZone;
 
 import co.ar_smart.www.analytics.AnalyticsApplication;
 import co.ar_smart.www.living.R;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-import static co.ar_smart.www.helpers.Constants.JSON;
 import static co.ar_smart.www.helpers.Constants.LIVING_HOTSPOT_PASSWORD;
 import static co.ar_smart.www.helpers.Constants.LIVING_HOTSPOT_SSID;
 import static co.ar_smart.www.helpers.Constants.LIVING_URL;
@@ -53,6 +55,7 @@ import static co.ar_smart.www.helpers.Constants.LIVING_URL;
  */
 public class LivingLocalConfigurationActivity extends AppCompatActivity {
 
+    public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
     /**
      * Constant for asking the permission
      */
@@ -72,7 +75,7 @@ public class LivingLocalConfigurationActivity extends AppCompatActivity {
     /**
      * List of all the names of networks the phone can see
      */
-    private List<String> SSIDList = new ArrayList<String>();
+    private List<String> SSIDList = new ArrayList<>();
     /**
      * Broadcast receiver for the permissions
      */
@@ -85,15 +88,6 @@ public class LivingLocalConfigurationActivity extends AppCompatActivity {
      * The application context
      */
     private Context mContext;
-    /**
-     * The check of the webserver worked
-     */
-    private boolean getWorked = false;
-    /**
-     * Number of tries at sending the data to the local webserver
-     */
-    private int counter = 0;
-
 
     /**
      * This method will send the user input into the hub local webserver. It will try to force the use of wifi but only in devices > api 21
@@ -104,7 +98,9 @@ public class LivingLocalConfigurationActivity extends AppCompatActivity {
      */
     private void sendWifiDataToHub(final String userWifiSSID, final String userWifiPassword, final String userHomeTimeZone) {
         final String json = "{\"ssid\":\"" + userWifiSSID + "\",\"password\":\"" + userWifiPassword + "\",\"timezone\":\"" + userHomeTimeZone + "\"}";
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP &&
+                ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != -1 &&
+                ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_SETTINGS) != -1) {
             ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
             NetworkRequest request;
             request = new NetworkRequest.Builder()
@@ -127,8 +123,6 @@ public class LivingLocalConfigurationActivity extends AppCompatActivity {
                     }
                 }
             });
-        } else {
-            client = new OkHttpClient();
         }
         testConnectionWithHub(json, userWifiSSID);
     }
@@ -139,24 +133,29 @@ public class LivingLocalConfigurationActivity extends AppCompatActivity {
      * @param json         the string formatted json object with the information
      * @param userWifiSSID the name of the user home WIFI network
      */
-    private void sendPost(String json, String userWifiSSID) {
-        boolean finished = true;
-        RequestBody body = RequestBody.create(JSON, json);
-        Request request = new Request.Builder()
-                .url(LIVING_URL)
-                .post(body)
-                .build();
-        try {
-            Response response = client.newCall(request).execute();
-            String resp = response.body().string();
-            if (response.isSuccessful() && resp.contains("ssid not found")) {
-                Toast.makeText(mContext, String.format(getResources().getString(R.string.welcome_messages), userWifiSSID), Toast.LENGTH_LONG).show();
-                finished = false;
+    private void sendPost(final String json, final String userWifiSSID) {
+        final boolean[] finished = {true};
+        postMethod(json, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                AnalyticsApplication.getInstance().trackException(e);
             }
-        } catch (IOException e) {
-            AnalyticsApplication.getInstance().trackException(e);
-        }
-        if (finished) {
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    String resp = response.body().string();
+                    if (response.isSuccessful() && resp.contains("ssid not found")) {
+                        Toast.makeText(mContext, String.format(getResources().getString(R.string.welcome_messages), userWifiSSID), Toast.LENGTH_LONG).show();
+                        finished[0] = false;
+                    }
+                } else {
+                    // Request not successful
+                    AnalyticsApplication.getInstance().trackEvent("RegistrationFail", response.message(), json);
+                }
+            }
+        });
+        if (finished[0]) {
             disconnectFromLivingWifi();
             Intent i = new Intent(mContext, VerifyConfigurationCompleteActivity.class);
             startActivity(i);
@@ -175,29 +174,54 @@ public class LivingLocalConfigurationActivity extends AppCompatActivity {
         }
     }
 
+    private Call postMethod(String json, Callback callback) {
+        RequestBody body = RequestBody.create(JSON, json);
+        Request request = new Request.Builder()
+                .url(LIVING_URL)
+                .post(body)
+                .build();
+        Call call = client.newCall(request);
+        call.enqueue(callback);
+        return call;
+    }
+
+    private Call getMethod(Callback callback) {
+        Request request = new Request.Builder()
+                .url(LIVING_URL)
+                .get()
+                .build();
+        Call call = client.newCall(request);
+        call.enqueue(callback);
+        return call;
+    }
+
     /**
      * This method validates if the webserver running in the hub is accesible to the phone doing a GET request
      * @param json
      * @param userWifiSSID
      */
-    public void testConnectionWithHub(String json, String userWifiSSID) {
-        Request request = new Request.Builder()
-                .url(LIVING_URL)
-                .get()
-                .build();
-        try {
-            Response response = client.newCall(request).execute();
-            String resp = response.body().string();
-            if (resp.contains("connected")) {
-                getWorked = true;
-                sendPost(json, userWifiSSID);
-            } else {
-                counter += 1;
-                showDialog();
+    public void testConnectionWithHub(final String json, final String userWifiSSID) {
+        getMethod(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                AnalyticsApplication.getInstance().trackException(e);
             }
-        } catch (IOException e) {
-            AnalyticsApplication.getInstance().trackException(e);
-        }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    String resp = response.body().string();
+                    if (resp.contains("connected")) {
+                        sendPost(json, userWifiSSID);
+                    } else {
+                        showDialog();
+                    }
+                } else {
+                    // Request not successful
+                    AnalyticsApplication.getInstance().trackEvent("RegistrationFail", response.message(), call.toString());
+                }
+            }
+        });
     }
 
     @Override
@@ -236,7 +260,7 @@ public class LivingLocalConfigurationActivity extends AppCompatActivity {
 
         // Start the animation (looped playback by default).
         frameAnimation.start();
-        ArrayAdapter<String> ssidAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line, SSIDList);
+        ArrayAdapter<String> ssidAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, SSIDList);
         final AutoCompleteTextView ssidAutoCompleteView = (AutoCompleteTextView) findViewById(R.id.available_wifi_networks);
         ssidAutoCompleteView.setAdapter(ssidAdapter);
         if (SSIDList.size() > 0) ssidAutoCompleteView.setText(SSIDList.get(0));
@@ -249,7 +273,7 @@ public class LivingLocalConfigurationActivity extends AppCompatActivity {
         String[] timeZones = getAvailableTimeZones();
         // Get the default device Time Zone
         String defaultTimeZone = TimeZone.getDefault().getID();
-        ArrayAdapter<String> timeZonesAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line, timeZones);
+        ArrayAdapter<String> timeZonesAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, timeZones);
         //Get the spinner from the UI
         final Spinner timeZonesSpinner = (Spinner) findViewById(R.id.time_zones_available);
         // Set the spinner with the Time Zones

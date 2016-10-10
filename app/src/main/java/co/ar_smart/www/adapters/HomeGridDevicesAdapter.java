@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -23,6 +24,7 @@ import co.ar_smart.www.pojos.Endpoint;
 
 /**
  * Created by Gabriel on 5/3/2016.
+ * Last revision 5/3/2016
  */
 public class HomeGridDevicesAdapter extends BaseAdapter {
 
@@ -166,50 +168,58 @@ public class HomeGridDevicesAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        View gridView;
+        ViewHolder holder;
         LayoutInflater inflater = (LayoutInflater) context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         if (convertView == null) {
-            gridView = inflater.inflate(R.layout.home_grid_view_item, null);
-            DisplayMetrics metrics = context.getResources().getDisplayMetrics();
-            int screenHeight = metrics.heightPixels;
-            AbsListView.LayoutParams params = new AbsListView.LayoutParams(
-                    AbsListView.LayoutParams.MATCH_PARENT,
-                    screenHeight / 4);
-            gridView.setLayoutParams(params);
-            gridView.setPadding(4, 4, 4, 4);
-            gridView.setBackgroundColor(ContextCompat.getColor(context, R.color.white_ctran));
+            holder = new ViewHolder();
+            convertView = inflater.inflate(R.layout.home_grid_view_item, null);
+            holder.gridView = (LinearLayout) convertView;
+            holder.imageView = (ImageView) convertView.findViewById(R.id.endpointImage);
+            holder.textView = (TextView) convertView.findViewById(R.id.endpointTitle);
+            holder.textView2 = (TextView) convertView.findViewById(R.id.endpointRoom);
+            convertView.setTag(holder);
         } else {
-            gridView = convertView;
+            holder = (ViewHolder) convertView.getTag();
         }
+        DisplayMetrics metrics = context.getResources().getDisplayMetrics();
+        int screenHeight = metrics.heightPixels;
+        AbsListView.LayoutParams params = new AbsListView.LayoutParams(
+                AbsListView.LayoutParams.MATCH_PARENT,
+                screenHeight / 4);
+        holder.gridView.setLayoutParams(params);
+        holder.gridView.setPadding(4, 4, 4, 4);
+        holder.gridView.setBackgroundColor(ContextCompat.getColor(context, R.color.white_ctran));
         if (endpoints.get(position) != null) {
             int temp = getDrawableFromString(endpoints.get(position).getImage());
-            ImageView imageView = (ImageView) gridView.findViewById(R.id.endpointImage);
-            TextView textView = (TextView) gridView.findViewById(R.id.endpointTitle);
-            textView.setText(endpoints.get(position).getName());
-            TextView textView2 = (TextView) gridView.findViewById(R.id.endpointRoom);
-            textView2.setText(endpoints.get(position).getRoom()); // En vez del room se puede colocar un estado correspondiente ej. "abierto/cerrado" , "25 C", etc.
+            holder.textView.setText(endpoints.get(position).getName());
+            holder.textView2.setText(endpoints.get(position).getRoom()); // En vez del room se puede colocar un estado correspondiente ej. "abierto/cerrado" , "25 C", etc.
             if (!endpoints.get(position).isActive()) {
-                imageView = (ImageView) gridView.findViewById(R.id.endpointImage);
-                imageView.setImageResource(temp);
-                imageView.setAlpha((float) 0.4);
+                holder.imageView.setImageResource(temp);
+                holder.imageView.setAlpha((float) 0.4);
             } else {
-                imageView.setAlpha((float) 1.0);
-
+                holder.imageView.setAlpha((float) 1.0);
                 if (endpoints.get(position).getState() > 0) {
-                    imageView.setImageDrawable(setTint(temp, Color.rgb(44, 194, 190)));
-                    textView.setTextColor(ContextCompat.getColor(context, R.color.colorPrimaryDark));
+                    holder.imageView.setImageDrawable(setTint(temp, Color.rgb(44, 194, 190)));
+                    holder.textView.setTextColor(ContextCompat.getColor(context, R.color.colorPrimaryDark));
                 } else {
-                    textView.setTextColor(ContextCompat.getColor(context, R.color.secundario));
-                    imageView.setImageDrawable(setTint(temp, Color.rgb(128, 128, 128)));
+                    holder.textView.setTextColor(ContextCompat.getColor(context, R.color.secundario));
+                    holder.imageView.setImageDrawable(setTint(temp, Color.rgb(128, 128, 128)));
                 }
             }
         }
-        return gridView;
+        return convertView;
     }
 
     public void updateItems(ArrayList<Endpoint> endpoint_devices) {
         endpoints = endpoint_devices;
         notifyDataSetChanged();
+    }
+
+    public static class ViewHolder {
+        LinearLayout gridView;
+        ImageView imageView;
+        TextView textView;
+        TextView textView2;
     }
 }

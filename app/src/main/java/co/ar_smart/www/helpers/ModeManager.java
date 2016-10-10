@@ -63,7 +63,7 @@ public class ModeManager {
 
     public static void removeMode(int hub_id, int modes_id, String API_TOKEN, final ModeCallbackInterfaceDelete callback) {
         modesClient = RetrofitServiceGenerator.createService(ModeService.class, API_TOKEN);
-        Call call = modesClient.deleteMode(hub_id, modes_id);
+        Call<ResponseBody> call = modesClient.deleteMode(hub_id, modes_id);
         Log.d("OkHttp", String.format("Sending request %s ", call.request().toString()));
         call.enqueue(new Callback<ResponseBody>() {
             @Override
@@ -87,7 +87,7 @@ public class ModeManager {
 
     public static void addMode(int hub_id, Mode email, String API_TOKEN, final ModeCallbackInterface callback) {
         modesClient = RetrofitServiceGenerator.createService(ModeService.class, API_TOKEN);
-        Call call = modesClient.addMode(hub_id, email);
+        Call<Mode> call = modesClient.addMode(hub_id, email);
         Log.d("OkHttp", String.format("Sending request %s ", call.request().toString()));
         call.enqueue(new Callback<Mode>() {
             @Override
@@ -143,7 +143,7 @@ public class ModeManager {
 
     public static void editMode(int hub_id, Mode modo, String API_TOKEN, final ModeCallbackInterface callback) {
         modesClient = RetrofitServiceGenerator.createService(ModeService.class, API_TOKEN);
-        Call call = modesClient.editMode(hub_id, modo.getId(), modo);
+        Call<Mode> call = modesClient.editMode(hub_id, modo.getId(), modo);
         Log.d("EDIT", "ID: " + modo.getId() + " " + call.request().toString());
         call.enqueue(new Callback<Mode>() {
             @Override

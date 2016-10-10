@@ -16,17 +16,17 @@
     <string name="lblnamedev">Set a name for this device: Ej. "Kitchen light"</string>
     <string name="acept">Acept</string>
     <string name="cancel">Cancel</string>
-    <string name="btnEditScene">Edit Scene</string>
-    <string name="btnDeLScene">Delete Scene</string>
-    <string name="btnAddScene">Add Scene</string>
+    <string name="button_edit_scene">Edit Scene</string>
+    <string name="button_delete_scene">Delete Scene</string>
+    <string name="button_add_scene">Add Scene</string>
     <string name="label_deletedev_activity_title">Delete Device</string>
     <string name="label_devices_activity_title">Devices</string>
     <string name="label_newdev_activity_title">New Devices</string>
     <string name="label_warning_delete_device">Are you sure you want to delete this device</string>
     <string name="label_warning_delete_scene">Are you sure you want to delete this scene</string>
-    <string name="label_deletescene_activity_title">Delete Modes</string>
+    <string name="label_delete_scene_activity_title">Delete Modes</string>
     <string name="label_delete_scene_failed">Only the person who created an scene can remove it</string>
-    <string name="label_editscene_activity_title">Select Mode</string>
+    <string name="label_edit_scene_activity_title">Select Mode</string>
     <string name="label_remove_escene_success">Scene deleted!</string>
     <string name="label_listcommands_activity_title">Edit Commands</string>
     <string name="label_selectscenedevice_activity_title">Select Device</string>
@@ -144,7 +144,7 @@
     <string name="label_down">%1$s (DOWN)</string>
     <string name="label_selected">%1$s (SELECTED)</string>
     <string name="label_unselected">%1$s (UNSELECTED)</string>
-    <string name="label_number_of_elements_scene">Actions in scene: %1$s</string>
+    <string name="label_number_of_elements_scene">Actions in scene: %1$d</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
@@ -181,7 +181,7 @@
     <string name="text_description_select_hub_switch">Using the following list, you can change the home to control from the app:</string>
     <string name="current_password">Current password:</string>
     <string name="new_password">New Password:</string>
-    <string name="icons">Icons</string>
+    <string name="pick_an_icon_message">Pick an icon for your device</string>
     <string name="label_existing_guests">Existing guests</string>
     <string name="enter_your_email">Type your email</string>
     <string name="enter_your_password">Type your password</string>
@@ -199,7 +199,7 @@
     <string name="home_menu_scenes">SCENES</string>
     <string name="home_menu_rooms">ROOMS</string>
     <string name="toast_not_matching_password">The passwords are not equal</string>
-    <string name="text_explain_scene">Select the devices you want to include using the left mark and set the devices states using the appropiate controllers to the right.</string>
+    <string name="text_explain_scene">Select the devices you want to include using the left mark and set the devices states using the appropriate controllers to the right.</string>
     <string name="btn_map_register_hub_location_selected">Done</string>
     <string name="specific_time">Specific time</string>
     <string name="from_specific_time">From:</string>
@@ -252,4 +252,10 @@
     <string name="manually_message">Manually add a WIFI device</string>
     <string name="enter_ip_address_message">Enter the IP address of the device in your home network:</string>
     <string name="label_use_this_room">Use selected room</string>
+    <string name="no_data_available_message">No Data is available</string>
+    <string name="energy_cost_test_value">"$ "</string>
+    <string name="current_energy_cost_aproximate">Current energy cost (aproximate):</string>
+    <string name="enter_your_energy_cost_per_kwh_title">Enter the cost of KWh</string>
+    <string name="enter_your_energy_cost_per_kwh_message">To be able to calculate the cost of the energy bill for this monitor, please input the value of your KWh. This number can be found in your last montly bill.</string>
+    <string name="device_image">Device Image</string>
 </resources>

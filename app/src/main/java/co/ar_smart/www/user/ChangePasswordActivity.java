@@ -30,7 +30,6 @@ import okhttp3.Response;
 
 import static co.ar_smart.www.helpers.Constants.CHANGE_PASSWORD_URL;
 import static co.ar_smart.www.helpers.Constants.DEFAULT_EMAIL;
-import static co.ar_smart.www.helpers.Constants.DEFAULT_HUB;
 import static co.ar_smart.www.helpers.Constants.EXTRA_MESSAGE;
 import static co.ar_smart.www.helpers.Constants.EXTRA_OBJECT;
 import static co.ar_smart.www.helpers.Constants.JSON;
@@ -39,8 +38,6 @@ import static co.ar_smart.www.helpers.Constants.PREF_EMAIL;
 
 public class ChangePasswordActivity extends AppCompatActivity {
 
-    private String API_TOKEN;
-    private User USER;
     private EditText old_pass;
     private EditText new_pass;
     private EditText new_pass2;
@@ -50,8 +47,8 @@ public class ChangePasswordActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_change_password);
         final Intent intent = getIntent();
-        API_TOKEN = intent.getStringExtra(EXTRA_MESSAGE);
-        USER = intent.getParcelableExtra(EXTRA_OBJECT);
+        String API_TOKEN = intent.getStringExtra(EXTRA_MESSAGE);
+        User USER = intent.getParcelableExtra(EXTRA_OBJECT);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setTitle(getString(R.string.change_password));

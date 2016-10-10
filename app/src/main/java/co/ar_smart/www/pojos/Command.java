@@ -226,7 +226,7 @@ public class Command implements Parcelable {
             //Log.d("COMMAND COMPARE","("+endpoint_id+" "+p.getEndpoint_id()+")("+node+" "+p.getNode()+")("+ip+" "+p.getIp()+")("+type+" "+p.getType()+")");
             return (this.endpoint_id == p.getEndpoint_id() &&
                     this.node == p.getNode() &&
-                    (this.ip == p.getIp() || this.ip.equalsIgnoreCase(p.getIp())) &&
+                    (this.ip.equalsIgnoreCase(p.getIp())) &&
                     this.type.equalsIgnoreCase(p.getType()));
         }
     }

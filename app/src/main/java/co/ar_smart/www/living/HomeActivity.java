@@ -134,10 +134,6 @@ public class HomeActivity extends AppCompatActivity {
      */
     private DrawerLayout mDrawerLayout;
     /**
-     * The adapter for the navigation menu
-     */
-    private ArrayAdapter<String> navAdapter;
-    /**
      * Toggle for the nav menu
      */
     private ActionBarDrawerToggle navMenuToggle;
@@ -343,7 +339,10 @@ public class HomeActivity extends AppCompatActivity {
                 getResources().getString(R.string.nav_label_guests),
                 getResources().getString(R.string.nav_label_account),
                 getResources().getString(R.string.nav_label_settings)};
-        navAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, options);
+        /*
+      The adapter for the navigation menu
+     */
+        ArrayAdapter<String> navAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, options);
         navList.setAdapter(navAdapter);
 
         navList.setOnItemClickListener(new AdapterView.OnItemClickListener() {

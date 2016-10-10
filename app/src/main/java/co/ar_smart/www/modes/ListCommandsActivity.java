@@ -124,7 +124,7 @@ public class ListCommandsActivity extends AppCompatActivity {
                     lb=(TextView)view.findViewById(R.id.label_item2_stand);
                     lb.setText(commands.get(position).getType());
                     ImageView i=(ImageView) view.findViewById(R.id.icon_list_stand);
-                    i.setImageDrawable(ContextCompat.getDrawable(myact, R.drawable.delete_btn));
+                    i.setImageDrawable(ContextCompat.getDrawable(myact, R.drawable.delete_icon));
                 }
                 //chk.setChecked(checked[position]);
                 return view;
@@ -205,7 +205,7 @@ public class ListCommandsActivity extends AppCompatActivity {
 
     public void rewrite(final int position)
     {
-        ArrayList<Command> ctemp=(ArrayList<Command>)commands.clone();
+        ArrayList<Command> ctemp = (ArrayList<Command>) commands.clone();
         ctemp.remove(position);
         mode.setPayload(ctemp);
         ListCommandClient client = RetrofitServiceGenerator.createService(ListCommandClient.class, API_TOKEN);

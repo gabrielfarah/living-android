@@ -13,9 +13,9 @@
         android:orientation="vertical">
 
         <org.florescu.android.rangeseekbar.RangeSeekBar
+            android:id="@+id/rsb_range"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/rsb_range"/>
+            android:layout_height="wrap_content" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -28,9 +28,9 @@
                 android:fillViewport="true">
 
                 <ListView
+                    android:id="@+id/lsv_modes"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/lsv_modes">
+                    android:layout_height="wrap_content">
 
                 </ListView>
             </ScrollView>
@@ -51,17 +51,16 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.1"
                 android:orientation="vertical">
 
                 <Button
                     android:id="@+id/btn_hour"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/blanco"
-                    android:background="@color/colorPrimaryDark"
                     android:layout_marginBottom="10dp"
-                    android:text="@string/specific_time"/>
+                    android:background="@color/colorPrimaryDark"
+                    android:text="@string/specific_time"
+                    android:textColor="@color/blanco" />
 
                 <LinearLayout
                     android:id="@+id/lyo_hour"
@@ -121,9 +120,9 @@
                     android:id="@+id/btn_day"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/blanco"
                     android:background="@color/colorPrimaryDark"
-                    android:text="@string/specific_days"/>
+                    android:text="@string/specific_days"
+                    android:textColor="@color/blanco" />
 
                 <LinearLayout
                     android:id="@+id/lyo_day"

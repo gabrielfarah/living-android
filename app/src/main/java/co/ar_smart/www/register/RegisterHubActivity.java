@@ -48,10 +48,6 @@ public class RegisterHubActivity extends AppCompatActivity
      */
     private String hubName;
     /**
-     * Path of background image
-     */
-    private String backgroungPath;
-    /**
      * Hub Latitude
      */
     private double hubLatitude;
@@ -78,7 +74,6 @@ public class RegisterHubActivity extends AppCompatActivity
         Intent previusIntent = getIntent();
         // Get values from extras
         hubName = previusIntent.getStringExtra("hubName");
-        backgroungPath = previusIntent.getStringExtra("backgroundPath");
         hubLatitude = previusIntent.getDoubleExtra("hubLatitude", Constants.DEFAULT_LATITUDE);
         hubLongitude = previusIntent.getDoubleExtra("hubLongitude", Constants.DEFAULT_LONGITUDE);
         hubRadius = (int) previusIntent.getDoubleExtra("hubRadius", Constants.DEFAULT_RADIUS);

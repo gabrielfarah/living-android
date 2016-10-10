@@ -31,13 +31,13 @@ public class TriggerManager
      * @param API_TOKEN
      * @param callback
      */
-    public static void addMode(int hub_id, int endpoint_id, Trigger trigger, String API_TOKEN, final TriggerCallbackInterface callback)
+    static void addMode(int hub_id, int endpoint_id, Trigger trigger, String API_TOKEN, final TriggerCallbackInterface callback)
     {
         Log.d("Hub_id",hub_id+"");
         Log.d("endpoint_id", endpoint_id+"");
         Log.d("Api_token",API_TOKEN);
         TriggerService triggerClient = RetrofitServiceGenerator.createService(TriggerService.class, API_TOKEN);
-        Call call = triggerClient.addTrigger(hub_id, endpoint_id, trigger);
+        Call<ResponseBody> call = triggerClient.addTrigger(hub_id, endpoint_id, trigger);
         Log.d("REQUEST: ", call.request().toString() + " " + call.request().body().toString());
         call.enqueue(new Callback<ResponseBody>()
         {

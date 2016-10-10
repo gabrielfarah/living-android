@@ -69,7 +69,7 @@ public class GuestManager {
      */
     public static void removeGuest(int hub_id, int guest_id, String API_TOKEN, final GuestCallbackInterface callback) {
         GuestService guestClient = RetrofitServiceGenerator.createService(GuestService.class, API_TOKEN);
-        Call call = guestClient.deleteGuest(hub_id, guest_id);
+        Call<ResponseBody> call = guestClient.deleteGuest(hub_id, guest_id);
         Log.d("OkHttp", String.format("Sending request %s ", call.request().toString()));
         call.enqueue(new Callback<ResponseBody>() {
             @Override

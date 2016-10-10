@@ -79,7 +79,7 @@ public class ModeManagementActivity extends AppCompatActivity {
         endpoint_devices.removeAll(temp_remove);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setTitle(getResources().getString(R.string.label_manage_modes));
+            getSupportActionBar().setTitle(getResources().getString(R.string.label_manage_scenes));
         }
         Button createNewModeButton = (Button) findViewById(R.id.add_new_mode_button);
         if (createNewModeButton != null) {
@@ -239,7 +239,7 @@ public class ModeManagementActivity extends AppCompatActivity {
      * This method displays a message when the the removing a guest fails
      */
     private void failedToRemoveMode() {
-        Toast.makeText(getApplicationContext(), getResources().getString(R.string.label_delete_mode_failed), Toast.LENGTH_LONG).show();
+        Toast.makeText(getApplicationContext(), getResources().getString(R.string.label_delete_scene_failed), Toast.LENGTH_LONG).show();
     }
 
     /**

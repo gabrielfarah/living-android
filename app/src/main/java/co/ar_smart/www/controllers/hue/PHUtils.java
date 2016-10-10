@@ -89,9 +89,9 @@ public class PHUtils {
         PointF pointF = new PointF(points[0], points[CPT_GREEN]);
         List<PointF> colorPoints = colorPointsForModel(model);
         if (!checkPointInLampsReach(pointF, colorPoints)) {
-            PointF pAB = getClosestPointToPoints((PointF) colorPoints.get(0), (PointF) colorPoints.get(CPT_GREEN), pointF);
-            PointF pAC = getClosestPointToPoints((PointF) colorPoints.get(CPT_BLUE), (PointF) colorPoints.get(0), pointF);
-            PointF pBC = getClosestPointToPoints((PointF) colorPoints.get(CPT_GREEN), (PointF) colorPoints.get(CPT_BLUE), pointF);
+            PointF pAB = getClosestPointToPoints(colorPoints.get(0), colorPoints.get(CPT_GREEN), pointF);
+            PointF pAC = getClosestPointToPoints(colorPoints.get(CPT_BLUE), colorPoints.get(0), pointF);
+            PointF pBC = getClosestPointToPoints(colorPoints.get(CPT_GREEN), colorPoints.get(CPT_BLUE), pointF);
             float dAB = getDistanceBetweenTwoPoints(pointF, pAB);
             float dAC = getDistanceBetweenTwoPoints(pointF, pAC);
             float dBC = getDistanceBetweenTwoPoints(pointF, pBC);
@@ -177,18 +177,15 @@ public class PHUtils {
         if (point == null || colorPoints == null) {
             return false;
         }
-        PointF red = (PointF) colorPoints.get(0);
-        PointF green = (PointF) colorPoints.get(CPT_GREEN);
-        PointF blue = (PointF) colorPoints.get(CPT_BLUE);
+        PointF red = colorPoints.get(0);
+        PointF green = colorPoints.get(CPT_GREEN);
+        PointF blue = colorPoints.get(CPT_BLUE);
         PointF v1 = new PointF(green.x - red.x, green.y - red.y);
         PointF v2 = new PointF(blue.x - red.x, blue.y - red.y);
         PointF q = new PointF(point.x - red.x, point.y - red.y);
         float s = crossProduct(q, v2) / crossProduct(v1, v2);
         float t = crossProduct(v1, q) / crossProduct(v1, v2);
-        if (s < 0.0f || t < 0.0f || s + t > 1.0f) {
-            return false;
-        }
-        return true;
+        return !(s < 0.0f || t < 0.0f || s + t > 1.0f);
     }
 
     private static float getDistanceBetweenTwoPoints(PointF one, PointF two) {

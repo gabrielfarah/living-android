@@ -1,6 +1,5 @@
 package co.ar_smart.www.endpoints;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -8,7 +7,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -53,27 +51,16 @@ public class DeleteZwaveActivity extends AppCompatActivity {
      * Represent the progress circle shown while the devices are been downloaded
      */
     private ProgressBar progress;
-    /**
-     * Integer that represent the elapsed time while the devices are been detected
-     */
-    private int sol;
-    /**
-     * Represent the current instance
-     */
-    private Activity myact;
-    private int prefered_hub;
 
     /**
      * Adapter for the list view
      */
-    private ArrayAdapter<Endpoint> adapter;
     private int PREFERRED_HUB_ID;
     private Date removeDeviceTimeoutDate;
     private String removeDevicePollingURL;
     private Runnable runnableEndpointRemoveResponse;
     private Handler pollingResponseHandler = new Handler();
     private boolean stopHandlerFlag = false;
-    private ArrayList<Endpoint> response_devices;
 
 
     @Override
@@ -84,8 +71,6 @@ public class DeleteZwaveActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setTitle(getString(R.string.label_newdev_activity_title));
         }
-        myact=this;
-        sol=0;
 
 
         list = (ListView) findViewById(R.id.list_DelDevicesHub);
