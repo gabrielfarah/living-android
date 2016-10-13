@@ -17,9 +17,11 @@ import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
@@ -36,7 +38,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.TimeZone;
 
-import co.ar_smart.www.analytics.AnalyticsApplication;
 import co.ar_smart.www.living.R;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -88,6 +89,7 @@ public class LivingLocalConfigurationActivity extends AppCompatActivity {
      * The application context
      */
     private Context mContext;
+    private Button submitButton;
 
     /**
      * This method will send the user input into the hub local webserver. It will try to force the use of wifi but only in devices > api 21
@@ -135,14 +137,17 @@ public class LivingLocalConfigurationActivity extends AppCompatActivity {
      */
     private void sendPost(final String json, final String userWifiSSID) {
         final boolean[] finished = {true};
+        Log.d("JSON", json);
         postMethod(json, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                AnalyticsApplication.getInstance().trackException(e);
+                Log.d("FAIL2", " " + e.getMessage() + " " + call.request().toString());
+                showDialog();
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
+                Log.d("PASS2", " " + response.message() + " " + call.request().toString());
                 if (response.isSuccessful()) {
                     String resp = response.body().string();
                     if (response.isSuccessful() && resp.contains("ssid not found")) {
@@ -151,7 +156,7 @@ public class LivingLocalConfigurationActivity extends AppCompatActivity {
                     }
                 } else {
                     // Request not successful
-                    AnalyticsApplication.getInstance().trackEvent("RegistrationFail", response.message(), json);
+                    showDialog();
                 }
             }
         });
@@ -197,28 +202,33 @@ public class LivingLocalConfigurationActivity extends AppCompatActivity {
 
     /**
      * This method validates if the webserver running in the hub is accesible to the phone doing a GET request
-     * @param json
-     * @param userWifiSSID
+     * @param json the information to send to the hub
+     * @param userWifiSSID the user's home WIFI name
      */
     public void testConnectionWithHub(final String json, final String userWifiSSID) {
         getMethod(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                AnalyticsApplication.getInstance().trackException(e);
+                //AnalyticsApplication.getInstance().trackException(e);
+                showDialog();
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
+                Log.d("Va a PASO?", " " + response.message() + " " + call.request().toString());
                 if (response.isSuccessful()) {
                     String resp = response.body().string();
                     if (resp.contains("connected")) {
+                        Log.d("PASO?", resp + " " + response.message() + " " + call.toString());
+                        enableButton();
                         sendPost(json, userWifiSSID);
                     } else {
                         showDialog();
                     }
                 } else {
                     // Request not successful
-                    AnalyticsApplication.getInstance().trackEvent("RegistrationFail", response.message(), call.toString());
+                    //AnalyticsApplication.getInstance().trackEvent("RegistrationFail", response.message(), call.toString());
+                    showDialog();
                 }
             }
         });
@@ -285,7 +295,7 @@ public class LivingLocalConfigurationActivity extends AppCompatActivity {
 
 
         final TextView passwordText = (TextView) findViewById(R.id.localConfPasswordText);
-        Button submitButton = (Button) findViewById(R.id.submitLocalConfigurationButton);
+        submitButton = (Button) findViewById(R.id.submitLocalConfigurationButton);
         if (submitButton != null) {
             submitButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -295,6 +305,7 @@ public class LivingLocalConfigurationActivity extends AppCompatActivity {
                     String userWifiPassword = passwordText.getText().toString();
                     boolean valid = validateUserInput(userWifiSSID, userWifiPassword, userHomeTimeZone);
                     if (valid) {
+                        submitButton.setEnabled(false);
                         sendWifiDataToHub(userWifiSSID, userWifiPassword, userHomeTimeZone);
                     }
                 }
@@ -416,7 +427,7 @@ public class LivingLocalConfigurationActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
         switch (requestCode) {
             case PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
                 // If request is cancelled, the result arrays are empty.
@@ -467,16 +478,31 @@ public class LivingLocalConfigurationActivity extends AppCompatActivity {
      * This method shows a dialog informing the user of a possible error and how to approach it.
      */
     public void showDialog() {
-        final Dialog dialog = new Dialog(this);
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setContentView(R.layout.dialog_local_configuration_wifi);
-        Button dialogButton = (Button) dialog.findViewById(R.id.local_configuration_button_accept);
-        dialogButton.setOnClickListener(new View.OnClickListener() {
+        LivingLocalConfigurationActivity.this.runOnUiThread(new Runnable() {
             @Override
-            public void onClick(View v) {
-                dialog.dismiss();
+            public void run() {
+                submitButton.setEnabled(true);
+                final Dialog dialog = new Dialog(LivingLocalConfigurationActivity.this);
+                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                dialog.setContentView(R.layout.dialog_local_configuration_wifi);
+                Button dialogButton = (Button) dialog.findViewById(R.id.local_configuration_button_accept);
+                dialogButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+                    }
+                });
+                dialog.show();
             }
         });
-        dialog.show();
+    }
+
+    private void enableButton() {
+        LivingLocalConfigurationActivity.this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                submitButton.setEnabled(true);
+            }
+        });
     }
 }

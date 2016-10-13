@@ -1,8 +1,8 @@
 <resources>
     <string name="addwifi_btntext">Add Wifi Device</string>
     <string name="delwifi_btntext">Delete Wifi Device</string>
-    <string name="addwave_btntext">Add ZWave Device</string>
-    <string name="delzwave_btntext">Delete ZWave Device</string>
+    <string name="addwave_btntext">Add Z-Wave Device</string>
+    <string name="delzwave_btntext">Delete Z-Wave Device</string>
     <string name="editDevice_btntext">Edit Device</string>
     <string name="editicon_btntext">Select an icon for the device</string>
     <string name="editroom_btntext">House Rooms</string>
@@ -24,9 +24,9 @@
     <string name="label_newdev_activity_title">New Devices</string>
     <string name="label_warning_delete_device">Are you sure you want to delete this device</string>
     <string name="label_warning_delete_scene">Are you sure you want to delete this scene</string>
-    <string name="label_delete_scene_activity_title">Delete Modes</string>
+    <string name="label_delete_scene_activity_title">Delete Scenes</string>
     <string name="label_delete_scene_failed">Only the person who created an scene can remove it</string>
-    <string name="label_edit_scene_activity_title">Select Mode</string>
+    <string name="label_edit_scene_activity_title">Select Scene</string>
     <string name="label_remove_escene_success">Scene deleted!</string>
     <string name="label_listcommands_activity_title">Edit Commands</string>
     <string name="label_selectscenedevice_activity_title">Select Device</string>
@@ -81,7 +81,7 @@
     <string name="label_failed_remove_guest">Unable to remove guest, try again</string>
     <string name="label_guest_removed_message">Guest removed!</string>
     <string name="label_only_administrator_can_add_guest">Only the administrator can manage the guests in this hub</string>
-    <string name="label_only_failed_add_guest">Failed. Did the email is registered?</string>
+    <string name="label_only_failed_add_guest">Failed. The user with that email must create a Domu account first.</string>
     <string name="label_edit_user_first_name">Edit your first name:</string>
     <string name="label_edit_user_first_name_text_view">First Name</string>
     <string name="label_edit_user_last_name">Edit your last name:</string>
@@ -146,8 +146,6 @@
     <string name="label_unselected">%1$s (UNSELECTED)</string>
     <string name="label_number_of_elements_scene">Actions in scene: %1$d</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="dialog_already_have_triggers">You already have some triggers for this action. What do you want to do ?</string>
     <string name="dialog_create_trigger">Create</string>
     <string name="dialog_remove_trigger">Remove existing one</string>
@@ -254,8 +252,12 @@
     <string name="label_use_this_room">Use selected room</string>
     <string name="no_data_available_message">No Data is available</string>
     <string name="energy_cost_test_value">"$ "</string>
-    <string name="current_energy_cost_aproximate">Current energy cost (aproximate):</string>
+    <string name="current_energy_cost_aproximate">Current energy cost (approximate):</string>
     <string name="enter_your_energy_cost_per_kwh_title">Enter the cost of KWh</string>
     <string name="enter_your_energy_cost_per_kwh_message">To be able to calculate the cost of the energy bill for this monitor, please input the value of your KWh. This number can be found in your last montly bill.</string>
     <string name="device_image">Device Image</string>
+    <string name="label_remove_device_activity_title">Remove Z-Wave device</string>
+    <string name="sonos_add_songs_to_queue">Please add songs to your Sonos device queue to be able to play them from here.</string>
+    <string name="unreachable_sonos_message">The SONOS player was unreachable, make sure is connected to the same WIFI network as the HUB and try again.</string>
+    <string name="music_volume">Music volume</string>
 </resources>

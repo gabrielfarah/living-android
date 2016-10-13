@@ -4,6 +4,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -116,8 +117,9 @@ public class NewDevicesActivity extends AppCompatActivity {
         endpoint_devices = intent.getParcelableArrayListExtra(EXTRA_LIST_PARCELABLE_FIRST);
 
         adapter = new ArrayAdapter<Endpoint>(this, android.R.layout.simple_list_item_1, endpoints) {
+            @NonNull
             @Override
-            public View getView(int position, View convertView, ViewGroup parent) {
+            public View getView(int position, View convertView, @NonNull ViewGroup parent) {
                 View view = convertView;
                 if (view == null) {
                     view = getLayoutInflater().inflate(R.layout.row_list_devices, null);
@@ -307,9 +309,6 @@ public class NewDevicesActivity extends AppCompatActivity {
                     progress.setVisibility(View.GONE);
                     noDeviceMessage.setVisibility(View.VISIBLE);
                     list.setVisibility(View.GONE);
-                    Log.d("Inf", endpoints.toString());
-                    Log.d("Inf", tryCount + "");
-                    Log.d("Inf", addType + "");
                     tryCount++;
                     if (addType != null && addType.equalsIgnoreCase(TYPE_DEVICE_WIFI) && tryCount > 1) { // Then add a Z-Wave
                         description.setText(getResources().getString(R.string.description_add_wifi));
@@ -384,7 +383,8 @@ public class NewDevicesActivity extends AppCompatActivity {
      */
     private boolean validateEndpoint(Endpoint endpointsResponse) {
         return endpointsResponse != null &&
-                (endpointsResponse.getId() > 0 || endpointsResponse.getNode() > 0) &&
+                (endpointsResponse.getId() > 0 || endpointsResponse.getNode() > 0 ||
+                        (endpointsResponse.getUid() != null && !endpointsResponse.getUid().isEmpty())) &&
                 endpointsResponse.getEndpoint_type() != null && !endpointsResponse.getEndpoint_type().isEmpty();
     }
 

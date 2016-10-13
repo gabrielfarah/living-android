@@ -295,7 +295,7 @@ public class HomeActivity extends AppCompatActivity {
                             public void onSuccessCallback(User user) {
                                 currentUSer = user;
                                 currentUSer.setPush_token(userId);
-                                Log.d("DEBUGGG", currentUSer.toString());
+                                currentUSer.setMobile_os("android");
                                 updateUserPushToken();
                             }
 
@@ -323,7 +323,6 @@ public class HomeActivity extends AppCompatActivity {
 
                 @Override
                 public void onUnsuccessfulCallback() {
-                    Log.d("No paso", "fuck");
                 }
             });
         }
@@ -645,7 +644,7 @@ public class HomeActivity extends AppCompatActivity {
                 // while the handler is not stoped create a new request every time delta
                 if (!stopHandlerFlag && endpointStatesTimeoutDate.after(new Date())) {
                     processEndpointStatesResponse();
-                    pollingResponseHandler.postDelayed(this, 5000);
+                    pollingResponseHandler.postDelayed(this, 10000);
                 }
             }
         };
@@ -791,7 +790,7 @@ public class HomeActivity extends AppCompatActivity {
                     }
                     getModes();
                     // If user got no endpoints redirect to management activity. set grid layout otherwise.
-                    if (responseEndpoints.isEmpty()) {
+                    if (endpoint_devices.isEmpty()) {
                         openManagementDevicesActivity();
                     } else {
                         setGridLayout(endpoint_devices);
@@ -1091,6 +1090,7 @@ public class HomeActivity extends AppCompatActivity {
                 performZwaveBinaryCommand(endpoint);
                 break;
             case Constants.UI_CLASS_ZWAVE_LEVEL_LIGHT:
+            case Constants.UI_CLASS_ZWAVE_LEVEL_SWITCH:
                 performZwaveLevelCommand(endpoint);
                 break;
             case Constants.UI_CLASS_HUE:
@@ -1244,7 +1244,7 @@ public class HomeActivity extends AppCompatActivity {
             public void run() {
                 doubleBackToExitPressedOnce = false;
             }
-        }, 2000);
+        }, 5000);
     }
 
     public String getBackgroundPath()
@@ -1301,7 +1301,7 @@ public class HomeActivity extends AppCompatActivity {
 
         private String image;
 
-        public EndpointIcons(String path) {
+        EndpointIcons(String path) {
             image = path;
     }
 

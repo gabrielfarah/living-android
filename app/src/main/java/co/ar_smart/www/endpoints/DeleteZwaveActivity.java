@@ -69,7 +69,7 @@ public class DeleteZwaveActivity extends AppCompatActivity {
         setContentView(R.layout.activity_delete_device);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setTitle(getString(R.string.label_newdev_activity_title));
+            getSupportActionBar().setTitle(getString(R.string.label_remove_device_activity_title));
         }
 
 

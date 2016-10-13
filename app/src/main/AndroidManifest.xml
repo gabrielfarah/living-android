@@ -79,6 +79,9 @@
             android:screenOrientation="portrait"/>
         <activity android:name="co.ar_smart.www.register.MapRegisterHubActivity"
             android:screenOrientation="portrait"/>
+        <activity
+            android:name="co.ar_smart.www.register.VerifyConfigurationCompleteActivity"
+            android:screenOrientation="portrait" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").

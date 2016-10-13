@@ -176,12 +176,12 @@ public class SonosControllerActivity extends AppCompatActivity {
                         shuffleRepeatCommand(PLAY_MODE_NORMAL);
                         repeatButton.setBackgroundResource(R.drawable.repeat_release);
                         repeatOn = false;
-                    } else if (repeatOn && shuffleOn) {
+                    } else if (repeatOn) {
                         //SHUFFLE_NOREPEAT
                         shuffleRepeatCommand(PLAY_MODE_SHUFFLE_NOREPEAT);
                         repeatButton.setBackgroundResource(R.drawable.repeat_release);
                         repeatOn = false;
-                    } else if (!repeatOn && !shuffleOn) {
+                    } else if (!shuffleOn) {
                         //REPEAT_ALL
                         shuffleRepeatCommand(PLAY_MODE_REPEAT_ALL);
                         repeatButton.setBackgroundResource(R.drawable.repeat_pressed);
@@ -203,12 +203,12 @@ public class SonosControllerActivity extends AppCompatActivity {
                         shuffleRepeatCommand(PLAY_MODE_SHUFFLE);
                         shuffleButton.setBackgroundResource(R.drawable.shuffle_pressed);
                         shuffleOn = true;
-                    } else if (repeatOn && shuffleOn) {
+                    } else if (repeatOn) {
                         //REPEAT_ALL
                         shuffleRepeatCommand(PLAY_MODE_REPEAT_ALL);
                         shuffleButton.setBackgroundResource(R.drawable.shuffle_released);
                         shuffleOn = false;
-                    } else if (!repeatOn && !shuffleOn) {
+                    } else if (!shuffleOn) {
                         //SHUFFLE_NOREPEAT
                         shuffleRepeatCommand(PLAY_MODE_SHUFFLE_NOREPEAT);
                         shuffleButton.setBackgroundResource(R.drawable.shuffle_pressed);
@@ -490,7 +490,7 @@ public class SonosControllerActivity extends AppCompatActivity {
             public void run() {
                 spinner.removeAllViews();
                 TextView message = new TextView(getApplicationContext());
-                message.setText("The SONOS player was unreachable, make sure is connected to the same WIFI network as the HUB and try again.");
+                message.setText(R.string.unreachable_sonos_message);
                 message.setGravity(View.TEXT_ALIGNMENT_CENTER);
                 spinner.addView(message);
             }
@@ -505,11 +505,13 @@ public class SonosControllerActivity extends AppCompatActivity {
             @Override
             public void run() {
                 spinner.setVisibility(View.GONE);
-                adapter = new TrackAdapter(SonosControllerActivity.this, sonosEndpoint.getQueue());
-                // Attach the adapter to a ListView
-                ListView listView = (ListView) findViewById(R.id.music_tracks_list_view);
-                listView.setVisibility(View.VISIBLE);
-                if (listView != null) {
+                TextView no_queue = (TextView) findViewById(R.id.message_no_songs_in_queue);
+                if (!sonosEndpoint.getQueue().isEmpty()) {
+                    no_queue.setVisibility(View.GONE);
+                    adapter = new TrackAdapter(SonosControllerActivity.this, sonosEndpoint.getQueue());
+                    // Attach the adapter to a ListView
+                    ListView listView = (ListView) findViewById(R.id.music_tracks_list_view);
+                    listView.setVisibility(View.VISIBLE);
                     listView.setAdapter(adapter);
                     listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                         @Override
@@ -518,6 +520,8 @@ public class SonosControllerActivity extends AppCompatActivity {
                             Toast.makeText(getApplicationContext(), sonosEndpoint.getQueue().get(position).toString(), Toast.LENGTH_LONG).show();
                         }
                     });
+                } else {
+                    no_queue.setVisibility(View.VISIBLE);
                 }
                 volControl.setProgress(sonosEndpoint.getVolume());
                 if (sonosEndpoint.getState().equalsIgnoreCase("PLAYING")) {
