@@ -11,8 +11,8 @@ android {
         versionCode 1
         versionName "1.0"
         manifestPlaceholders = [manifestApplicationId          : "${applicationId}",
-                                onesignal_app_id               : "d5ff3af3-5c26-47a4-908d-874cd24db8b5",
-                                onesignal_google_project_number: "861319112287"]
+                                onesignal_app_id               : "onesignal_app_id",
+                                onesignal_google_project_number: "onesignal_google_project_number"]
     }
     buildTypes {
         release {
